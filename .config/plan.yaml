@@ -26,5 +26,368 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 0
-  plans: {}
+  task_count: 15
+  plans:
+    P1:
+      id: "P1"
+      title: "Entity"
+      order: 1
+      target: "Entity"
+      does: "The Entity Component exists as the reusable, project-internal Entity library that defines and publishes every Target Entity with its Fields, relationships, and rules."
+      constraints: []
+      task_count: 15
+      groups:
+        P1-G1:
+          id: "P1-G1"
+          title: "Library setup"
+          description: "Establishes the Entity Component as its own library so that the shared contracts and the Entity units have a place to be built and their dependencies resolve."
+          area: "Component packaging and environment"
+          does: "The Entity library exists as a project-internal package with its environment and declared dependencies resolved, ready to receive its contracts and Entity units."
+          constraints: []
+          task_count: 1
+          tasks:
+            P1-G1-T1:
+              id: "P1-G1-T1"
+              source_id: "002"
+              title: "Establish the Entity library package"
+              description: "Create the Entity Component as a project-internal library package with an isolated environment in which its declared third-party dependencies resolve to stabilized concrete versions, containing no Entity content yet."
+              reason: "Every later Task of the phase builds inside this library and needs its dependencies to resolve."
+              inputs: []
+              skills:
+                - "sqlmodel"
+              expected_result: "An empty, importable Entity library whose environment resolves and records concrete versions for its declared dependencies."
+              acceptance: "The library installs from the repository into its isolated environment and imports without error, every declared dependency is resolved to a recorded concrete version, and nothing is published or installed outside the project."
+              depends_on: []
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:06:58Z", by: "003", event: "claimed", note: "No dependencies; claimed by Develop."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "done", note: "Created the Entity library at entity/ (pyproject.toml, empty entity/__init__.py, placeholder README.md). uv sync created entity/.venv (already covered by the root ignore entry .venv/) and entity/uv.lock. Resolved: sqlmodel 0.0.48, pydantic 2.14.1, sqlalchemy 2.1.4; dev group ruff 0.17.0, ty 0.0.86. Observed: the package builds and imports in its environment."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "decision", note: "Unset: Python version (latest-compatible). Chosen: requires-python >=3.14, the latest available interpreter (3.14.4), supported by the resolved packages. Why: Development Preferences select latest-compatible."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "decision", note: "Unset: build backend and where quality tools are declared. Chosen: uv_build with the package at the Component root; ruff and ty in a dev dependency group with lower bounds at their resolved versions. Why: uv is the selected package manager and the quality tools are Development defaults."}
+        P1-G2:
+          id: "P1-G2"
+          title: "Core contracts"
+          description: "The shared contracts and private behavior that serve every Entity rather than one: Declaration, Field Type realization, Storage Mapping, Validation, and Foundation. They are grouped because every Entity unit is built on them and they build on one another."
+          area: "Core shared by all Entities"
+          does: "Any Entity unit can declare its meaning, map to its table-ready form, validate its values, and convert through JSON text on one shared base."
+          constraints: []
+          task_count: 5
+          tasks:
+            P1-G2-T1:
+              id: "P1-G2-T1"
+              source_id: "002"
+              title: "Provide the public Declaration contract"
+              description: "Provide the immutable structured records for Entity Declarations and Field Declarations together with Entity Metadata, Field constraints, Field Types, Value Generation, and Sensitivity, refusing an invalid or contradictory Declaration when it is created."
+              reason: "Every Entity states its meaning once through its Declaration, and every other Core capability and every consumer reads that meaning from it."
+              inputs:
+                - "The established Entity library"
+              skills: []
+              expected_result: "A public Declaration contract able to express every Target Entity and its Fields, refusing structurally invalid Declarations at creation."
+              acceptance: "A valid Declaration is created and read back with every property intact and cannot be modified; a Declaration with a repeated Field name, a Default Value together with Value Generation, a size on a non-string Field, a Relation on an unknown Field, or a repeated uniqueness or index entry is refused when created."
+              depends_on:
+                - "P1-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Deviation: the claim was recorded after implementation had begun in this execution."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "done", note: "Declaration contract (entity/entity/core/declaration.py): frozen Declaration, FieldDeclaration, FieldConstraints, Relation, UniquenessConstraint, Index, FieldType, ValueGeneration, Sensitivity, and the NO_DEFAULT marker, with creation-time structural checks. Exercised with the User Entity: construction, rejection, masking, assignment, JSON round trip, and SQLite storage all behaved as intended."}
+            P1-G2-T2:
+              id: "P1-G2-T2"
+              source_id: "002"
+              title: "Realize the closed Field Type set"
+              description: "Realize each Field Type both as an in-language value and as its JSON Object form, so a Field's Type determines its value category consistently, and refuse any Type outside the closed set."
+              reason: "Every Field of every Entity depends on one consistent mapping from its Type to its value representation."
+              inputs:
+                - "The public Declaration contract"
+              skills:
+                - "sqlmodel"
+              expected_result: "Every Field Type has exactly one realization for in-language values and JSON text; an unrecognized Type is refused rather than guessed."
+              acceptance: "Each Field Type accepts a valid value of its category and rejects a value of another category; a non-finite float and a datetime without timezone are rejected; an unknown Type is refused."
+              depends_on:
+                - "P1-G2-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Deviation: the claim was recorded after implementation had begun in this execution."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "done", note: "Field Type realization (entity/entity/core/_types.py): one in-language type per Field Type, its JSON text form, and its decoding; a float accepts only finite floats, not integers. Exercised with the User Entity: construction, rejection, masking, assignment, JSON round trip, and SQLite storage all behaved as intended."}
+            P1-G2-T3:
+              id: "P1-G2-T3"
+              source_id: "002"
+              title: "Derive the table-ready Storage Mapping from Declarations"
+              description: "Provide the private Storage Mapping that derives an Entity's table-ready form — table and column names, column types, Primary Key, Relations, uniqueness, indexes, identity column, and exact decimal and UTC datetime columns — only from its Declaration, registered in one shared table metadata reachable through the Entities."
+              reason: "Consumers that store Entities need a table form that follows the Declaration exactly, without Entity ever running storage."
+              inputs:
+                - "The public Declaration contract"
+                - "The Field Type realization"
+              skills:
+                - "sqlmodel"
+              expected_result: "Any Entity's table form is derived from its Declaration alone and is registered exactly once in the shared table metadata."
+              acceptance: "For a representative Declaration, the derived table has the Entity's physical name, one column per Field named by the Field, the Primary Key, a foreign key per Relation, uniqueness and indexes named by the convention, and an identity column for an Auto Increment Field; decimal values come back exact and datetime values come back timezone-aware in UTC after being stored and read."
+              depends_on:
+                - "P1-G2-T1"
+                - "P1-G2-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Deviation: the claim was recorded after implementation had begun in this execution."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "done", note: "Storage Mapping (entity/entity/core/_storage.py): a private registry whose metadata has the pk/fk/uq/ix naming convention, deterministic type and table names, per-Field realization from the Declaration, an exact-text decimal column type, UTCDateTime for datetimes, Identity plus sqlite_autoincrement for auto_increment, and table-level combination constraints and indexes. Exercised with the User Entity: construction, rejection, masking, assignment, JSON round trip, and SQLite storage all behaved as intended."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "decision", note: "Unset: physical casing for type versus table names. Chosen: the type name is PascalCase (AccountGroup) and the table name is snake_case (account_group). Why: Entity Preferences name PascalCase for entities and snake_case for modules; this pairing is applied deterministically."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "decision", note: "Unset: the size constraint's meaning. Chosen: a maximum length for validation and the column. Why: it is a column length."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "decision", note: "Unset: the value of a nullable Field without a Default Value when it is omitted. Chosen: it is stored as null while its Declaration keeps NO_DEFAULT. Why: by definition such a Field is not a Required Field."}
+                - {at: "2026-10-12T23:21:44Z", by: "003", event: "decision", note: "Unset: how the datetime column realizes DateTime(timezone=True). Chosen: SQLModel's UTCDateTime, whose underlying type is DateTime(timezone=True) and which normalizes to UTC and reads back UTC-aware. Why: it realizes the Preference exactly and is what the sqlmodel Skill directs; see OQ-003-1."}
+            P1-G2-T4:
+              id: "P1-G2-T4"
+              source_id: "002"
+              title: "Provide the shared Validation base"
+              description: "Provide the private Base that every Entity builds on: strict validation on construction and on assignment, refusal of immutable and caller-supplied Auto Increment assignment, non-hashable mutable Entities, replacement of marked input in validation messages, and the load-time match between an Entity type, its table name, and its Declaration's Fields."
+              reason: "Field contracts must be enforced identically for every Entity, from one place, so no Entity reshapes or coerces its data."
+              inputs:
+                - "The public Declaration contract"
+                - "The Field Type realization"
+                - "The Storage Mapping"
+              skills:
+                - "sqlmodel"
+              expected_result: "A shared Base on which an Entity validates every construction and assignment strictly and fails to load when its type disagrees with its Declaration."
+              acceptance: "An Entity built on Base rejects an unknown Field, a wrong Type, and a missing Required Field without coercion; keeps explicit false, zero, empty string, and null as supplied; leaves the prior value after a failed assignment; refuses assigning an immutable or Auto Increment Field; cannot be hashed; never shows a marked Field's input in a validation message; and fails to load when its type name, table name, or Fields disagree with its Declaration."
+              depends_on:
+                - "P1-G2-T1"
+                - "P1-G2-T2"
+                - "P1-G2-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Deviation: the claim was recorded after implementation had begun in this execution."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "done", note: "Validation base (entity/entity/core/_base.py): strict, extra-forbid validation on construction and assignment through model_validate; refusal of a caller-supplied auto_increment value and of immutable assignment; sensitive input replaced in every validation message; not hashable; a load-time check of type name, table name, and Field names and Types against the Declaration. Exercised with the User Entity: construction, rejection, masking, assignment, JSON round trip, and SQLite storage all behaved as intended."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "decision", note: "Unset: the replacement shown for a marked Field's input. Chosen: the fixed text **********. Why: the Principle requires replacement but does not name its form."}
+            P1-G2-T5:
+              id: "P1-G2-T5"
+              source_id: "002"
+              title: "Provide Foundation conversion through JSON text"
+              description: "Provide the public Foundation that extends Base with lossless conversion of an Entity to JSON text and reconstruction of an Entity from JSON text."
+              reason: "Consumers need one portable, lossless value representation for every Entity."
+              inputs:
+                - "The shared Validation base"
+              skills:
+                - "sqlmodel"
+              expected_result: "Every Entity built on Foundation converts to and from JSON text without loss."
+              acceptance: "An Entity converts to JSON text whose single root object has exactly its Field names in Declaration order and converts back to an equal Entity, with decimal and datetime values exact; malformed text, a repeated key, a non-standard constant, and a non-object root are refused; an Auto Increment value present in the text is accepted as stored."
+              depends_on:
+                - "P1-G2-T4"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Deviation: the claim was recorded after implementation had begun in this execution."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "done", note: "Foundation (entity/entity/core/foundation.py): to_json and from_json; refuses malformed text, repeated keys, non-standard constants, and non-object roots; decodes decimal, datetime, date, time, and uuid text forms; accepts a stored auto_increment value. Exercised with the User Entity: construction, rejection, masking, assignment, JSON round trip, and SQLite storage all behaved as intended."}
+        P1-G3:
+          id: "P1-G3"
+          title: "Entity units"
+          description: "One unit per Target Entity, each holding its own Declaration and the type built on Foundation. They form one Group because each realizes one Target Entity definition on the same Core; their order follows the Relations between them."
+          area: "Entity units, one per Target Entity"
+          does: "Every Target Entity exists as its own Entity whose Declaration matches its Target definition, which constructs, validates, and round-trips through JSON text on the shared Core, and whose Relations each resolve to another Entity of the Component."
+          constraints: []
+          task_count: 7
+          tasks:
+            P1-G3-T1:
+              id: "P1-G3-T1"
+              source_id: "002"
+              title: "Realize the User Entity"
+              description: "Realize the User Entity from its Target definition."
+              reason: "User owns every other user-scoped record, so it is the target of every ownership Relation."
+              inputs:
+                - "The Target definition of User"
+              skills:
+                - "sqlmodel"
+              expected_result: "A User Entity matching its Target definition."
+              acceptance: "User's Declaration matches its Target definition in every Field, order, Type, nullability, default, and metadata, and User carries no Relation."
+              depends_on:
+                - "P1-G2-T5"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Deviation: the claim was recorded after implementation had begun in this execution."}
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "done", note: "Realized User (entity/entity/entity/user.py) from its Target definition; observed table user with uq_user_name and uq_user_username."}
+            P1-G3-T2:
+              id: "P1-G3-T2"
+              source_id: "002"
+              title: "Realize the Instance Entity"
+              description: "Realize the Instance Entity from its Target definition."
+              reason: "Instance carries the technical connection to MetaTrader 5 that Accounts use."
+              inputs:
+                - "The Target definition of Instance"
+              skills:
+                - "sqlmodel"
+              expected_result: "An Instance Entity matching its Target definition."
+              acceptance: "Instance's Declaration matches its Target definition in every Field, order, Type, nullability, default, and metadata, and its ownership Relation resolves to User."
+              depends_on:
+                - "P1-G2-T5"
+                - "P1-G3-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Dependencies P1-G2-T5 and P1-G3-T1 are done."}
+                - {at: "2026-10-12T23:18:29Z", by: "003", event: "done", note: "Realized from its Target definition (entity/entity/entity/instance.py); it loads, and its table is instance with uq_instance_user_id_name and fk_instance_user_id."}
+                - {at: "2026-10-12T23:18:29Z", by: "003", event: "decision", note: "Unset: which Target credential Fields carry which Sensitivity Marker. Chosen: password is marked password and api_key is marked sensitive; the technical username and ip are unmarked. Why: the Target declares password and api_key as credentials. The same mapping is applied to User and Account."}
+            P1-G3-T3:
+              id: "P1-G3-T3"
+              source_id: "002"
+              title: "Realize the Currency Entity"
+              description: "Realize the Currency Entity from its Target definition."
+              reason: "Accounts need a user-owned currency as their base currency."
+              inputs:
+                - "The Target definition of Currency"
+              skills:
+                - "sqlmodel"
+              expected_result: "A Currency Entity matching its Target definition."
+              acceptance: "Currency's Declaration matches its Target definition in every Field, order, Type, nullability, default, size, and metadata, and its ownership Relation resolves to User."
+              depends_on:
+                - "P1-G2-T5"
+                - "P1-G3-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Dependencies P1-G2-T5 and P1-G3-T1 are done."}
+                - {at: "2026-10-12T23:18:29Z", by: "003", event: "done", note: "Realized from its Target definition (entity/entity/entity/currency.py); it loads, and its table is currency with code VARCHAR(3), uq_currency_user_id_code and fk_currency_user_id; a four-letter code is rejected."}
+            P1-G3-T4:
+              id: "P1-G3-T4"
+              source_id: "002"
+              title: "Realize the Broker Entity"
+              description: "Realize the Broker Entity from its Target definition."
+              reason: "Brokers provide Assets and own Accounts."
+              inputs:
+                - "The Target definition of Broker"
+              skills:
+                - "sqlmodel"
+              expected_result: "A Broker Entity matching its Target definition."
+              acceptance: "Broker's Declaration matches its Target definition in every Field, order, Type, nullability, default, and metadata, and its ownership Relation resolves to User."
+              depends_on:
+                - "P1-G2-T5"
+                - "P1-G3-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Dependencies P1-G2-T5 and P1-G3-T1 are done."}
+                - {at: "2026-10-12T23:18:29Z", by: "003", event: "done", note: "Realized from its Target definition (entity/entity/entity/broker.py); it loads, and its table is broker with uq_broker_user_id_name and fk_broker_user_id."}
+            P1-G3-T5:
+              id: "P1-G3-T5"
+              source_id: "002"
+              title: "Realize the Asset Entity"
+              description: "Realize the Asset Entity from its Target definition."
+              reason: "Assets identify what can be traded through each Broker."
+              inputs:
+                - "The Target definition of Asset"
+              skills:
+                - "sqlmodel"
+              expected_result: "An Asset Entity matching its Target definition."
+              acceptance: "Asset's Declaration matches its Target definition in every Field, order, Type, nullability, default, and metadata, and its Relation resolves to Broker."
+              depends_on:
+                - "P1-G2-T5"
+                - "P1-G3-T4"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:18:29Z", by: "003", event: "claimed", note: "Dependencies P1-G2-T5 and P1-G3-T4 are done."}
+                - {at: "2026-10-12T23:19:19Z", by: "003", event: "done", note: "Realized Asset (entity/entity/entity/asset.py); its table is asset with uq_asset_broker_id_symbol and fk_asset_broker_id. Observed: an integer or NaN point_size is rejected."}
+            P1-G3-T6:
+              id: "P1-G3-T6"
+              source_id: "002"
+              title: "Realize the Account Group Entity"
+              description: "Realize the Account Group Entity from its Target definition."
+              reason: "Accounts are organized into user-owned Account Groups."
+              inputs:
+                - "The Target definition of Account Group"
+              skills:
+                - "sqlmodel"
+              expected_result: "An Account Group Entity matching its Target definition."
+              acceptance: "Account Group's Declaration matches its Target definition in every Field, order, Type, nullability, default, and metadata, its logical name keeps the Target spelling, and its ownership Relation resolves to User."
+              depends_on:
+                - "P1-G2-T5"
+                - "P1-G3-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Dependencies P1-G2-T5 and P1-G3-T1 are done."}
+                - {at: "2026-10-12T23:18:29Z", by: "003", event: "done", note: "Realized from its Target definition (entity/entity/entity/account_group.py); it loads, and its table is account_group with uq_account_group_user_id_name and fk_account_group_user_id."}
+            P1-G3-T7:
+              id: "P1-G3-T7"
+              source_id: "002"
+              title: "Realize the Account Entity"
+              description: "Realize the Account Entity from its Target definition."
+              reason: "Account is the trading account through which MetaTrader 5 actions will later be performed."
+              inputs:
+                - "The Target definition of Account"
+              skills:
+                - "sqlmodel"
+              expected_result: "An Account Entity matching its Target definition."
+              acceptance: "Account's Declaration matches its Target definition in every Field, order, Type, nullability, default, and metadata, its decimal balance keeps its exact value through JSON text, and its Relations resolve to Account Group, Broker, Instance, and Currency."
+              depends_on:
+                - "P1-G2-T5"
+                - "P1-G3-T2"
+                - "P1-G3-T3"
+                - "P1-G3-T4"
+                - "P1-G3-T6"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:18:29Z", by: "003", event: "claimed", note: "Dependencies P1-G2-T5, P1-G3-T2, P1-G3-T3, P1-G3-T4, and P1-G3-T6 are done."}
+                - {at: "2026-10-12T23:19:19Z", by: "003", event: "done", note: "Realized Account (entity/entity/entity/account.py); its table is account with uq_account_name, uq_account_group_id_broker_id_instance_id, and four foreign keys to account_group, broker, instance, and currency. Observed: a 29-digit balance keeps its exact value through JSON text and SQLite storage, and a marked password is replaced in validation messages."}
+        P1-G4:
+          id: "P1-G4"
+          title: "Interface publication"
+          description: "The single entrypoint through which consumers reach the Entities, kept separate because it publishes the completed Entity units rather than defining any of them."
+          area: "Interface: Entity Exports and Entity Collection"
+          does: "Every Entity is published once by its own name and together in the Entity Collection, under the versioned Interface contract."
+          constraints: []
+          task_count: 1
+          tasks:
+            P1-G4-T1:
+              id: "P1-G4-T1"
+              source_id: "002"
+              title: "Publish every Entity through the Interface"
+              description: "Publish each realized Entity through an explicit Entity Export and all of them through the Entity Collection in Target order, and nothing else."
+              reason: "Database, Logic, and Presentation reach Entities only through this published surface."
+              inputs:
+                - "Every realized Entity unit"
+              skills: []
+              expected_result: "A published Interface holding exactly one Entity Export per Target Entity and the Entity Collection in Target order."
+              acceptance: "A consumer imports each of the seven Entities directly by its own name and enumerates an Entity Collection holding exactly those same Entities in Target order; each export is the actual Entity exposing its actual Declaration; nothing else is published; loading the Interface creates no instance, data, connection, file, or process."
+              depends_on:
+                - "P1-G3-T1"
+                - "P1-G3-T2"
+                - "P1-G3-T3"
+                - "P1-G3-T4"
+                - "P1-G3-T5"
+                - "P1-G3-T6"
+                - "P1-G3-T7"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:19:19Z", by: "003", event: "claimed", note: "Dependencies P1-G3-T1 to P1-G3-T7 are done."}
+                - {at: "2026-10-12T23:20:00Z", by: "003", event: "done", note: "Published the Interface (entity/entity/interface.py): explicit imports of the seven Entities, __all__, and the entities tuple in Target order. Observed: the module exposes exactly the seven Entities and entities; each Collection item is the exported Entity itself; loading creates no Entity instance, thread, or file. ruff format, ruff check, and ty check pass across the Component after formatting the earlier output and fixing four lint findings (TypeError for type checks, Decimal(0)) and six type findings (SQLModelConfig, LiteralString casts)."}
+        P1-G5:
+          id: "P1-G5"
+          title: "Documentation"
+          description: "The Component's root documentation, kept separate because it describes the finished published surface for consumers rather than producing behavior."
+          area: "Component root documentation"
+          does: "A consumer can understand, set up, use, and verify the Entity library from its documentation alone."
+          constraints: []
+          task_count: 1
+          tasks:
+            P1-G5-T1:
+              id: "P1-G5-T1"
+              source_id: "002"
+              title: "Document the Entity Component"
+              description: "Write the Component's root documentation with its required sections, covering the published Interface, Declaration access, Foundation conversion, setup, use, verification, and troubleshooting."
+              reason: "Consumers learn the Entity contract from its documentation without reading internals."
+              inputs:
+                - "The published Interface"
+              skills: []
+              expected_result: "Root documentation that describes the current Entity Component completely and accurately."
+              acceptance: "The documentation presents its sections in the required order, lists every Entity once in Target order with its description, complete Field table, and metadata, its examples work as written against the published Interface, and it contains no real credential or secret."
+              depends_on:
+                - "P1-G4-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-12T23:20:00Z", by: "003", event: "claimed", note: "Dependency P1-G4-T1 is done."}
+                - {at: "2026-10-12T23:21:44Z", by: "003", event: "done", note: "Wrote the root documentation (entity/README.md): Overview, Interface (every Entity in Target order with its Field table generated from its Declaration, and its Entity Metadata), Declaration, Foundation, Setup, Use, Verify, and Troubleshooting. Observed: all 12 Python examples run and print what the text states; only placeholder credentials are used. The Component's cache directories created by checks during this execution (.ruff_cache, __pycache__) were removed."}
