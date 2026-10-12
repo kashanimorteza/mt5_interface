@@ -1,0 +1,52 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".config/state.yaml"
+  path_note: "Mutable Workflow position, Phase progress, and execution Log."
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: true
+  rule: "Apply the current State Component and the active operation's ownership rules."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read active, then the Phase selected by stable Target phase identifier, then the Log Entries by identifier."
+  selection: "A requested phase resolves to the phases entry keyed by that phase identifier; a Log Entry resolves by its identifier."
+  absence: "No matching phases entry means no progress is recorded for that phase."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - "active"
+  - "phases"
+  - "log"
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  active: "Current Workflow position."
+  phases: "Aggregate progress for each Target phase."
+  log: "Recorded Skill executions and their outcomes."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+  active:
+    mode: "not set"
+    phase: null
+    mode_reason: "No Workflow operation has been recorded."
+    set_by: "initialization"
+    set_at: null
+  phases: {}
+  log:
+    - id: "001"
+      skill: "my-interface-configure"
+      event: "configure"
+      outcome: "completed"
+      started_at: "2026-10-12T22:49:17Z"
+      completed_at: "2026-10-12T22:49:30Z"
+      duration: "13 seconds"
+      report: "Generated Plan Config and State Config from their Schemas; both were missing. Verified section order and content against the general YAML structure and each specialized Schema."
+      data:
+        records:
+          - file: ".config/plan.yaml"
+            action: "created"
+          - file: ".config/state.yaml"
+            action: "created"
