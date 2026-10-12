@@ -29,18 +29,18 @@ content_map:
 # <!--------------------------------------------------------------------------------- Content -->
 content:
   active:
-    mode: "development"
+    mode: "reviewing"
     phase: "P1"
-    mode_reason: "Develop executed the P1 Plan."
-    set_by: "my-interface-develop"
-    set_at: "2026-10-12T23:06:58Z"
+    mode_reason: "Review judged P1 satisfied."
+    set_by: "my-interface-review"
+    set_at: "2026-10-12T23:23:32Z"
   phases:
     P1:
       id: "P1"
       planning: "completed"
       development: "completed"
-      review: "not started"
-      completed_at: null
+      review: "satisfied"
+      completed_at: "2026-10-12T23:31:20Z"
   log:
     - id: "001"
       skill: "my-interface-configure"
@@ -145,8 +145,47 @@ content:
       skill: "my-interface-review"
       phase: "P1"
       event: "review"
-      outcome: "in progress"
+      outcome: "satisfied"
       started_at: "2026-10-12T23:23:32Z"
-      completed_at: null
-      duration: null
-      report: ""
+      completed_at: "2026-10-12T23:31:20Z"
+      duration: "7:48"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P1 against its Plan and the Entity Review category."
+        - name: "sqlmodel"
+          report: "Used to judge table-model construction, UTCDateTime storage, and session behavior."
+      open_questions:
+        - "OQ-004-1"
+      blockers: []
+      report: "P1 satisfied. Judged all 15 Task acceptances and all 12 Entity Review observations by independent transient checks (testing is disabled, so nothing was persisted), plus Target comparison of every Entity, lock, dependency, compile, format, lint, type, build, wheel-install, rebuild-determinism, and README regeneration checks. Two Findings were recorded and resolved: F1 (the original unmasked error stayed reachable through __context__) and F2 (the README Verify section omitted side-effect freedom, actual Declaration references, and immutability). The final re-run passed 181 of 181 checks. Zero-diff regeneration of the agent-authored source itself could not be observed (OQ-004-1). The review session was interrupted once by the Human and resumed."
+      data:
+        findings:
+          F1:
+            state: "resolved"
+            resolution: "Base.model_validate and Foundation.from_json now build the masked error inside the handler and raise it after leaving it, so __context__ and __cause__ are None. Recheck: seven failure paths (missing, wrong type, assignment, Account, malformed JSON, repeated key, JSON Field error) show no sensitive input and no chained error; a failed assignment keeps the prior value; ruff format, ruff check, and ty check pass."
+            baseline: "Entity Sensitivity Principle and Validation: a marked Field's input is replaced in every validation message, and the original message holding the value is never chained or exposed. Plan acceptance P1-G2-T4: never shows a marked Field's input in a validation message."
+            expected: "No masked ValidationError carries the original, unmasked error or input."
+            observed: "The masked error is raised inside the except block, so the original error stays attached as __context__ (only its display is suppressed). Its errors() still hold the marked input: User(name='N', password='SECRETPW', api_key='k') exposes SECRETPW through e.__context__.errors(); assigning u.password = 12345 exposes input_value=12345 through e.__context__. In from_json, the attached JSONDecodeError's doc holds the whole input text, including marked values."
+            location: "entity/entity/core/_base.py Base.model_validate; entity/entity/core/foundation.py Foundation.from_json"
+          F2:
+            state: "resolved"
+            resolution: "The Verify example now first checks, in a fresh interpreter, that loading creates no Entity instance or thread; that every Entity's Declaration is an actual Declaration identical through Export and Collection and is frozen; and that id cannot be assigned. Recheck: all 12 README Python examples run in fresh interpreters, and formatting passes."
+            baseline: "Entity Definition, Documentation section 7 (Verify): verify Interface-contract shape, exact Entity Export membership, Entity Collection membership and order and its correspondence with the Exports, actual Entity and Declaration references, immutability, side-effect freedom, representative construction, Declaration access, and a lossless JSON round trip. Plan P1-G5-T1: documentation with its required sections."
+            expected: "The Verify section covers every listed item."
+            observed: "The Verify section's example checks shape, export and collection membership, order, correspondence, construction, Declaration access, round trip, and rejection. It does not check side-effect freedom of loading the Interface, that each Entity exposes its actual Declaration, or immutability (of the Declaration or of id)."
+            location: "entity/README.md, section Verify"
+        observations:
+          - "An initial check that the package initialisers publish nothing failed only because Python binds imported submodules as package attributes; all three initialisers are 0-byte files, so this is not a Finding."
+          - "Zero-diff regeneration was verified only for deterministic derived output: two builds give byte-identical wheel and sdist, and the README Entity sections regenerate from the Declarations with no difference. Regenerating the agent-authored source has no deterministic generator Review can run; see OQ-004-1."
+          - "The sdist contains a pyproject.toml.orig that the uv_build backend adds; it is not in the source tree and is meaning-neutral."
+          - "The wheel-install check created a temporary environment in the uv cache outside the project; it was removed after the check."
+          - "The Target's credential protection rules (hash or encrypted storage) are outside Entity by its Boundaries and absent from the P1 Plan, so they were not judged here."
+        established:
+          plan_acceptance: "All 15 P1 Task acceptance criteria were observed to hold."
+          review_category: "All 12 Entity Review observations were observed to hold: Interface publishes exactly its contract; one Export per Target Entity; Collection exact and in Target order; Relations resolve with compatible Types and no name collisions; Declarations match the Target; immutable id and Boolean is_active; construction accepts valid values and rejects unknown Field, wrong Type, and missing Required Field; JSON round trip is equal; decimal and datetime exact through JSON; loading Interface has no side effect; an unknown Type stops generation; storage names and identity column take the Preferences' form."
+          technical: "uv lock --check, uv sync --locked, and uv pip check pass; all 16 modules compile; ruff format, ruff check, and ty check pass; uv build gives a wheel and sdist with only the package, README, and pyproject; the wheel installs into an isolated environment and imports."
+        open_questions:
+          OQ-004-1:
+            question: "How should zero-diff regeneration of agent-authored source be evidenced?"
+            context: "The Review Principle requires verifying that regeneration from unchanged authorities produces no source or documentation difference. The Entity source is written by Develop, with no deterministic generator that Review can run, and Review may not invoke Develop."
+            current_choice: "Treat the deterministic derived output (builds, README Entity sections) as verified, and report source-level regeneration as unobserved rather than as a Finding."

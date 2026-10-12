@@ -51,7 +51,12 @@ class Foundation(Base):
                 text, object_pairs_hook=_unique_keys, parse_constant=_standard_constant
             )
         except (_NotJson, json.JSONDecodeError) as error:
-            raise cls._not_json(f"Invalid JSON: {error}", text) from None
+            failure = cls._not_json(f"Invalid JSON: {error}", text)
+        else:
+            failure = None
+        # Raised outside the handler so the original error is never chained.
+        if failure is not None:
+            raise failure
         if type(value) is not dict:
             raise cls._not_json("Input should be one JSON object", text)
         for field in cls.declaration.fields:

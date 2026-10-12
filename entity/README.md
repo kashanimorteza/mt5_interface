@@ -345,13 +345,25 @@ uv run ruff check .
 uv run ty check
 ```
 
-Then check the published shape and behaviour:
+Then, in a fresh interpreter, check the published shape and behaviour:
 
 ```python
+import dataclasses
+import gc
+import threading
+
 from pydantic import ValidationError
 
-import entity.interface as interface
-from entity.interface import User, entities
+threads = threading.active_count()
+
+import entity.interface as interface  # noqa: E402
+from entity.core.declaration import Declaration  # noqa: E402
+from entity.core.foundation import Foundation  # noqa: E402
+from entity.interface import User, entities  # noqa: E402
+
+# Loading the Interface has no side effect.
+assert not [item for item in gc.get_objects() if isinstance(item, Foundation)]
+assert threading.active_count() == threads
 
 names = ["User", "Instance", "Currency", "Broker", "Asset", "AccountGroup", "Account"]
 assert [item.__name__ for item in entities] == names
@@ -359,6 +371,16 @@ assert isinstance(entities, tuple)
 assert all(getattr(interface, name) is item for name, item in zip(names, entities))
 assert sorted(interface.__all__) == sorted([*names, "entities"])
 assert [item.declaration.name for item in entities][5] == "Account Group"
+
+# Each Entity exposes its actual, immutable Declaration.
+for name, item in zip(names, entities):
+    assert type(item.declaration) is Declaration
+    assert getattr(interface, name).declaration is item.declaration
+    try:
+        item.declaration.name = "changed"
+        raise AssertionError("mutable Declaration")
+    except dataclasses.FrozenInstanceError:
+        pass
 
 user = User(
     name="Example",
@@ -381,6 +403,11 @@ for bad in ({"unknown": 1}, {"name": 1}, {"id": 1}):
         raise AssertionError(bad)
     except ValidationError:
         pass
+try:
+    user.id = 1
+    raise AssertionError("id assigned")
+except ValidationError:
+    pass
 try:
     hash(user)
     raise AssertionError("hashable")

@@ -122,9 +122,11 @@ class Base(SQLModel, registry=_storage.registry):
                 update=update,
             )
         except ValidationError as error:
-            raise cls._masked(error) from None
+            masked = cls._masked(error)
         finally:
             _initializing.reset(token)
+        # Raised outside the handler so the original error is never chained.
+        raise masked
 
     @classmethod
     def _from_stored(cls, data: dict[str, Any]) -> Self:
