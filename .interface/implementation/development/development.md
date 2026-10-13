@@ -57,7 +57,7 @@ Development owns only shared coordination: defaults and Connections. Each Compon
 
 ```text
 Components
-├── Model
+├── Entity
 ├── Database
 ├── Logic
 ├── API
@@ -65,12 +65,12 @@ Components
 └── Platform
 ```
 
-### Model
+### Entity
 
 The reusable data library of the application.
 
-→ [Definition of Model](model/model.md)<br>
-→ [Preferences of Model](model/model.yaml)
+→ [Definition of Entity](entity/entity.md)<br>
+→ [Preferences of Entity](entity/entity.yaml)
 
 ### Database
 

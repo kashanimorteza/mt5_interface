@@ -80,7 +80,7 @@ Every Service listed in Logic Preferences has its own directory and Interface, a
 
 #### Entity Service
 
-One Child Service for every Model Entity.
+One Child Service for every Entity.
 
 → [Definition of Entity Service](services/entity/entity.md)
 → [Preferences of Entity Service](services/entity/entity.yaml)

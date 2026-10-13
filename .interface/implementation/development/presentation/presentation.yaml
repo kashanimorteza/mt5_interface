@@ -52,8 +52,8 @@ content:
         generated_types: true
       entity_pages:
         api_group: entity
-        entity_source: model_entity_collection
-        field_source: model_entity_declaration
+        entity_source: entity_collection
+        field_source: entity_declaration
         page_naming: <entity>
       navigation:
         entry_naming: <entity>
@@ -75,7 +75,7 @@ content:
       architecture:
         modularity: "Presentation is built from focused, separate units: each Component, page, and part is its own unit with one responsibility."
         entity_pages: "Every Entity Page is written out explicitly in its own unit, using shared Components; no generic List, Create, Edit, or Show page serves several Entities."
-        entity_metadata: "Entities, Fields, Relations, and their dependencies come from the Entity Declarations in Model, read when Presentation is generated into one generated metadata unit; Navigation, routes, and Entity Pages read it, and no Entity or Field is listed by hand. Adding, removing, or changing an Entity changes that unit and its page only."
+        entity_metadata: "Entities, Fields, Relations, and their dependencies come from the Entity Declarations in Entity, read when Presentation is generated into one generated metadata unit; Navigation, routes, and Entity Pages read it, and no Entity or Field is listed by hand. Adding, removing, or changing an Entity changes that unit and its page only."
         api_access: "One Data Provider inside API Access is the only unit that communicates with API; its address comes from one environment setting."
       conventions:
         typing: "Strict typing with no untyped value."

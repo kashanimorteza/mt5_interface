@@ -6,7 +6,7 @@ Agent Interface
 │   └── Target Definition
 ├── Implementation
 │   ├── Development
-│   │   ├── Model
+│   │   ├── Entity
 │   │   ├── Database
 │   │   ├── Logic
 │   │   ├── API

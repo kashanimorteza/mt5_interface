@@ -24,7 +24,7 @@ Database is the structured Development Component that persists public Entity dat
 <!-------------------------- Overview -->
 ### Overview
 
-Database enumerates every Entity through the Entity Collection published by Model Interface, derives storage structure from each actual Entity and the Declaration it exposes, and persists Entity instances through a selected active DatabaseInstance. Interface is its only public boundary. Core routes every request, and one isolated Engine unit implements the contract for each Engine used by at least one active Instance.
+Database enumerates every Entity through the Entity Collection published by Entity Interface, derives storage structure from each actual Entity and the Declaration it exposes, and persists Entity instances through a selected active DatabaseInstance. Interface is its only public boundary. Core routes every request, and one isolated Engine unit implements the contract for each Engine used by at least one active Instance.
 
 <!-------------------------- Purpose -->
 ### Purpose
@@ -100,7 +100,7 @@ Operation
 
 #### Entity Operation
 
-Operations scoped to one Entity. Each receives the Entity itself — an Entity instance or the Entity class imported from Model — never an Entity name or other string identity.
+Operations scoped to one Entity. Each receives the Entity itself — an Entity instance or the Entity class imported from Entity — never an Entity name or other string identity.
 
 #### Setup Operation
 
@@ -125,7 +125,7 @@ Query
 └── Limit
 ```
 
-Query is how a consumer narrows, orders, and bounds what an Operation reads: a Condition, a Sort, and a Limit. Its enumerations are closed member sets; a consumer imports and passes their members and values, and a string is never accepted in their place. A Field's declared Type is the Type its Field Declaration in Model carries, such as integer, string, or datetime. No checked form is published.
+Query is how a consumer narrows, orders, and bounds what an Operation reads: a Condition, a Sort, and a Limit. Its enumerations are closed member sets; a consumer imports and passes their members and values, and a string is never accepted in their place. A Field's declared Type is the Type its Field Declaration in Entity carries, such as integer, string, or datetime. No checked form is published.
 
 #### Condition
 
@@ -215,7 +215,7 @@ It declares and forwards behavior and implements no Engine work. Its Interface c
 1. **Grouped** — exactly the six groups above, each named by the prefix, an underscore, and its key; every member is reached through its group.
 2. **Fixed shape** — every Operation takes exactly its listed parameters in their order, with `instance` last, and Entities, Fields, Instances, and vocabulary are passed as imported values, never as strings.
 3. **Nothing else** — Core, Engine units, configuration, connection values, and storage paths are never published; Interface runs no check of its own beyond validating each call's input, and loading it opens no connection and creates no data or file.
-4. **Versioned** — changing a public contract, its members, or its meaning requires raising `contract_version` and a consumer review; a change in Model's Entities, the Instances, or the Engines flows through without one.
+4. **Versioned** — changing a public contract, its members, or its meaning requires raising `contract_version` and a consumer review; a change in the Entities, the Instances, or the Engines flows through without one.
 
 <!-------------------------- Configuration -->
 ### Configuration
@@ -299,7 +299,7 @@ The place where a file-backed database keeps its files. The database file of one
 <!--------------------------------------------------------------------------------- Relationships --->
 ## Relationships
 
-- **Consumes Model** — uses the Entity Collection and Entity Exports Model Interface publishes, found from Model's own Preferences.
+- **Consumes Entity** — uses the Entity Collection and Entity Exports Entity Interface publishes, found from Entity's own Preferences.
 - **Consumes Development** — follows its shared rules and Defaults for every choice this Component leaves unstated.
 
 <br>
@@ -336,11 +336,11 @@ Every Principle below is mandatory.
 **Why:** A fixed layout lets every generation place each file in the same place, so an Agent never decides structure and consumers always find the same parts.
 **Boundary:** Fixed Architecture members keep the names and places the Directory Structure and its file names give them, and are never renamed or relocated by generation. No additional internal source unit is placed at the Component root, beside an Engine unit, or inside Storage.
 
-#### Database consumes Model without owning it
+#### Database consumes Entity without owning it
 
-**Rule:** Database imports Model Interface and reaches Entities only through the Entity Collection and Entity Exports of its Interface contract. It iterates the Entity Collection and uses each actual public Entity and the complete public Declaration it exposes. It never uses wildcard or attribute discovery, scans Model directories, imports Entity-unit paths, builds another Model registry, or creates, edits, builds, tests, documents, or generates an artifact inside Model.
-**Why:** One path to Entities keeps Database in step with Model and prevents a second, drifting copy of Model's meaning.
-**Boundary:** A missing or incompatible Model capability is reported; Database does not repair or redefine Model.
+**Rule:** Database imports Entity Interface and reaches Entities only through the Entity Collection and Entity Exports of its Interface contract. It iterates the Entity Collection and uses each actual public Entity and the complete public Declaration it exposes. It never uses wildcard or attribute discovery, scans Entity directories, imports Entity-unit paths, builds another Entity registry, or creates, edits, builds, tests, documents, or generates an artifact inside Entity.
+**Why:** One path to Entities keeps Database in step with Entity and prevents a second, drifting copy of Entity's meaning.
+**Boundary:** A missing or incompatible Entity capability is reported; Database does not repair or redefine Entity.
 
 #### Database stores values without interpreting domain meaning
 
@@ -359,9 +359,9 @@ Every Principle below is mandatory.
 **Why:** Preparing storage is a different act from using it; keeping them apart prevents an everyday call from changing schema or seeding data.
 **Boundary:** Manual and after-generation execution invoke the same public commands and do not duplicate their logic inside an entry point.
 
-#### `create_tables` builds Tables only from Model Entities
+#### `create_tables` builds Tables only from Entities
 
-**Rule:** `create_tables` uses only the actual Entities of the Model Entity Collection and their Declarations to create the required Tables, Fields, Primary Keys, Relations, Uniqueness Constraints, and Indexes. It never reads the Target. Re-execution on matching Tables succeeds without change. A difference between an existing Table and its Declaration stops the command and is reported; it is never resolved by judgment.
+**Rule:** `create_tables` uses only the actual Entities of the Entity Collection and their Declarations to create the required Tables, Fields, Primary Keys, Relations, Uniqueness Constraints, and Indexes. It never reads the Target. Re-execution on matching Tables succeeds without change. A difference between an existing Table and its Declaration stops the command and is reported; it is never resolved by judgment.
 **Why:** The generated Entities already carry every structural fact, so Tables follow them exactly and the same Entities always yield the same Tables.
 **Boundary:** It does not copy runtime records between Instances, invent Relation cascade behavior, or alter a Declaration. Cross-Instance transfer requires a future explicit command.
 
@@ -477,7 +477,7 @@ Every Principle below is mandatory.
 - DatabaseInstance holds exactly one member per active configured Instance and none for an inactive one.
 - A call without a DatabaseInstance runs on the configured default Instance.
 - No Operation accepts an Entity name, a Field name, or any other string in place of an imported value.
-- `create_tables` uses only the Entities of the Model Entity Collection and their Declarations, and stops on a difference with an existing Table.
+- `create_tables` uses only the Entities of the Entity Collection and their Declarations, and stops on a difference with an existing Table.
 - Every returned Entity is built through its own construction, and a row that breaks the Entity contract is an error.
 - `prepare` runs `create_tables` and then `insert_initial_data`, and stops when `create_tables` fails.
 - A Target Initial Data value that is not concrete is copied as an empty string, and no value is generated.
@@ -500,11 +500,11 @@ Every Principle below is mandatory.
 - **Must** — preserve the canonical Interface, Core, Engine, Entry Points, Storage, Configuration, and Documentation, and keep every member's name and place from the Directory Structure.
 - **Never** — place an internal source unit outside Core or its owning Engine unit, or place source code in Storage.
 
-**Database consumes Model without owning it**
+**Database consumes Entity without owning it**
 
-- **Must** — consume actual Entity and Declaration references only through Model Interface's Entity Collection and Entity Exports.
+- **Must** — consume actual Entity and Declaration references only through Entity Interface's Entity Collection and Entity Exports.
 - **Never** — use wildcard or attribute discovery, directories, internal paths, or construct another Entity registry.
-- **Never** — change, generate, build, test, or document Model output.
+- **Never** — change, generate, build, test, or document Entity output.
 
 **Database stores values without interpreting domain meaning**
 
@@ -522,9 +522,9 @@ Every Principle below is mandatory.
 - **Must** — keep `create_tables`, `insert_initial_data`, and `prepare` separate from Operations and callable through Interface and manual entry points.
 - **Must** — return SetupResult from either invocation path.
 
-**`create_tables` builds Tables only from Model Entities**
+**`create_tables` builds Tables only from Entities**
 
-- **Must** — build Tables only from the Entities of the Model Entity Collection and their Declarations, and stop on any difference with an existing Table.
+- **Must** — build Tables only from the Entities of the Entity Collection and their Declarations, and stop on any difference with an existing Table.
 - **Never** — read the Target, alter an existing Table by judgment, copy records between Instances, or invent relationship behavior.
 
 **`insert_initial_data` is repeatable**

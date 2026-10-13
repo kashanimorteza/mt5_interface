@@ -55,7 +55,7 @@ Entity Group
 └── Documentation
 ```
 
-Every entity below is declared in `architecture` in Entity Group Preferences, which also own its name, Adapter naming pattern, and documentation choices. Entity Group states what it serves in the shape of the Group contract in the API Definition: its source is Entity Service, reached through Logic Interface, whose Service group gives the Child Services and whose Model and Database groups give the types its Parameters use.
+Every entity below is declared in `architecture` in Entity Group Preferences, which also own its name, Adapter naming pattern, and documentation choices. Entity Group states what it serves in the shape of the Group contract in the API Definition: its source is Entity Service, reached through Logic Interface, whose Service group gives the Child Services and whose Entity and Database groups give the types its Parameters use.
 
 <!-------------------------- Adapters -->
 ### Adapters

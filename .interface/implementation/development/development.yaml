@@ -93,18 +93,18 @@ content:
     presentation_to_api:
       consumer: "presentation"
       provider: "api"
-    presentation_to_model:
+    presentation_to_entity:
       consumer: "presentation"
-      provider: "model"
+      provider: "entity"
     api_to_logic:
       consumer: "api"
       provider: "logic"
     logic_to_database:
       consumer: "logic"
       provider: "database"
-    logic_to_model:
+    logic_to_entity:
       consumer: "logic"
-      provider: "model"
-    database_to_model:
+      provider: "entity"
+    database_to_entity:
       consumer: "database"
-      provider: "model"
+      provider: "entity"

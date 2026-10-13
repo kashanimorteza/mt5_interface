@@ -28,7 +28,7 @@ read_order:
 
 # <!--------------------------------------------------------------------------------- Content_Map -->
 content_map:
-  settings: "Database's identity and the Model contract it consumes."
+  settings: "Database's identity and the Entity contract it consumes."
   architecture: "The entities of the Architecture tree — Operation with its after-generation behavior, Query with its defaults, Condition, Sort, and Limit, Engine with the version, storage, and connection of every Engine, Error, Result, Instance with the default Instance and the default definition of every Instance; Interface with its contract version, group prefix, and six groups; Configuration with its file, location, format, and Schema; and Documentation with its file, location, and format."
   development: "Development capabilities and the selected language and its profile with its Engine drivers."
 
@@ -42,9 +42,9 @@ content:
       platform: "VPS"
       directory: "database"
       package: "database"
-    model_dependency:
-      definition: ".interface/implementation/development/model/model.md"
-      preferences: ".interface/implementation/development/model/model.yaml"
+    entity_dependency:
+      definition: ".interface/implementation/development/entity/entity.md"
+      preferences: ".interface/implementation/development/entity/entity.yaml"
 
   # <!-------------------------------------------- architecture -->
   architecture:
@@ -109,7 +109,7 @@ content:
         setup_operation:
           create_tables:
             parameters: ["instance"]
-            effect: "creates every Table from the Entities of the Model Entity Collection and their Declarations, using nothing else; matching Tables are left unchanged; a difference with an existing Table stops the command"
+            effect: "creates every Table from the Entities of the Entity Collection and their Declarations, using nothing else; matching Tables are left unchanged; a difference with an existing Table stops the command"
             returns: "a SetupResult"
           insert_initial_data:
             parameters: ["instance"]
@@ -280,8 +280,8 @@ content:
                 activation: "when_selected"
                 purpose: "Apply SQLModel guidance while realizing Tables and Engine units."
             agent_avoid:
-              - "Never declare or subclass a table class inside Database; Tables come only from the Model Entities."
-          table_creation: "Core Tables creates exactly the Tables of the Model Entity Collection's table models through their shared metadata (create_all restricted to those Tables). It writes no per-Entity code."
+              - "Never declare or subclass a table class inside Database; Tables come only from the Entities."
+          table_creation: "Core Tables creates exactly the Tables of the Entity Collection's table models through their shared metadata (create_all restricted to those Tables). It writes no per-Entity code."
           interface_file: "The Interface is the interface file at the package root (database/interface.py); every __init__.py stays empty and publishes nothing."
           value_shapes:
             executable_groups: "the interface and setup groups are plain classes named by their group name and created with no argument, such as database_interface() and database_setup()"

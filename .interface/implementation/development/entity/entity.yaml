@@ -1,8 +1,8 @@
 # <!--------------------------------------------------------------------------------- Meta -->
 meta:
-  path: ".interface/implementation/development/model/model.yaml"
-  path_note: "The Preferences layer of the Model Component."
-  purpose: "Configurable component, the entities of architecture with their Interface contract, Entity defaults, and documentation choices, and the language profile for Model."
+  path: ".interface/implementation/development/entity/entity.yaml"
+  path_note: "The Preferences layer of the Entity Component."
+  purpose: "Configurable component, the entities of architecture with their Interface contract, Entity defaults, and documentation choices, and the language profile for Entity."
   standard: "Agent Project Interface"
   version: "27.0"
   updated: "2026-10-13"
@@ -10,15 +10,15 @@ meta:
 # <!--------------------------------------------------------------------------------- Policy -->
 policy:
   agent_may_edit: false
-  rule: "This file is human-owned. Operations read it without writing resolved Model choices back into it."
+  rule: "This file is human-owned. Operations read it without writing resolved Entity choices back into it."
   changed_by: "The human, directly."
-  precedence: "Explicit compatible Target meaning and every applicable Model Principle take precedence over this file."
+  precedence: "Explicit compatible Target meaning and every applicable Entity Principle take precedence over this file."
 
 # <!--------------------------------------------------------------------------------- Resolution -->
 resolution:
   consumption: "Read the content sections in read_order; realize the entities of architecture through the selected language profile in development."
   selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
-  version_resolution: "Resolve Model-owned versioned technical items from the selected language profile in development. Resolve latest-compatible to a concrete compatible version and preserve that resolution in dependency or lock metadata."
+  version_resolution: "Resolve Entity-owned versioned technical items from the selected language profile in development. Resolve latest-compatible to a concrete compatible version and preserve that resolution in dependency or lock metadata."
 
 # <!--------------------------------------------------------------------------------- Read_Order -->
 read_order:
@@ -28,7 +28,7 @@ read_order:
 
 # <!--------------------------------------------------------------------------------- Content_Map -->
 content_map:
-  settings: "Model's identity."
+  settings: "Entity's identity."
   architecture: "The entities of the Architecture tree — Entity with the default properties of id and is_active, its Value Generation with the selected generated-identifier algorithm and its alternatives, and its Sensitivity with the recognized markers; Interface with its contract version and published symbol names, and Documentation with its file, location, and format."
   development: "Development capabilities and the selected language and its realization profile."
 
@@ -39,8 +39,8 @@ content:
   settings:
     component:
       type: library
-      directory: model
-      package: model
+      directory: entity
+      package: entity
 
   # <!-------------------------------------------- architecture -->
   architecture:
@@ -88,7 +88,7 @@ content:
       selected: python
       options:
         python:
-          interface_file: "The Interface is the interface file at the package root (model/interface.py); every __init__.py stays empty and publishes nothing."
+          interface_file: "The Interface is the interface file at the package root (entity/interface.py); every __init__.py stays empty and publishes nothing."
           naming:
             entity: PascalCase
             fields: snake_case

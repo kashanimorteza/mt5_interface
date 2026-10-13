@@ -2,7 +2,7 @@
 
 This document is the common structure every Definition file follows. It defines the shape of a Definition file, not the content of any Implementation or Executor Component. Each owner describes itself inside this shape so that every Definition file is written, read, and reasoned about the same way.
 
-One Definition file exists per Implementation Component at `.interface/implementation/<subsystem>/<component>/<component>.md` — for example `.interface/implementation/development/model/model.md` — and per Executor Component at `.interface/executor/<component>/<component>.md`. Each file is human-owned and never written by an Interface operation. Operational Skills read applicable Implementation Definitions; only explicitly Human-invoked Agent Native Implement reads Agent Definitions, then realizes them as Runtime artifacts consumed by every other Skill.
+One Definition file exists per Implementation Component at `.interface/implementation/<subsystem>/<component>/<component>.md` — for example `.interface/implementation/development/entity/entity.md` — and per Executor Component at `.interface/executor/<component>/<component>.md`. Each file is human-owned and never written by an Interface operation. Operational Skills read applicable Implementation Definitions; only explicitly Human-invoked Agent Native Implement reads Agent Definitions, then realizes them as Runtime artifacts consumed by every other Skill.
 
 
 <!--------------------------------------------------------------------------------- Purpose --->

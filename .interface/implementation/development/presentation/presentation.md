@@ -23,15 +23,15 @@ Presentation is the Development Component that shows every Entity of the applica
 
 ### Overview
 
-Presentation gives a user one page for every Entity of Model, where the user can list, search, order, add, edit, delete, enable, and disable its records. It reaches the running application only through API and leaves visual design to the selected client. Its architecture is independent of any language, library, framework, package manager, or project.
+Presentation gives a user one page for every Entity of Entity, where the user can list, search, order, add, edit, delete, enable, and disable its records. It reaches the running application only through API and leaves visual design to the selected client. Its architecture is independent of any language, library, framework, package manager, or project.
 
 ### Purpose
 
-Users need to manage the records of every Entity without a hand-written interface that drifts away from Model and API. Presentation reads each Entity from its owner, so the interface stays in step with both.
+Users need to manage the records of every Entity without a hand-written interface that drifts away from Entity and API. Presentation reads each Entity from its owner, so the interface stays in step with both.
 
 ### How It Works
 
-When Presentation is generated, it reads the Entities and their Fields from Model and the Endpoints from API's machine-readable description. When it runs, API Access calls API, each Entity Page shows the results, and Navigation leads to every page.
+When Presentation is generated, it reads the Entities and their Fields from Entity and the Endpoints from API's machine-readable description. When it runs, API Access calls API, each Entity Page shows the results, and Navigation leads to every page.
 
 <br>
 
@@ -39,7 +39,7 @@ When Presentation is generated, it reads the Entities and their Fields from Mode
 ## Terms
 
 - **Presentation** — the Component that shows every Entity to users and lets them work with its records through API.
-- **Entity Page** — the page of one Entity of Model, through which a user works with that Entity's records.
+- **Entity Page** — the page of one Entity of Entity, through which a user works with that Entity's records.
 - **Record** — one instance of an Entity.
 - **API Access** — the only part of Presentation that communicates with API.
 - **Navigation** — the menu that leads to every Entity Page.
@@ -58,7 +58,7 @@ Presentation
 └── Documentation
 ```
 
-Every entity below is declared in `architecture` in Presentation Preferences, which also own the selected Client, its technology, its design, and the documentation choices; these selections realize the responsibilities below without changing them. Presentation owns showing Entities and working with their Records; Model owns what an Entity is; API owns the external contract.
+Every entity below is declared in `architecture` in Presentation Preferences, which also own the selected Client, its technology, its design, and the documentation choices; these selections realize the responsibilities below without changing them. Presentation owns showing Entities and working with their Records; Entity owns what an Entity is; API owns the external contract.
 
 <!-------------------------- API Access -->
 ### API Access
@@ -73,7 +73,7 @@ Entity Pages
 └── one page per Entity
 ```
 
-One page for every Entity in Model's Entity Collection, read when Presentation is generated. Each page is written out in its own unit, named from its Entity, and offers these operations on that Entity's Records, each one only where API serves its Endpoint:
+One page for every Entity in the Entity Collection, read when Presentation is generated. Each page is written out in its own unit, named from its Entity, and offers these operations on that Entity's Records, each one only where API serves its Endpoint:
 
 - **List** — the Records in a table.
 - **View** — one Record by its id.
@@ -84,7 +84,7 @@ One page for every Entity in Model's Entity Collection, read when Presentation i
 - **Delete** — one Record.
 - **Enable and Disable** — one Record.
 
-Every form field, table column, filter, and order comes from the Entity Declaration in Model and follows it: its description labels it, its order orders it, an immutable or generated Field is shown but never entered, a sensitive Field is entered without being shown, and a related Field is chosen from the Records of the Entity it relates to.
+Every form field, table column, filter, and order comes from the Entity Declaration in Entity and follows it: its description labels it, its order orders it, an immutable or generated Field is shown but never entered, a sensitive Field is entered without being shown, and a related Field is chosen from the Records of the Entity it relates to.
 
 <!-------------------------- Navigation -->
 ### Navigation
@@ -116,7 +116,7 @@ The root documentation, in the file, location, and format Presentation Preferenc
 <!--------------------------------------------------------------------------------- Relationships --->
 ## Relationships
 
-- **Consumes Model** — reads every Entity and its Declaration through Model's published Interface, only when Presentation is generated.
+- **Consumes Entity** — reads every Entity and its Declaration through Entity's published Interface, only when Presentation is generated.
 - **Consumes API** — the public API and its machine-readable description, through which all application data and capabilities are reached.
 - **Consumes Development** — the common package standard and the cross-cutting capabilities selected for the project.
 
@@ -127,7 +127,7 @@ The root documentation, in the file, location, and format Presentation Preferenc
 
 - **Application persistence** — is not Presentation's, because data is stored behind API.
 - **Application rules** — are not Presentation's, because they have one home behind API; Presentation requests their outcome and shows it.
-- **The meaning and structure of Entities** — are not Presentation's, because Model owns them.
+- **The meaning and structure of Entities** — are not Presentation's, because Entity owns them.
 - **The external API contract** — is not Presentation's, because API owns it.
 - **Visual design** — is not decided here, because the selected Client's profile in Presentation Preferences owns it.
 
@@ -149,9 +149,9 @@ Every Principle below is mandatory and belongs to the Architecture category that
 
 #### Every Entity has one page
 
-**Rule:** Presentation has exactly one Entity Page and one Navigation entry for every Entity in Model's Entity Collection, read when Presentation is generated, and nothing for anything else. Every Entity Page is written out explicitly in its own unit, with no generic page, loop, or inheritance between pages.
-**Why:** Users reach every Entity, each page can be read, extended, or reduced on its own, and Presentation stays in step with Model.
-**Boundary:** Model is read only when Presentation is generated, never at run time; pages still share Components.
+**Rule:** Presentation has exactly one Entity Page and one Navigation entry for every Entity in the Entity Collection, read when Presentation is generated, and nothing for anything else. Every Entity Page is written out explicitly in its own unit, with no generic page, loop, or inheritance between pages.
+**Why:** Users reach every Entity, each page can be read, extended, or reduced on its own, and Presentation stays in step with Entity.
+**Boundary:** Entity is read only when Presentation is generated, never at run time; pages still share Components.
 
 #### Presentation holds no application rule
 
@@ -171,8 +171,8 @@ Every Principle below is mandatory and belongs to the Architecture category that
 
 #### Fields follow their Declaration
 
-**Rule:** Every form field, table column, filter, and order comes from the Entity Declaration in Model, is never listed by hand, and behaves as that Declaration states: its description labels it, its order orders it, an immutable or generated Field is shown but never entered, a sensitive Field is entered without being shown, and a related Field is chosen from the Records of the Entity it relates to.
-**Why:** The interface follows each Entity's own definition, so a change in Model reaches it without a second hand-written copy.
+**Rule:** Every form field, table column, filter, and order comes from the Entity Declaration in Entity, is never listed by hand, and behaves as that Declaration states: its description labels it, its order orders it, an immutable or generated Field is shown but never entered, a sensitive Field is entered without being shown, and a related Field is chosen from the Records of the Entity it relates to.
+**Why:** The interface follows each Entity's own definition, so a change in Entity reaches it without a second hand-written copy.
 **Boundary:** Presentation adds no Field and no meaning that the Declaration does not state.
 
 <br>
@@ -193,18 +193,18 @@ Every Principle below is mandatory and belongs to the Architecture category that
 
 **Rule:** Presentation is conformant only when its real output shows every part Architecture names with the responsibility stated there, and every observation below holds.
 **Why:** A gap here lets an interface that misses an Entity or bypasses API look complete.
-**Boundary:** Review reads API's published contract and the Entity Declarations in Model only to compare; it changes nothing outside Presentation.
+**Boundary:** Review reads API's published contract and the Entity Declarations in Entity only to compare; it changes nothing outside Presentation.
 
 #### Review observes Presentation through a fixed set of checks
 
 **Rule:** Review establishes Presentation conformance through these observations, every one of them on every review:
 
-- There is one Entity Page and one Navigation entry for every Entity in Model's Entity Collection, and none for anything else, each page written out in its own unit.
+- There is one Entity Page and one Navigation entry for every Entity in the Entity Collection, and none for anything else, each page written out in its own unit.
 - Every page offers exactly the operations whose Endpoints API serves for its Entity.
-- Every form field, table column, filter, and order comes from the Entity Declaration in Model and behaves as that Declaration states.
+- Every form field, table column, filter, and order comes from the Entity Declaration in Entity and behaves as that Declaration states.
 - Only API Access communicates with API, and its address comes from one setting.
 - No page decides an application rule.
-- Presentation reads Model only when it is generated, never at run time.
+- Presentation reads Entity only when it is generated, never at run time.
 - Documentation has its sections in order.
 
 **Why:** A fixed set of observations proves the same things on every review, so a result is never judged by a different standard from one run to the next.
@@ -221,8 +221,8 @@ Every obligation in the file, under the Principle it comes from.
 
 **Every Entity has one page**
 
-- **Must** — Give every Entity in Model one Entity Page and one Navigation entry, each page written out in its own unit.
-- **Never** — Add a page for anything else, produce a page by a generic page or loop, or read Model at run time.
+- **Must** — Give every Entity in Entity one Entity Page and one Navigation entry, each page written out in its own unit.
+- **Never** — Add a page for anything else, produce a page by a generic page or loop, or read Entity at run time.
 
 **Presentation holds no application rule**
 
@@ -240,7 +240,7 @@ Every obligation in the file, under the Principle it comes from.
 
 **Fields follow their Declaration**
 
-- **Must** — Take every field, column, filter, and order from the Entity Declaration in Model and make it behave as the Declaration states.
+- **Must** — Take every field, column, filter, and order from the Entity Declaration in Entity and make it behave as the Declaration states.
 - **Never** — List a field by hand or add meaning the Declaration does not state.
 
 <br>

@@ -103,7 +103,7 @@ content:
           action: From an Agent Instance outside the Agent Native Implement prompt, read a file inside the Executor Module and search inside it; then edit the Interface entry file.
           expect: All three are blocked with the boundary message, and no content is returned.
         allow_probe:
-          action: From any Agent Instance, run a command that names only paths outside the Interface, including a name that merely contains "interface", such as importing `model.interface`.
+          action: From any Agent Instance, run a command that names only paths outside the Interface, including a name that merely contains "interface", such as importing `entity.interface`.
           expect: The command is allowed.
       agent-native-read-grant:
         guarantee: Grant Executor Module read access only to the prompt created by the Human's direct explicit invocation of Agent Native Implement; a model, Agent Native, Agent Instance,
