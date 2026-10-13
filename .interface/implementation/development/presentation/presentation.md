@@ -178,6 +178,34 @@ Every Principle below is mandatory and belongs to the Architecture category that
 
 <br>
 
+### Display
+
+#### The layout fills the whole screen in every theme
+
+**Rule:** The application layout fills the entire viewport with no outer margin or gap, and the page background (html, body, and the root element) always follows the active theme, dark or light.
+**Why:** A gap or a background that ignores the theme shows a light frame around a dark page.
+**Boundary:** Applies to the outer frame only; spacing inside pages still comes from the Design Tokens.
+
+#### Active state is shown as an icon
+
+**Rule:** The is_active Field is shown in tables as a colored icon, green for active and red for inactive, never as text such as Yes or No. The enable and disable actions are icon buttons: a green enable icon on an inactive Record and a red disable icon on an active one. Every such icon has a tooltip naming its meaning through the internationalization layer.
+**Why:** The state and its action are recognized at a glance, and the tooltip keeps their meaning clear and accessible.
+**Boundary:** Applies only to the is_active Field and its enable and disable actions; other boolean Fields keep their normal display.
+
+#### Filter combination appears only when it matters
+
+**Rule:** The choice between all conditions (AND) and any condition (OR) is shown only while the filter holds two or more conditions; with fewer, it is hidden and AND applies.
+**Why:** With one condition the choice changes nothing and only confuses the user.
+**Boundary:** The combination sent to API is unchanged; only its control is hidden.
+
+#### Sensitive Fields appear only in forms
+
+**Rule:** A Field with a Sensitivity Marker, such as password or api_key, has no table column, no filter, no order, and no place in the record view. It appears only in the add and edit forms, as an input whose value is never shown.
+**Why:** A sensitive value, even masked or hashed, has no use in a list and only exposes that it exists.
+**Boundary:** Changes only where the Field is shown; the Field is still sent to API exactly as its Declaration states.
+
+<br>
+
 ### API Access
 
 #### API Access is the only door to the application
@@ -206,6 +234,10 @@ Every Principle below is mandatory and belongs to the Architecture category that
 - Only API Access communicates with API, and its address comes from one setting.
 - No page decides an application rule.
 - Presentation reads the Entity Component only when it is generated, never at run time.
+- The layout fills the viewport with no gap, and its background follows the active theme.
+- is_active and its enable and disable actions appear as colored icons with tooltips, never as text.
+- The AND/OR choice appears only while the filter holds two or more conditions.
+- No sensitive Field appears in a table, filter, order, or view; it appears only as a hidden-value input in forms.
 - Documentation has its sections in order.
 
 **Why:** A fixed set of observations proves the same things on every review, so a result is never judged by a different standard from one run to the next.
@@ -244,6 +276,30 @@ Every obligation in the file, under the Principle it comes from.
 - **Must** — Take every field, column, filter, and order from the Entity Declaration in the Entity Component and make it behave as the Declaration states.
 - **Never** — List a field by hand or add meaning the Declaration does not state.
 - **Must** — Show every Field through its Field Label, keyed by the exact Field name, and keep every edited Field Label when Presentation is generated again.
+
+<br>
+
+### Display
+
+**The layout fills the whole screen in every theme**
+
+- **Must** — Fill the whole viewport with no gap, with a page background that follows the active theme.
+- **Never** — Leave a browser margin or a background that ignores the theme.
+
+**Active state is shown as an icon**
+
+- **Must** — Show is_active and its enable and disable actions as colored icons, each with a tooltip.
+- **Never** — Show the active state or its actions as text such as Yes, No, Enable, or Disable.
+
+**Filter combination appears only when it matters**
+
+- **Must** — Show the AND/OR choice only while the filter holds two or more conditions, and apply AND otherwise.
+- **Never** — Show the AND/OR choice when it cannot change the result.
+
+**Sensitive Fields appear only in forms**
+
+- **Must** — Show a sensitive Field only in add and edit forms, as an input whose value is never shown.
+- **Never** — Give a sensitive Field a table column, filter, order, or place in the record view.
 
 <br>
 
