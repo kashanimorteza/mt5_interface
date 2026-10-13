@@ -30,10 +30,10 @@ content_map:
 content:
   active:
     mode: "reviewing"
-    phase: "P1"
-    mode_reason: "Review judged P1 satisfied."
+    phase: "P2"
+    mode_reason: "Review judged P2 satisfied."
     set_by: "my-interface-review"
-    set_at: "2026-10-12T23:23:32Z"
+    set_at: "2026-10-13T00:12:56Z"
   phases:
     P1:
       id: "P1"
@@ -41,6 +41,12 @@ content:
       development: "completed"
       review: "satisfied"
       completed_at: "2026-10-12T23:31:20Z"
+    P2:
+      id: "P2"
+      planning: "completed"
+      development: "completed"
+      review: "satisfied"
+      completed_at: "2026-10-13T00:21:05Z"
   log:
     - id: "001"
       skill: "my-interface-configure"
@@ -189,3 +195,187 @@ content:
             question: "How should zero-diff regeneration of agent-authored source be evidenced?"
             context: "The Review Principle requires verifying that regeneration from unchanged authorities produces no source or documentation difference. The Entity source is written by Develop, with no deterministic generator that Review can run, and Review may not invoke Develop."
             current_choice: "Treat the deterministic derived output (builds, README Entity sections) as verified, and report source-level regeneration as unobserved rather than as a Finding."
+    - id: "005"
+      skill: "my-interface-plan"
+      phase: "P2"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-12T23:38:33Z"
+      completed_at: "2026-10-12T23:43:13Z"
+      duration: "4:40"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Created the P2 Plan."
+      open_questions: []
+      blockers: []
+      report: "Requested phase 2 resolved to Target phase P2 (Database, enabled and ready). P1 has no open Blocker. No earlier P2 Plan existed; created the P2 Plan with 9 Groups and 24 Tasks covering library setup, public values, Configuration and Instances, Core routing, the Engine unit, Setup Operations, Interface publication, Entry Points with after-generation preparation, and documentation. Set aggregate Planning progress for P2 to completed. Total stored Tasks: 39. No Open Questions or Blockers."
+      data:
+        phase_selection:
+          requested: "2"
+          resolved: "P2"
+          reason: "The Target names its phases P1 to P5 and the Workflow selects them by number."
+        prior_phase: "P1 has no open Blocker; its Review is satisfied."
+        changes:
+          added:
+            - {id: "P2-G1-T1", reason: "Required library package with its Entity Connection for every later Task."}
+            - {id: "P2-G2-T1", reason: "Required Error group content."}
+            - {id: "P2-G2-T2", reason: "Required query vocabulary for the Value group."}
+            - {id: "P2-G2-T3", reason: "Required Result group content."}
+            - {id: "P2-G3-T1", reason: "Required Database Configuration (Engines, Instances, Settings)."}
+            - {id: "P2-G3-T2", reason: "Required copy of the Target Initial Data into the Configuration; the P2 goal includes Initial Data."}
+            - {id: "P2-G3-T3", reason: "Required Database Instance enumeration."}
+            - {id: "P2-G3-T4", reason: "Required Configuration loading and Instance resolution in Core."}
+            - {id: "P2-G4-T1", reason: "Required Core checking of Conditions and Sorts."}
+            - {id: "P2-G4-T2", reason: "Required Core routing of the Entity Operations."}
+            - {id: "P2-G4-T3", reason: "Required Core routing of the Command Operation."}
+            - {id: "P2-G5-T1", reason: "Required Engine unit connection to storage."}
+            - {id: "P2-G5-T2", reason: "Required changing Entity Operations in the Engine unit."}
+            - {id: "P2-G5-T3", reason: "Required reading Entity Operations in the Engine unit."}
+            - {id: "P2-G5-T4", reason: "Required aggregate Entity Operations in the Engine unit."}
+            - {id: "P2-G5-T5", reason: "Required native command execution in the Engine unit."}
+            - {id: "P2-G6-T1", reason: "Required Create Tables Setup Operation."}
+            - {id: "P2-G6-T2", reason: "Required Insert Initial Data Setup Operation."}
+            - {id: "P2-G6-T3", reason: "Required Prepare Setup Operation."}
+            - {id: "P2-G7-T1", reason: "Required executable Interface and Setup groups."}
+            - {id: "P2-G7-T2", reason: "Required publication of exactly the six groups."}
+            - {id: "P2-G8-T1", reason: "Required manual Entry Points."}
+            - {id: "P2-G8-T2", reason: "After-generation preparation is enabled in the Database Preferences."}
+            - {id: "P2-G9-T1", reason: "Required Component documentation."}
+          changed: []
+          removed: []
+          preserved: []
+          replaced: []
+        notes:
+          - "OQ-002-1 (Initial Data deferred from P1) is addressed by P2-G3-T2 and P2-G6-T2, as the P2 goal requires."
+          - "The Target's credential storage rules (hash or encrypted at rest) are not planned in P2. The Database Boundaries exclude hashing and encryption, and Database stores each value unchanged. Protection falls to a later Component."
+          - "P2-G5-T4 acceptance requires exact decimal sums and numeric ordering for decimal minimum and maximum. P1 recorded an exact-text decimal column form, so Develop has to make these aggregates numeric."
+    - id: "006"
+      skill: "my-interface-develop"
+      phase: "P2"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-12T23:51:09Z"
+      completed_at: "2026-10-13T00:12:07Z"
+      duration: "20:58"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Executed all 24 P2 Tasks."
+        - name: "sqlmodel"
+          report: "Applied to table creation through the Entities' shared metadata, UTC datetime and exact decimal storage, and engine setup; its Session-based patterns were not used (OQ-006-2)."
+      open_questions:
+        - "OQ-006-1"
+        - "OQ-006-2"
+      blockers: []
+      decisions:
+        - "P2-G1-T1"
+        - "P2-G2-T2"
+        - "P2-G2-T3"
+        - "P2-G3-T1"
+        - "P2-G3-T2"
+        - "P2-G3-T3"
+        - "P2-G3-T4"
+        - "P2-G4-T1"
+        - "P2-G4-T2"
+        - "P2-G4-T3"
+        - "P2-G5-T1"
+        - "P2-G5-T2"
+        - "P2-G5-T3"
+        - "P2-G5-T5"
+        - "P2-G6-T1"
+        - "P2-G6-T2"
+        - "P2-G6-T3"
+        - "P2-G7-T1"
+        - "P2-G8-T1"
+        - "P2-G9-T1"
+      report: "Developed all 24 P2 Tasks; every Task is done and was claimed before its work began. The Database library is at database/: Core (configuration, values, errors, query, data, tables, initial_data, setup), the SQLite Engine unit, the Interface with its six groups, three Setup entry points, config.yaml with all 17 Target Initial Data records, and README. ruff format, ruff check, and ty check pass; all README examples run as written. After generation, prepare ran on the default Instance: db/application.db holds the 7 Entity Tables and the 17 records. During P2-G8-T1 an interpreter flag made a failure check run against the real Component, which prepared the default store early; that store was replaced by the after-generation preparation. P2 development progress set to completed. Conformance is for Review to establish."
+      data:
+        component: "database"
+        resolved_versions:
+          python: "3.14.4"
+          entity: "0.1.0 (local path)"
+          sqlmodel: "0.0.48"
+          sqlalchemy: "2.1.4"
+          pyyaml: "6.0.3"
+          pydantic: "2.14.1"
+          ruff: "0.17.0"
+          ty: "0.0.86"
+        notes:
+          - "The Target's credential storage rules (hash or encrypted at rest) are not realized in Database, whose Boundaries exclude hashing and encryption; the Initial Data credentials are stored as empty strings, as the Database Principle requires."
+          - "Consumers (Logic) must depend on Database as an editable local path dependency, because Database locates config.yaml and its storage in its own Component directory; a copied installation fails loading."
+          - "The Entity Component was not changed."
+        open_questions:
+          OQ-006-1:
+            question: "Should the inactive PostgreSQL Instance's password from Database Preferences be copied into config.yaml?"
+            context: "Database Preferences give the PostgreSQL Instance the password 123456 and generation builds the Configuration from Preferences, while the project Rules forbid copying a credential into a project file and the Database Configuration Schema example shows an empty password."
+            current_choice: "The password is written as an empty string; the Instance is inactive, so nothing uses it."
+          OQ-006-2:
+            question: "Should Database adopt the sqlmodel Skill's Session and select patterns instead of Core statements on a Connection?"
+            source: "The sqlmodel Skill directs Session(engine) with session.exec(select(Model)) and session.add/commit/refresh for reads and writes."
+            alternative_reason: "That is the Skill's standard SQLModel usage pattern."
+            current_choice: "Core statements on a Connection, because Database Preferences require every returned Entity to be built through its own construction and Engine units to return raw results; ORM loading bypasses the Entity's construction."
+    - id: "007"
+      skill: "my-interface-review"
+      phase: "P2"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-13T00:12:56Z"
+      completed_at: "2026-10-13T00:21:05Z"
+      duration: "8:09"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P2 against its Plan and the Database Review category."
+      open_questions:
+        - "OQ-007-1"
+      blockers: []
+      report: "P2 satisfied. Judged all 24 Task acceptances and all 12 Database Review observations, plus the Database conformance list, by independent transient checks (testing is disabled, so nothing was persisted) on an isolated copy of the Component: 125 Interface checks, 29 Configuration, Initial Data, Setup, and aggregate checks, Configuration loading cases and fuzzing, entry points, all 15 README examples against their stated output, and a read-only inspection of the real default store. Technical checks: uv lock --check, uv sync --locked, uv pip check, compile of all 16 modules, ruff format, ruff check, ty check, two byte-identical builds, and an isolated wheel install that imports and refuses to resolve storage without its Configuration. Three Findings were recorded and resolved: F1 (Configuration validation was incomplete), F2 (pydantic imported but undeclared), F3 (the PostgreSQL Instance password differed from Preferences). Zero-diff regeneration of the agent-authored source could not be observed. The review ran in the same session that developed P2."
+      data:
+        findings:
+          F1:
+            state: "resolved"
+            resolution: "configuration.py now checks settings.default_instance and each Initial Data entity as text before lookup, and validates Engine parameters: only known keys, storage file or server, required_parameters naming Instance fields, foreign_keys boolean, connect_arguments mapping, default_port positive integer. Recheck: all 21 fuzz cases, including the five from the observation, fail with ConfigurationError; the P2-G3-T4 cases (missing Instance field, unknown Engine, inactive or unknown default, unknown enum name, escaping database path and storage root) fail with no attached error and no file created; default_limit 0 and -7 normalize to -1; the real Configuration loads; ruff and ty pass."
+            baseline: "P2-G3-T4: load the Database Configuration and validate it completely, failing before any connection opens when anything is invalid; expected result: the validated Configuration or the invalid-configuration error (ConfigurationError). Database Principle: an invalid Configuration fails loading."
+            expected: "Every invalid Configuration fails loading with ConfigurationError."
+            observed: "Transient fuzzing of config.yaml: settings.default_instance given as a list, and an initial_data entity given as a list, each raise a raw TypeError (unhashable type: 'list'); engines.sqlite.parameters.foreign_keys 'yes', connect_arguments [1], and storage 'tape' each load successfully, after which foreign keys are silently off, engine creation raises TypeError, or calls fail with ConnectionFailureError."
+            location: "database/database/core/configuration.py: load (default_instance lookup), _initial_data (entity lookup), _engines (parameters not validated)"
+          F2:
+            state: "resolved"
+            resolution: "pydantic>=2.14.1 (its resolved version) is declared in pyproject.toml and uv.lock regenerated. Recheck: uv lock --check, uv sync --locked, and uv pip check pass; both builds remain byte-identical."
+            baseline: "Review technical conformance: dependency checks pass without a fixable warning owned by the Component; Develop generation standard: declare the necessary dependencies with stabilized versions."
+            expected: "Every third-party package Database imports directly is declared in its dependencies."
+            observed: "pydantic is imported directly (from pydantic import ValidationError) but is not declared; it resolves only transitively through sqlmodel and entity."
+            location: "database/pyproject.toml [project].dependencies; imports in database/database/core/data.py and database/database/core/initial_data.py"
+          F3:
+            state: "resolved"
+            resolution: "Resolved by declared precedence: the project Rules state that an owned Interface source outranks a Rule and holds where they disagree, and the Database Preferences and the Schema's regeneration rule are owned sources; config.yaml now carries the Preferences value for instances.postgresql.password. Recheck: every Instance field matches Preferences; the Instance stays inactive and has no DatabaseInstance member; no error message, README text, or Result contains the value; all checks pass. See OQ-007-1."
+            baseline: "P2-G3-T1 expected result: Engines, complete Instances, and Settings that match the current Database Preferences; Database Configuration Schema rule regeneration: config is rebuilt from the current Target and Preferences."
+            expected: "instances.postgresql.password equals the Preferences value."
+            observed: "config.yaml has password \"\" for the postgresql Instance while Database Preferences define it; every other Instance field matches. Develop recorded this as its own choice under the credential Rule (OQ-006-1)."
+            location: "database/config.yaml instances.postgresql.password"
+        observations:
+          - "Independence: Develop and this Review ran in the same session. Every check was written anew from the P2 Plan acceptance and the Database Definition rather than reused from Develop's probes."
+          - "Zero-diff regeneration was verified only for deterministic derived output: two builds give byte-identical wheel and sdist, and the Configuration's Instances and Initial Data equal those rebuilt from the current Preferences and Target. Regenerating the agent-authored source has no deterministic generator Review can run (as in OQ-004-1)."
+          - "Sum and minimum/maximum ignoring nulls cannot occur through the Target Entities, whose numeric Fields are all non-nullable; it was observed on the Engine unit with a temporary table of nullable integer, float, and exact-decimal columns."
+          - "sqlmodel is declared but not imported by Database; it is the modeling package Database Preferences select, and the Entities' table models it supplies are what Database stores. Not a Finding."
+          - "insert_initial_data compares a configured record with stored records including the Entity's defaults, so a stored Initial Data record later changed in a defaulted Field (for example an Account balance or is_active) makes a rerun fail as a conflict. The Plan and Definition are silent on records changed after insertion; not a Finding."
+          - "Rows are materialized through the Entity's from_json, the Entity construction that accepts a storage-assigned id; the plain constructor refuses one. Judged as the Entity's own construction (see OQ-006-2)."
+          - "The sdist contains a pyproject.toml.orig that the uv_build backend adds; it is not in the source tree and is meaning-neutral."
+          - "Checks used temporary stores and a Component copy in the session scratchpad and a temporary environment for the wheel install; the real default store was only read (its hash is unchanged) and the Entity Component was not changed."
+        established:
+          plan_acceptance: "All 24 P2 Task acceptance criteria were observed to hold."
+          review_category: "All 12 Database Review observations were observed to hold: exact Interface publication; every Operation's and Setup Operation's signature and result; enumerations exactly as Preferences list; one DatabaseInstance member per active Instance; default Instance when none given; no string accepted in place of an imported value; create_tables from Entities only and stopping on a difference; every returned Entity built through its own construction with a contract-breaking row an error; prepare order and stop; non-concrete Initial Data copied as empty strings with nothing generated; a missing record returns null; loading Interface opens no connection and creates no data or file."
+          conformance: "Exact Architecture (Core files, one Engine unit, three entry points, Storage, Configuration, README); configuration valid against its Schema; active default Instance; storage resolving beneath db/ in the Component from any working directory; complete Engine contracts; Documentation sections in order with every example working as stated."
+          technical: "uv lock --check, uv sync --locked, and uv pip check pass; all 16 modules compile; ruff format, ruff check, and ty check pass; uv build gives a wheel holding only the package and an sdist with the package, README, and pyproject, byte-identical across two builds; the wheel installs with the Entity wheel into an isolated environment and imports."
+        open_questions:
+          OQ-007-1:
+            question: "Should config.yaml carry the inactive PostgreSQL Instance's placeholder password from Database Preferences?"
+            context: "Develop withheld it under the credential Rule (OQ-006-1). Review resolved F3 by the Rules' declared precedence (an owned Interface source holds over a Rule), so the value is now copied. The Schema example shows an empty password for the same Instance."
+            current_choice: "Copied as Database Preferences define it; the Instance is inactive and the value appears nowhere else."
+    - id: "008"
+      skill: "my-interface-plan"
+      phase: "P3"
+      event: "plan"
+      outcome: "in progress"
+      started_at: "2026-10-13T00:25:24Z"
+      completed_at: null
+      duration: null
+      report: "Planning requested for phase 3."

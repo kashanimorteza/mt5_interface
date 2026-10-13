@@ -1,0 +1,33 @@
+[project]
+name = "database"
+version = "0.1.0"
+description = "Persists the project's Entities on a selected Instance through one published Interface."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "entity",
+    "pydantic>=2.14.1",
+    "pyyaml>=6.0.3",
+    "sqlalchemy>=2.1.4",
+    "sqlmodel>=0.0.48",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.0",
+    "ty>=0.0.86",
+]
+
+[tool.uv.sources]
+entity = { path = "../entity" }
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "database"
+module-root = ""
+
+[tool.ruff]
+target-version = "py314"
