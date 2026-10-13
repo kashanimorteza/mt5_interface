@@ -14,8 +14,16 @@ const response = await fetch(`${base.href}/openapi.json`);
 if (!response.ok) {
   throw new Error(`API description answered ${response.status}`);
 }
-const description = await response.json();
+const received = await response.json();
 const prefix = base.pathname.replace(/\/+$/, "");
+// API derives operation ids and request-body schema names from the full path, with its non-word
+// characters as underscores; those names are rewritten without the Base URL's path.
+const derived = prefix.replace(/\W/g, "_");
+const description = derived === "" ? received : JSON.parse(JSON.stringify(received).split(derived).join(""));
+const schemaNames = (spec) => Object.keys(spec.components?.schemas ?? {});
+if (new Set(schemaNames(description)).size !== schemaNames(received).length) {
+  throw new Error("Two API schema names coincide without the Base URL's path");
+}
 description.paths = Object.fromEntries(
   Object.entries(description.paths).map(([path, item]) => {
     if (!path.startsWith(`${prefix}/`)) {
@@ -24,4 +32,9 @@ description.paths = Object.fromEntries(
     return [path.slice(prefix.length), item];
   }),
 );
+const segments = prefix.split("/").filter(Boolean);
+const text = JSON.stringify(description);
+if (segments.some((segment) => text.includes(segment) || text.includes(segment.replace(/\W/g, "_")))) {
+  throw new Error("The API description still holds part of the Base URL");
+}
 await writeFile("api/schema.d.ts", astToString(await openapiTS(description)));

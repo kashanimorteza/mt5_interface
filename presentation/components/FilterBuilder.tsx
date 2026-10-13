@@ -4,7 +4,7 @@ import type { Dayjs } from "dayjs";
 import { useTranslation } from "react-i18next";
 
 import type { EntityMeta, FieldMeta } from "../navigation/resources.config";
-import { fieldLabel, fromPicker } from "./records";
+import { displayedFields, fieldLabel, fromPicker } from "./records";
 
 type Operator = LogicalFilter["operator"];
 
@@ -49,7 +49,7 @@ interface FilterBuilderProps {
   readonly onApply: (filters: CrudFilter[]) => void;
 }
 
-/** Search and filter on any Field, combined with AND or OR, sent to API. */
+/** Search and filter on any non-sensitive Field, sent to API; AND or OR is offered from two conditions on. */
 export function FilterBuilder({ entity, onApply }: FilterBuilderProps) {
   const { t } = useTranslation();
   const [form] = Form.useForm<{ conditions: Condition[]; combination: "and" | "or" }>();
@@ -64,8 +64,9 @@ export function FilterBuilder({ entity, onApply }: FilterBuilderProps) {
         const value = temporal ? fromPicker(field, (c.value ?? null) as Dayjs | null) : c.value;
         return { field: c.field, operator: c.operator, value };
       });
-    onApply(values.combination === "or" && logical.length > 0 ? [{ operator: "or", value: logical }] : logical);
+    onApply(values.combination === "or" && logical.length >= 2 ? [{ operator: "or", value: logical }] : logical);
   };
+  const conditions = Form.useWatch("conditions", form) ?? [];
 
   return (
     <Form form={form} layout="inline" initialValues={{ conditions: [], combination: "and" }} onFinish={apply}>
@@ -79,7 +80,7 @@ export function FilterBuilder({ entity, onApply }: FilterBuilderProps) {
                     aria-label={t("filters.field")}
                     placeholder={t("filters.field")}
                     style={{ width: 220 }}
-                    options={entity.fields.map((f) => ({ value: f.name, label: fieldLabel(t, entity.resource, f) }))}
+                    options={displayedFields(entity).map((f) => ({ value: f.name, label: fieldLabel(t, entity.resource, f) }))}
                   />
                 </Form.Item>
                 <Form.Item noStyle shouldUpdate>
@@ -110,14 +111,16 @@ export function FilterBuilder({ entity, onApply }: FilterBuilderProps) {
         )}
       </Form.List>
       <Space wrap>
-        <Form.Item name="combination">
-          <Radio.Group
-            options={[
-              { value: "and", label: t("filters.and") },
-              { value: "or", label: t("filters.or") },
-            ]}
-          />
-        </Form.Item>
+        {conditions.length >= 2 ? (
+          <Form.Item name="combination">
+            <Radio.Group
+              options={[
+                { value: "and", label: t("filters.and") },
+                { value: "or", label: t("filters.or") },
+              ]}
+            />
+          </Form.Item>
+        ) : null}
         <Button type="primary" htmlType="submit">
           {t("buttons.apply")}
         </Button>

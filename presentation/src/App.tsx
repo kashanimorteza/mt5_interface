@@ -13,6 +13,7 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import { dataProvider } from "../api/dataProvider";
 import type { Language } from "../i18n";
 import { i18nProvider } from "../i18n/provider";
+import { Frame } from "../navigation/frame";
 import { Header } from "../navigation/header";
 import { resources } from "../navigation/menu";
 import { routes } from "../navigation/routes";
@@ -33,6 +34,7 @@ export function App() {
   return (
     <BrowserRouter>
       <ConfigProvider direction={direction} locale={language === "fa" ? faIR : enUS} theme={themeOf(dark, language)}>
+        <Frame />
         <AntdApp>
           <Refine
             dataProvider={dataProvider}

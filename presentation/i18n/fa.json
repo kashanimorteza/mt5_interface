@@ -138,7 +138,8 @@
   "values": {
     "yes": "بله",
     "no": "خیر",
-    "hidden": "پنهان",
+    "active": "فعال",
+    "inactive": "غیرفعال",
     "empty": "—"
   },
   "validation": {

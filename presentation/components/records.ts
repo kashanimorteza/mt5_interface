@@ -2,11 +2,16 @@ import type { BaseRecord } from "@refinedev/core";
 import dayjs, { type Dayjs } from "dayjs";
 import type { TFunction } from "i18next";
 
-import { entityOf, type FieldMeta } from "../navigation/resources.config";
+import { type EntityMeta, entityOf, type FieldMeta } from "../navigation/resources.config";
 
 /** A Field's Field Label in the chosen language, kept under its exact Field name; the Field name when missing. */
 export function fieldLabel(t: TFunction, resource: string, field: FieldMeta): string {
   return t(`fields.${resource}.${field.name}`, { defaultValue: field.name });
+}
+
+/** The Fields shown outside forms: every Field without a Sensitivity Marker, in Declaration order. */
+export function displayedFields(entity: EntityMeta): readonly FieldMeta[] {
+  return entity.fields.filter((field) => !field.sensitive);
 }
 
 /** A record without its sensitive Fields, so a stored secret never reaches a form. */

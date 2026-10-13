@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { entityOf } from "../navigation/resources.config";
 import { FieldValue } from "./FieldValue";
-import { fieldLabel } from "./records";
+import { displayedFields, fieldLabel } from "./records";
 import { useEntityRelatedNames } from "./related";
 
 interface RecordViewProps {
@@ -12,13 +12,13 @@ interface RecordViewProps {
   readonly record: BaseRecord | undefined;
 }
 
-/** One record's Fields, in Declaration order, as its Declaration states them. */
+/** One record's non-sensitive Fields, in Declaration order, as its Declaration states them. */
 export function RecordView({ resource, record }: RecordViewProps) {
   const { t } = useTranslation();
   const names = useEntityRelatedNames(resource, record === undefined ? [] : [record]);
   return (
     <Descriptions column={1} bordered>
-      {entityOf(resource).fields.map((field) => (
+      {displayedFields(entityOf(resource)).map((field) => (
         <Descriptions.Item key={field.name} label={fieldLabel(t, resource, field)}>
           <FieldValue field={field} value={record?.[field.name]} related={names.get(field.name)} />
         </Descriptions.Item>

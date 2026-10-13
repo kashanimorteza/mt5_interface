@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { entityOf } from "../navigation/resources.config";
 import { FieldValue } from "./FieldValue";
 import { FilterBuilder } from "./FilterBuilder";
-import { fieldLabel } from "./records";
+import { displayedFields, fieldLabel } from "./records";
 import { useEntityRelatedNames } from "./related";
 
 interface RecordTableProps {
@@ -15,7 +15,7 @@ interface RecordTableProps {
   readonly actions?: (record: BaseRecord) => ReactNode;
 }
 
-/** An Entity's records in a table whose columns, filters, and orders come from its metadata. */
+/** An Entity's records in a table whose columns, filters, and orders come from its non-sensitive Fields. */
 export function RecordTable({ resource, actions }: RecordTableProps) {
   const { t } = useTranslation();
   const entity = entityOf(resource);
@@ -28,16 +28,17 @@ export function RecordTable({ resource, actions }: RecordTableProps) {
   });
   const records = (tableProps.dataSource ?? []) as readonly BaseRecord[];
   const names = useEntityRelatedNames(resource, records);
+  const fields = displayedFields(entity);
   return (
     <Space direction="vertical" style={{ width: "100%" }}>
       <FilterBuilder entity={entity} onApply={(filters) => setFilters(filters, "replace")} />
       <Table {...tableProps} rowKey="id" scroll={{ x: true }}>
-        {entity.fields.map((field) => (
+        {fields.map((field, index) => (
           <Table.Column<BaseRecord>
             key={field.name}
             dataIndex={field.name}
             title={fieldLabel(t, resource, field)}
-            sorter={{ multiple: entity.fields.indexOf(field) + 1 }}
+            sorter={{ multiple: index + 1 }}
             render={(value: unknown) => <FieldValue field={field} value={value} related={names.get(field.name)} />}
           />
         ))}

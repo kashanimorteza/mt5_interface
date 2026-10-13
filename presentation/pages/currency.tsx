@@ -2,10 +2,10 @@
 
 import { Create, DeleteButton, Edit, EditButton, List, Show, ShowButton, useForm } from "@refinedev/antd";
 import { type BaseKey, useParsed, useShow, useUpdate } from "@refinedev/core";
-import { Button, Form, Space } from "antd";
-import { useTranslation } from "react-i18next";
+import { Form, Space } from "antd";
 
 import type { Switch } from "../api/dataProvider";
+import { ACTIVE_FIELD, ActiveSwitch } from "../components/ActiveState";
 import { FieldRenderer } from "../components/FieldRenderer";
 import { RecordTable } from "../components/RecordTable";
 import { withoutSensitive } from "../components/records";
@@ -13,7 +13,6 @@ import { RecordView } from "../components/RecordView";
 import { entityOf } from "../navigation/resources.config";
 
 export function CurrencyList() {
-  const { t } = useTranslation();
   const { mutate } = useUpdate();
   const switchRecord = (id: BaseKey | undefined, operation: Switch) => {
     if (id !== undefined) {
@@ -28,9 +27,10 @@ export function CurrencyList() {
           <Space>
             <ShowButton hideText size="small" recordItemId={record.id} />
             <EditButton hideText size="small" recordItemId={record.id} />
-            <Button size="small" onClick={() => switchRecord(record.id, record["is_active"] === true ? "disable" : "enable")}>
-              {t(record["is_active"] === true ? "buttons.disable" : "buttons.enable")}
-            </Button>
+            <ActiveSwitch
+              active={record[ACTIVE_FIELD] === true}
+              onSwitch={() => switchRecord(record.id, record[ACTIVE_FIELD] === true ? "disable" : "enable")}
+            />
             <DeleteButton hideText size="small" recordItemId={record.id} />
           </Space>
         )}

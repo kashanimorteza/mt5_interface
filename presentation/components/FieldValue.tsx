@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 
 import type { FieldMeta } from "../navigation/resources.config";
+import { ACTIVE_FIELD, ActiveIcon } from "./ActiveState";
 
 interface FieldValueProps {
   readonly field: FieldMeta;
@@ -9,17 +10,17 @@ interface FieldValueProps {
   readonly related?: ReadonlyMap<string, string>;
 }
 
-/** One Field's stored value as the user sees it; a sensitive value is never shown. */
+/** One non-sensitive Field's stored value as the user sees it. */
 export function FieldValue({ field, value, related }: FieldValueProps) {
   const { t } = useTranslation();
-  if (field.sensitive) {
-    return <>{t("values.hidden")}</>;
-  }
   if (value === null || value === undefined) {
     return <>{t("values.empty")}</>;
   }
   if (field.relation !== null) {
     return <>{related?.get(String(value)) ?? String(value)}</>;
+  }
+  if (field.name === ACTIVE_FIELD && typeof value === "boolean") {
+    return <ActiveIcon active={value} />;
   }
   switch (field.type) {
     case "boolean":

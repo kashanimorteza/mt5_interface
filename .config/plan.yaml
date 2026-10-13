@@ -26,7 +26,7 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 76
+  task_count: 82
   plans:
     P1:
       id: "P1"
@@ -1511,7 +1511,7 @@ content:
       target: "Presentation"
       does: "The Presentation Component exists as the web dashboard with a menu and navigation, giving every Entity one page through which its records are listed, viewed, searched, filtered, ordered, added, edited, enabled, disabled, and deleted, reaching the application only through API."
       constraints: []
-      task_count: 19
+      task_count: 25
       groups:
         P5-G1:
           id: "P5-G1"
@@ -1631,7 +1631,7 @@ content:
           area: "Layout, Navigation, routes, language, and theme"
           does: "A user opens the dashboard, chooses Persian or English, and reaches every Entity Page from its menu."
           constraints: []
-          task_count: 5
+          task_count: 6
           tasks:
             P5-G4-T1:
               id: "P5-G4-T1"
@@ -1734,6 +1734,26 @@ content:
               log:
                 - {at: "2026-10-13T03:21:27Z", by: "025", event: "claimed", note: "Dependency P5-G4-T2 is done."}
                 - {at: "2026-10-13T03:24:02Z", by: "025", event: "done", note: "The existing dark-mode switch (navigation/header.tsx with the darkAlgorithm or defaultAlgorithm of navigation/theme.ts) covers the whole dashboard; no change was needed. Observed in jsdom on the Account list and Add pages: switching to dark turns the layout from rgb(245, 245, 245) to rgb(0, 0, 0) and the menu and table from rgb(255, 255, 255) to rgb(20, 20, 20), the form inputs are rgb(20, 20, 20) in dark mode, and switching back restores the layout and inputs to light."}
+            P5-G4-T6:
+              id: "P5-G4-T6"
+              source_id: "027"
+              title: "Fill the whole screen in every theme"
+              description: "Make the dashboard's frame fill the entire viewport with no outer margin or gap, with the page background following the active theme."
+              reason: "A gap or a background that ignores the theme shows a light frame around a dark page."
+              inputs:
+                - "The application shell"
+                - "The theme"
+              skills: []
+              expected_result: "A dashboard that fills the screen edge to edge in both modes."
+              acceptance: "The dashboard covers the whole viewport with no outer margin or gap, and the page background behind it is dark in dark mode and light in light mode, with no light frame around a dark page."
+              depends_on:
+                - "P5-G4-T5"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T04:19:07Z", by: "028", event: "claimed", note: "Dependency P5-G4-T5 is done."}
+                - {at: "2026-10-13T04:20:11Z", by: "028", event: "done", note: "New navigation/frame.tsx renders Frame inside the ConfigProvider: it gives html, body, and the root element no margin, full height, and the active theme's colorBgLayout as background, following every mode change; the root Layout of the dashboard shell keeps minHeight 100vh. Observed in jsdom on the Broker page: in light mode html, body, and #root have margin 0px, height 100%, and background rgb(245, 245, 245); after switching to dark all three are rgb(0, 0, 0); after switching back they are rgb(245, 245, 245) again; the root Layout's minHeight is 100vh; tsc passes and the build completes with no warning."}
+                - {at: "2026-10-13T04:20:11Z", by: "028", event: "decision", note: "Unset: how the outer frame takes the theme's background. Chosen: a shell Component that reads the Design Token colorBgLayout through the theme and applies it, with margin 0 and full height, to html, body, and the root element, instead of a stylesheet. Why: appearance comes from Design Tokens, never from scattered CSS, and the background must follow the mode chosen at runtime."}
         P5-G5:
           id: "P5-G5"
           title: "Shared record Components"
@@ -1741,7 +1761,7 @@ content:
           area: "Shared Components for fields and tables"
           does: "Any Entity Page can show its records in a table and enter them in a form, every column and field following its Entity's Declaration."
           constraints: []
-          task_count: 4
+          task_count: 8
           tasks:
             P5-G5-T1:
               id: "P5-G5-T1"
@@ -1835,10 +1855,92 @@ content:
                 - "P5-G3-T2"
                 - "P5-G8-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-13T03:22:35Z", by: "025", event: "claimed", note: "Dependencies P5-G2-T1, P5-G3-T2, and P5-G8-T1 are done; P5-G5-T2, which it replaces, is marked replaced."}
                 - {at: "2026-10-13T03:24:02Z", by: "025", event: "done", note: "components/RecordTable.tsx labels each column and components/FilterBuilder.tsx each Field choice with fieldLabel; the table's server-side search, filtering, and ordering from the replaced P5-G5-T2 are unchanged. Observed in jsdom against API on an isolated Database copy: the Account table's columns and the filter builder's Field choices read ID, Name, Group, Broker, Instance, Base Currency, Username, Password, Leverage, balance (Field-name fallback), Account Type, Active, Description, with related Fields shown by name and the password hidden; the record lifecycle (add, edit, disable, enable, delete, and API's error on a duplicate) passes with the English labels; tsc passes."}
+                - {at: "2026-10-13T04:10:20Z", by: "028", event: "replaced", note: "Replaced by P5-G5-T5 (Log Entry 027): the record table now leaves every sensitive Field out of its columns, filters, and orders."}
+            P5-G5-T5:
+              id: "P5-G5-T5"
+              source_id: "027"
+              title: "Provide the shared record table without sensitive Fields"
+              description: "Provide the shared Component that shows an Entity's records in a table whose columns, filters, and orders come from its metadata, carry their Field Labels, and leave out every sensitive Field, with search, filtering, and ordering requested from API."
+              reason: "A sensitive value has no use in a list and only exposes that it exists, while every other Field must still be listed, searched, filtered, and ordered on the server."
+              inputs:
+                - "The Entity metadata"
+                - "The Data Provider"
+                - "The Field Labels"
+              skills: []
+              replaces: "P5-G5-T4"
+              expected_result: "One table Component that lists any Entity's records by their non-sensitive Fields, with search, filter, and order on each of them."
+              acceptance: "The table has one column per Field without a Sensitivity Marker, in Declaration order and labeled by its Field Label in the chosen language or by the Field name where that label is missing; no sensitive Field has a column, a filter choice, or an order; a related Field displays the related record's name; a filter or search on any listed Field, joined by AND or OR, and an order by any listed Field in either direction go to API, and the table lists exactly what API returns."
+              depends_on:
+                - "P5-G2-T1"
+                - "P5-G3-T2"
+                - "P5-G8-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T04:10:20Z", by: "028", event: "claimed", note: "Dependencies P5-G2-T1, P5-G3-T2, and P5-G8-T1 are done; P5-G5-T4, which it replaces, is marked replaced."}
+                - {at: "2026-10-13T04:11:29Z", by: "028", event: "done", note: "components/records.ts gained displayedFields(entity), every Field without a Sensitivity Marker in Declaration order; components/RecordTable.tsx builds its columns and orders from it and components/FilterBuilder.tsx its filter choices, so no sensitive Field has a column, a filter, or an order. Labels, related names, and server-side filter, search, and order are unchanged from P5-G5-T4. Observed in jsdom against API on an isolated Database copy: the User table's columns are ID, Name, Username, Active, Description, Actions (no Password or API Key), 5 columns are sortable, no row shows a hidden-value marker, and the filter's Field choices are ID, Name, Username, Active, Description; tsc passes."}
+            P5-G5-T6:
+              id: "P5-G5-T6"
+              source_id: "027"
+              title: "Show the active state as a colored icon"
+              description: "Show the active state in the record table as a colored icon with a tooltip instead of text."
+              reason: "The active state is recognized at a glance, and the tooltip keeps its meaning clear."
+              inputs:
+                - "The shared record table"
+                - "The language resources"
+              skills: []
+              expected_result: "Table cells that show each record's active state as an icon."
+              acceptance: "In every table, an active record shows a green icon and an inactive record a red icon in the active-state column, each with a tooltip naming its meaning in the chosen language, and no text such as Yes or No appears there; other boolean Fields keep their normal display."
+              depends_on:
+                - "P5-G5-T5"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T04:11:29Z", by: "028", event: "claimed", note: "Dependency P5-G5-T5 is done."}
+                - {at: "2026-10-13T04:13:06Z", by: "028", event: "done", note: "New components/ActiveState.tsx holds ACTIVE_FIELD (is_active) and ActiveIcon: CheckCircleFilled in the theme's success color for active and CloseCircleFilled in its error color for inactive, wrapped in a Tooltip whose text is values.active or values.inactive; components/FieldValue.tsx renders ActiveIcon for the active-state Field, and every other boolean keeps the Yes/No display. Both language resources gained values.active and values.inactive (Active/Inactive, فعال/غیرفعال). Observed in jsdom against API on an isolated Database copy, with Currency 2 disabled for the check and enabled again: the Active cell of Currency 1 holds a check-circle icon in rgb(82, 196, 26) with tooltip Active, that of Currency 2 a close-circle icon in rgb(255, 77, 79) with tooltip Inactive, both cells have no text, and after switching to Persian the tooltip reads غیرفعال; tsc passes. The current Declarations have no boolean Field other than is_active."}
+                - {at: "2026-10-13T04:13:06Z", by: "028", event: "decision", note: "Unset: where the active-state Field is recognized. Chosen: one constant, ACTIVE_FIELD, in the shared ActiveState Component, used by the value display and the page actions. Why: the Display Principle names is_active, and one place keeps the table cell and the actions consistent."}
+            P5-G5-T7:
+              id: "P5-G5-T7"
+              source_id: "027"
+              title: "Show the AND/OR choice only for two or more conditions"
+              description: "Show the filter's choice between all conditions and any condition only while it holds two or more conditions, applying AND otherwise."
+              reason: "With one condition the choice changes nothing and only confuses the user."
+              inputs:
+                - "The shared record table and its filter"
+              skills: []
+              expected_result: "A filter whose combination control appears only when it can change the result."
+              acceptance: "With no condition or one condition the filter shows no AND/OR choice and its request combines by AND; adding a second condition shows the choice, and the chosen combination reaches API; removing conditions down to one hides it again."
+              depends_on:
+                - "P5-G5-T5"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T04:13:06Z", by: "028", event: "claimed", note: "Dependency P5-G5-T5 is done."}
+                - {at: "2026-10-13T04:17:23Z", by: "028", event: "done", note: "components/FilterBuilder.tsx watches its conditions and renders the AND/OR Radio.Group only while it holds two or more; a filter is sent combined by OR only when OR is chosen and at least two complete conditions exist, otherwise by AND. Observed in jsdom on the Asset page against API on an isolated Database copy, reading each list request API received: no choice with 0 or 1 condition; one condition sent with combination AND (XAU/USD, USOil); with a second condition the choice shows All conditions and Any condition, Any sends OR (EUR/USD, XAU/USD, USOil) and All sends AND (no row); with OR chosen and the second condition removed, the choice is hidden again and the request combines by AND (XAU/USD, USOil); tsc passes."}
+            P5-G5-T8:
+              id: "P5-G5-T8"
+              source_id: "027"
+              title: "Keep sensitive Fields out of the record view"
+              description: "Leave every Field with a Sensitivity Marker out of the record view."
+              reason: "A sensitive value, even hidden, has no place in a record's view."
+              inputs:
+                - "The record view"
+                - "The Entity metadata"
+              skills: []
+              expected_result: "A record view that shows only non-sensitive Fields."
+              acceptance: "Viewing a record of any Entity shows each of its non-sensitive Fields in Declaration order and no sensitive Field, not even as hidden text, while that record's add and edit forms still offer the sensitive Fields as inputs whose value is never shown."
+              depends_on:
+                - "P5-G6-T1"
+                - "P5-G8-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T04:17:23Z", by: "028", event: "claimed", note: "Dependencies P5-G6-T1 and P5-G8-T1 are done."}
+                - {at: "2026-10-13T04:17:54Z", by: "028", event: "done", note: "components/RecordView.tsx lists displayedFields only, so a record's view has no row for a sensitive Field; components/FieldValue.tsx lost its now unreachable hidden-value branch and both language resources the obsolete values.hidden text. Add and edit forms are unchanged. Observed in jsdom against API on an isolated Database copy: the view of User 1 has the rows ID, Name, Username, Active, Description and no hidden-value text; the User add and edit forms still list ID, Name, Username, Password, API Key, Active, Description, with Password and API Key as password inputs that are empty, also on the edit form of the stored User; tsc passes."}
         P5-G6:
           id: "P5-G6"
           title: "Entity Pages"
@@ -1846,7 +1948,7 @@ content:
           area: "Entity Pages, one per Entity"
           does: "Every Entity has one page through which a user lists, views, searches, filters, orders, adds, edits, deletes, enables, and disables its records."
           constraints: []
-          task_count: 3
+          task_count: 4
           tasks:
             P5-G6-T1:
               id: "P5-G6-T1"
@@ -1912,6 +2014,25 @@ content:
                 - {at: "2026-10-13T02:35:49Z", by: "021", event: "claimed", note: "Dependency P5-G6-T1 is done."}
                 - {at: "2026-10-13T02:39:46Z", by: "021", event: "done", note: "The pages generated with scope all give each list row, beside View and Edit, an Enable or Disable button (by the record's is_active) that calls the Data Provider's update with the enable or disable operation, and Refine's DeleteButton with its confirmation. Observed in jsdom against API on a freshly copied Database store: on the Broker page, Disable shows the record inactive and the button turns to Enable, Enable shows it active again, and Delete with its confirmation removes it from the list; errors API returns are shown in Refine's notification with API's message. Every page offers list, view, add, edit, delete, enable, and disable, the operations of the Presentation Definition that API serves for every Entity."}
                 - {at: "2026-10-13T02:39:46Z", by: "021", event: "decision", note: "Unset: how enable and disable appear on a page. Chosen: one button per row showing the action that changes the record's current state (Disable for an active record, Enable for an inactive one). Why: both are served for every Entity, and is_active decides which one applies."}
+            P5-G6-T4:
+              id: "P5-G6-T4"
+              source_id: "027"
+              title: "Offer enable and disable as colored icon buttons"
+              description: "Present each record's enable and disable actions as icon buttons with tooltips instead of text buttons."
+              reason: "The action that changes a record's state is recognized at a glance, and the tooltip keeps its meaning clear."
+              inputs:
+                - "Every Entity Page"
+                - "The language resources"
+              skills: []
+              expected_result: "Every page whose enable and disable actions are colored icon buttons."
+              acceptance: "On every page, an inactive record offers a green enable icon button and an active record a red disable icon button, each with a tooltip naming its action in the chosen language and no text label; pressing it changes the record's state through API as before."
+              depends_on:
+                - "P5-G6-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T04:17:54Z", by: "028", event: "claimed", note: "Dependency P5-G6-T3 is done."}
+                - {at: "2026-10-13T04:19:07Z", by: "028", event: "done", note: "components/ActiveState.tsx gained ActiveSwitch: a small icon Button with a green CheckCircleFilled (enable) on an inactive record and a red CloseCircleFilled (disable) on an active one, wrapped in a Tooltip and labeled by buttons.enable or buttons.disable, with no text. The scratch page generator gen_pages.py now emits ActiveSwitch in every list's actions instead of the text Button, and the 7 Entity Page units were regenerated; routes are unchanged, and running the generators again gives byte-identical metadata, routes, language resources, and pages. Observed in jsdom against API on an isolated Database copy: the active Broker 1 offers a close-circle button in rgb(255, 77, 79) with no text and tooltip Disable; pressing it makes API report is_active false and its state cell Inactive; it then offers a check-circle button in rgb(82, 196, 26) with tooltip Enable, in Persian فعال کردن; pressing it again makes API report true; on the Account, Account Group, Asset, Currency, Instance, and User pages the first row has the icon switch and no text button; tsc passes."}
         P5-G7:
           id: "P5-G7"
           title: "Documentation"
