@@ -7,3 +7,8 @@ Produces the Presentation as a dashboard with a menu and navigation, in which th
 **Development:**
 
 - Frontend: React, as a web application
+
+**Requirements:**
+
+- Language: English and Persian, with English as the default.
+- Appearance: dark and light modes.

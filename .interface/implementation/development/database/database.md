@@ -125,7 +125,7 @@ Query
 └── Limit
 ```
 
-Query is how a consumer narrows, orders, and bounds what an Operation reads: a Condition, a Sort, and a Limit. Its enumerations are closed member sets; a consumer imports and passes their members and values, and a string is never accepted in their place. A Field's declared Type is the Type its Field Declaration in Entity carries, such as integer, string, or datetime. No checked form is published.
+Query is how a consumer narrows, orders, and bounds what an Operation reads: a Condition, a Sort, and a Limit. Its enumerations are closed member sets; a consumer imports and passes their members and values, and a string is never accepted in their place. A Field's declared Type is the Type its Field Declaration in the Entity Component carries, such as integer, string, or datetime. No checked form is published.
 
 #### Condition
 
@@ -299,7 +299,7 @@ The place where a file-backed database keeps its files. The database file of one
 <!--------------------------------------------------------------------------------- Relationships --->
 ## Relationships
 
-- **Consumes Entity** — uses the Entity Collection and Entity Exports the Entity Component's Interface publishes, found from Entity's own Preferences.
+- **Consumes the Entity Component** — uses the Entity Collection and Entity Exports the Entity Component's Interface publishes, found from the Entity Component's own Preferences.
 - **Consumes Development** — follows its shared rules and Defaults for every choice this Component leaves unstated.
 
 <br>
@@ -336,11 +336,11 @@ Every Principle below is mandatory.
 **Why:** A fixed layout lets every generation place each file in the same place, so an Agent never decides structure and consumers always find the same parts.
 **Boundary:** Fixed Architecture members keep the names and places the Directory Structure and its file names give them, and are never renamed or relocated by generation. No additional internal source unit is placed at the Component root, beside an Engine unit, or inside Storage.
 
-#### Database consumes Entity without owning it
+#### Database consumes the Entity Component without owning it
 
-**Rule:** Database imports the Entity Component's Interface and reaches Entities only through the Entity Collection and Entity Exports of its Interface contract. It iterates the Entity Collection and uses each actual public Entity and the complete public Declaration it exposes. It never uses wildcard or attribute discovery, scans Entity directories, imports Entity-unit paths, builds another Entity registry, or creates, edits, builds, tests, documents, or generates an artifact inside Entity.
-**Why:** One path to Entities keeps Database in step with Entity and prevents a second, drifting copy of Entity's meaning.
-**Boundary:** A missing or incompatible Entity capability is reported; Database does not repair or redefine Entity.
+**Rule:** Database imports the Entity Component's Interface and reaches Entities only through the Entity Collection and Entity Exports of its Interface contract. It iterates the Entity Collection and uses each actual public Entity and the complete public Declaration it exposes. It never uses wildcard or attribute discovery, scans Entity Component directories, imports Entity-unit paths, builds another Entity Component registry, or creates, edits, builds, tests, documents, or generates an artifact inside the Entity Component.
+**Why:** One path to Entities keeps Database in step with the Entity Component and prevents a second, drifting copy of its meaning.
+**Boundary:** A missing or incompatible Entity Component capability is reported; Database does not repair or redefine the Entity Component.
 
 #### Database stores values without interpreting domain meaning
 
@@ -500,11 +500,11 @@ Every Principle below is mandatory.
 - **Must** — preserve the canonical Interface, Core, Engine, Entry Points, Storage, Configuration, and Documentation, and keep every member's name and place from the Directory Structure.
 - **Never** — place an internal source unit outside Core or its owning Engine unit, or place source code in Storage.
 
-**Database consumes Entity without owning it**
+**Database consumes the Entity Component without owning it**
 
 - **Must** — consume actual Entity and Declaration references only through the Entity Component's Interface's Entity Collection and Entity Exports.
 - **Never** — use wildcard or attribute discovery, directories, internal paths, or construct another Entity registry.
-- **Never** — change, generate, build, test, or document Entity output.
+- **Never** — change, generate, build, test, or document Entity Component output.
 
 **Database stores values without interpreting domain meaning**
 

@@ -1,6 +1,6 @@
 # Entity Definition
 
-Entity defines and publishes the project's reusable data-model Entities and their complete public meaning.
+The Entity Component defines and publishes the project's reusable data-model Entities and their complete public meaning.
 
 <br>
 
@@ -23,7 +23,7 @@ Entity defines and publishes the project's reusable data-model Entities and thei
 
 ### Overview
 
-Entity defines flat, technology-independent Entities. Every Entity carries its own Fields, Entity Metadata, and public Declaration without nesting another Entity.
+The Entity Component defines flat, technology-independent Entities. Every Entity carries its own Fields, Entity Metadata, and public Declaration without nesting another Entity.
 
 ### Purpose
 
@@ -46,7 +46,7 @@ Each Entity lives in its own unit and exposes its Declaration and the shared JSO
 - **Activity Field** — the mandatory is_active Field that represents whether an Entity is active.
 - **Default Value** — a fixed value used when a Field is omitted.
 - **Value Generation** — the declared way to supply a Field value automatically, including Auto Increment or a Generated Identifier.
-- **Sensitivity Marker** — optional Field metadata naming one of the recognized markers; it records value meaning but causes no Entity-side protection or transformation.
+- **Sensitivity Marker** — optional Field metadata naming one of the recognized markers; it records value meaning but causes no protection or transformation in the Entity Component.
 - **Primary Key** — Entity Metadata that names id.
 - **Relation** — Entity Metadata connecting one local Field to a target Entity and target Field by logical name.
 - **Uniqueness Constraint** — Entity Metadata requiring one Field or an ordered combination of Fields to be unique.
@@ -219,7 +219,7 @@ Storage Mapping
 └── Exact values
 ```
 
-The private, table-ready realization every Entity always has when the selected language profile defines one: physical table and column names, column types, and the constraints and indexes its Declaration states. The table forms of all Entities are registered in one shared table metadata, which a consumer reaches through the Entities themselves, so that it creates exactly their Tables and no other. Entity only declares this form; it never runs storage.
+The private, table-ready realization every Entity always has when the selected language profile defines one: physical table and column names, column types, and the constraints and indexes its Declaration states. The table forms of all Entities are registered in one shared table metadata, which a consumer reaches through the Entities themselves, so that it creates exactly their Tables and no other. The Entity Component only declares this form; it never runs storage.
 
 Every storage option is derived only from the Declaration:
 
@@ -278,7 +278,7 @@ The root documentation, in the file, location, and format Entity Preferences nam
 5. **Setup** — Give the setup steps for the selected technology.
 6. **Use** — Show use that follows the Entity Exports and the Entity Collection.
 7. **Verify** — Verify Interface-contract-conformant shape, exact Entity Export membership, Entity Collection membership and order and its correspondence with the Exports, actual Entity and Declaration references, immutability, side-effect freedom, representative Entity construction, Declaration access, and a lossless JSON text round trip.
-8. **Troubleshooting** — Cover Entity concerns only.
+8. **Troubleshooting** — Cover Entity Component concerns only.
 
 Every section follows these rules:
 
@@ -299,7 +299,7 @@ Directory Structure
 └── README
 ```
 
-Entity holds one unit per Entity, named by the Entity's name under the selected language's module naming, such as `user` and `account_group`. The names in this tree, and the files named under Core, are the physical names of Entity; the root of this tree is the Component directory, and it and the package directory take their names from `settings` in Entity Preferences.
+Entity holds one unit per Entity, named by the Entity's name under the selected language's module naming, such as `user` and `account_group`. The names in this tree, and the files named under Core, are the physical names of the Entity Component; the root of this tree is the Component directory, and it and the package directory take their names from `settings` in Entity Preferences.
 
 #### Core
 
@@ -317,19 +317,19 @@ The shared area holding every file that serves all Entities rather than one: the
 <!--------------------------------------------------------------------------------- Boundaries --->
 ## Boundaries
 
-- **Queries, migrations, Instances, and storage lifecycle** — are not Entity's, because they describe how data is stored and handled, not what it means. The selected language profile, when it defines one, always realizes Entities in a table-ready form, but Entity never runs storage.
-- **Actions, decisions, workflows, authorization, quotas, and orchestration** — are not Entity's, because they depend on an operation and its application context rather than on one Entity's own data.
-- **Endpoints, requests, responses, protocols, and transport schemas** — are not Entity's, because they are properties of a transport, not of what the data means.
-- **Encryption, hashing, masking, and secret storage** — are not Entity's, because they protect a value rather than define it.
-- **Initial Data and runtime records** — are not Entity's, because they are data rather than the meaning of data.
-- **How an Entity is used** — is not Entity's, because Entity publishes a contract, not a usage.
+- **Queries, migrations, Instances, and storage lifecycle** — are not the Entity Component's, because they describe how data is stored and handled, not what it means. The selected language profile, when it defines one, always realizes Entities in a table-ready form, but the Entity Component never runs storage.
+- **Actions, decisions, workflows, authorization, quotas, and orchestration** — are not the Entity Component's, because they depend on an operation and its application context rather than on one Entity's own data.
+- **Endpoints, requests, responses, protocols, and transport schemas** — are not the Entity Component's, because they are properties of a transport, not of what the data means.
+- **Encryption, hashing, masking, and secret storage** — are not the Entity Component's, because they protect a value rather than define it.
+- **Initial Data and runtime records** — are not the Entity Component's, because they are data rather than the meaning of data.
+- **How an Entity is used** — is not the Entity Component's, because the Entity Component publishes a contract, not a usage.
 
 <br>
 
 <!--------------------------------------------------------------------------------- Authority --->
 ## Authority
 
-Every Principle in this file is mandatory for Entity. Entity Preferences provide configurable defaults and conventions but can never weaken a Principle. Explicit Target meaning retains its authority.
+Every Principle in this file is mandatory for the Entity Component. Entity Preferences provide configurable defaults and conventions but can never weaken a Principle. Explicit Target meaning retains its authority.
 
 <br>
 
@@ -340,16 +340,16 @@ Every Principle below is mandatory and belongs to the Architecture category that
 
 ### General
 
-#### Entity meaning comes only from the Target
+#### Entity Component meaning comes only from the Target
 
-**Rule:** Entity preserves every Target-declared Entity, Field, parameter, explicit false, explicit null, Type, constraint, Default Value, Sensitivity Marker, Value Generation, Primary Key, Relation, Uniqueness Constraint, and Index, and adds only id, is_active, and compatible Preference defaults for unstated allowed properties. This meaning stays independent of language, package, tool, version, runtime, platform, database, and Engine: technology selects realization only, and a missing native capability is implemented privately only when meaning stays exact.
+**Rule:** The Entity Component preserves every Target-declared Entity, Field, parameter, explicit false, explicit null, Type, constraint, Default Value, Sensitivity Marker, Value Generation, Primary Key, Relation, Uniqueness Constraint, and Index, and adds only id, is_active, and compatible Preference defaults for unstated allowed properties. This meaning stays independent of language, package, tool, version, runtime, platform, database, and Engine: technology selects realization only, and a missing native capability is implemented privately only when meaning stays exact.
 **Why:** One authority keeps convenience, package defaults, and technology from changing the domain.
-**Boundary:** Entity's contract changes only under Target authority, never to fit a consumer. If the selected technology cannot preserve a contract, generation reports the incompatibility instead of weakening meaning.
+**Boundary:** The Entity Component's contract changes only under Target authority, never to fit a consumer. If the selected technology cannot preserve a contract, generation reports the incompatibility instead of weakening meaning.
 
-#### Entity has one canonical structure
+#### The Entity Component has one canonical structure
 
 **Rule:** Every realization has exactly the Directory Structure in Architecture, with each unit owning what Architecture gives it and everything private to one Entity kept in that Entity's unit. Dependencies flow from Interface to Entity units and from Entity units to Core; Core depends on neither Interface nor a specific Entity.
-**Why:** Stable ownership keeps each Entity independently changeable, prevents cycles, and gives consumers Entity's meaning without its internals.
+**Why:** Stable ownership keeps each Entity independently changeable, prevents cycles, and gives consumers the Entity Component's meaning without its internals.
 **Boundary:** Language-required files, entrypoints, annotations, and native constructs may exist without creating another conceptual layer; physical casing, extensions, and symbol and method names belong to the language's Preferences.
 
 <br>
@@ -370,30 +370,30 @@ Every Principle below is mandatory and belongs to the Architecture category that
 
 **Rule:** Every Target domain concept produces exactly one uniquely named Entity. Each Entity preserves its description, has exactly one Identity, id, named by its Primary Key, and exactly one Activity Field, is_active. id is always non-nullable and immutable once assigned; is_active is always a non-nullable, mutable Boolean. Where the Target leaves their remaining properties unstated, Entity Preferences supply them.
 **Why:** One structural contract prevents generators from reshaping domain concepts. Every Entity needs id so each instance can be identified, and is_active so any record can be taken out of use and restored without being deleted, keeping its history and every Relation that points to it intact.
-**Boundary:** Entity adds no universal Field other than id and is_active.
+**Boundary:** The Entity Component adds no universal Field other than id and is_active.
 
 #### Entity Metadata is complete and Entities stay flat
 
-**Rule:** Primary Key, Relations, Uniqueness Constraints, and Indexes belong to Entity Metadata outside Field Declarations. Every local Field reference resolves within the Entity; every Relation target Entity and Field resolves within Entity; Relation endpoint Types are compatible; participating Fields are not repeated; duplicate metadata is invalid. An Entity contains only its own Fields and metadata: cross-Entity meaning is recorded only by Relation names, never by nesting, inheriting, copying, or importing another Entity.
+**Rule:** Primary Key, Relations, Uniqueness Constraints, and Indexes belong to Entity Metadata outside Field Declarations. Every local Field reference resolves within the Entity; every Relation target Entity and Field resolves within the Entity Component; Relation endpoint Types are compatible; participating Fields are not repeated; duplicate metadata is invalid. An Entity contains only its own Fields and metadata: cross-Entity meaning is recorded only by Relation names, never by nesting, inheriting, copying, or importing another Entity.
 **Why:** Consumers realize structure only from complete, unambiguous metadata, and flat Entities avoid hidden coupling.
 **Boundary:** A Relation records local Field, target Entity name, and target Field name only, with no cardinality, cascade, deletion, or other undeclared behavior. An Entity may use a shared private base from Core without inheriting another Entity's meaning. These rules are met at generation and observed by Review; no runtime check across Entities is generated for them. Checks one Entity runs on itself — its Declaration's structural rules when created and Base's match of type, table, and Fields when loaded — remain.
 
 #### Entity runtime behavior enforces Field contracts only
 
-**Rule:** Direct and JSON Object construction accept only declared Fields and identically enforce Required Fields, nullability, Types, defaults, generation, and constraints without implicit coercion, except that JSON Object construction accepts an Auto Increment value storage assigned; explicit false, zero, empty string, and null remain supplied values. Assignment to a mutable Field revalidates atomically, a failed assignment keeps the prior value, and an immutable Field cannot change. Entity defines no equality, ordering, hashing, copy, clone, merge, or reconstruction beyond the JSON Object round trip, and mutable Entities are not hashable.
+**Rule:** Direct and JSON Object construction accept only declared Fields and identically enforce Required Fields, nullability, Types, defaults, generation, and constraints without implicit coercion, except that JSON Object construction accepts an Auto Increment value storage assigned; explicit false, zero, empty string, and null remain supplied values. Assignment to a mutable Field revalidates atomically, a failed assignment keeps the prior value, and an immutable Field cannot change. The Entity Component defines no equality, ordering, hashing, copy, clone, merge, or reconstruction beyond the JSON Object round trip, and mutable Entities are not hashable.
 **Why:** One runtime contract stops package-specific construction, mutation, and object conventions from changing data or inventing behavior.
 **Boundary:** Construction and mutation perform no storage, network, application, or workflow operation. A language-required diagnostic representation may exist internally but is not a portable contract.
 
 #### Generated identities follow their declaration
 
-**Rule:** An omitted Auto Increment Field remains in an explicit pending state without becoming nullable, rejects a caller-supplied value at direct construction and assignment unless Target explicitly permits one, accepts in JSON Object construction the value storage assigned, and is never assigned by Entity. A Generated Identifier is produced during Entity creation when declared, using the algorithm Entity Preferences select unless the Target names another.
+**Rule:** An omitted Auto Increment Field remains in an explicit pending state without becoming nullable, rejects a caller-supplied value at direct construction and assignment unless Target explicitly permits one, accepts in JSON Object construction the value storage assigned, and is never assigned by the Entity Component. A Generated Identifier is produced during Entity creation when declared, using the algorithm Entity Preferences select unless the Target names another.
 **Why:** Generation ownership prevents callers from choosing values that another realization is responsible for assigning.
 **Boundary:** The pending representation may use JSON null solely to represent not-yet-generated Auto Increment state; it does not change the Field's nullability.
 
 #### Sensitivity remains metadata
 
-**Rule:** Only the Sensitivity Markers that Entity Preferences recognize are accepted. Entity preserves the actual value unchanged in Entity state and JSON Object, exposes the marker through Declaration, never encrypts, hashes, masks, redacts, authorizes, inspects, ignores, or remaps a value because of it, and never echoes a sensitive value in validation or generation diagnostics.
-**Why:** Entity preserves sensitivity meaning without taking ownership of protection.
+**Rule:** Only the Sensitivity Markers that Entity Preferences recognize are accepted. The Entity Component preserves the actual value unchanged in Entity state and JSON Object, exposes the marker through Declaration, never encrypts, hashes, masks, redacts, authorizes, inspects, ignores, or remaps a value because of it, and never echoes a sensitive value in validation or generation diagnostics.
+**Why:** The Entity Component preserves sensitivity meaning without taking ownership of protection.
 **Boundary:** Generated source, fixtures, and examples use no real credential or secret. A new marker requires an explicit addition to Entity Preferences.
 
 #### Logical names remain exact and physical names remain deterministic
@@ -418,20 +418,20 @@ Every Principle below is mandatory and belongs to the Architecture category that
 
 ### Review
 
-#### Entity conformance covers every Entity contract
+#### Entity Component conformance covers every Entity Component contract
 
-**Rule:** Entity is conformant only when its Interface contract and its real output match one another, and every observation below holds.
-**Why:** A gap here lets a broken Entity look complete to every consumer.
+**Rule:** The Entity Component is conformant only when its Interface contract and its real output match one another, and every observation below holds.
+**Why:** A gap here lets a broken Entity Component look complete to every consumer.
 **Boundary:** Review reads the Target only to compare; it changes nothing.
 
-#### Review observes Entity through a fixed set of checks
+#### Review observes the Entity Component through a fixed set of checks
 
-**Rule:** Review establishes Entity conformance through these observations, every one of them on every review:
+**Rule:** Review establishes Entity Component conformance through these observations, every one of them on every review:
 
 - Interface publishes every need of its Interface contract and nothing beyond them.
 - Every Target Entity has exactly one Entity Export.
 - The Entity Collection holds exactly the exported Entities, in Target order.
-- Every Relation reaches a Field of an Entity in Entity with a compatible Type, and no two Entities collide in name, before or after physical naming.
+- Every Relation reaches a Field of an Entity in the Entity Component with a compatible Type, and no two Entities collide in name, before or after physical naming.
 - Each Entity's Declaration matches the Target — Fields, order, Types, nullability, defaults, and metadata.
 - Every Entity has an immutable id and a Boolean is_active.
 - Each Entity constructs from valid values and rejects an unknown Field, a wrong Type, and a missing Required Field.
@@ -453,12 +453,12 @@ Every obligation below derives from the Principle with the same title.
 
 ### General
 
-**Entity meaning comes only from the Target**
+**Entity Component meaning comes only from the Target**
 
 - **Must** — Preserve every explicit Target item, add only id, is_active, and approved defaults, and realize technology without changing meaning.
 - **Never** — Remove, rename, override, or invent Target meaning, or weaken a contract for a technology.
 
-**Entity has one canonical structure**
+**The Entity Component has one canonical structure**
 
 - **Must** — Keep exactly the Directory Structure, everything private to one Entity in that Entity's unit, and dependencies one-way.
 - **Never** — Create a dependency cycle or another conceptual layer, or expose a helper as contract.
@@ -489,13 +489,13 @@ Every obligation below derives from the Principle with the same title.
 
 **Generated identities follow their declaration**
 
-- **Must** — keep an omitted Auto Increment Field pending, accept in JSON Object construction the value storage assigned, and never assign it inside Entity.
+- **Must** — keep an omitted Auto Increment Field pending, accept in JSON Object construction the value storage assigned, and never assign it inside the Entity Component.
 - **Never** — accept caller-supplied Auto Increment values at direct construction or assignment unless Target explicitly permits them.
 
 **Sensitivity remains metadata**
 
 - **Must** — preserve recognized markers and actual values while excluding sensitive values from diagnostics and artifacts.
-- **Never** — protect, transform, authorize, inspect, or remap values inside Entity because of a marker.
+- **Never** — protect, transform, authorize, inspect, or remap values inside the Entity Component because of a marker.
 
 **Logical names remain exact and physical names remain deterministic**
 
@@ -515,12 +515,12 @@ Every obligation below derives from the Principle with the same title.
 
 ### Review
 
-**Entity conformance covers every Entity contract**
+**Entity Component conformance covers every Entity Component contract**
 
-- **Must** — show that the Interface contract and the real output match and every observation holds before Entity is conformant.
+- **Must** — show that the Interface contract and the real output match and every observation holds before the Entity Component is conformant.
 - **Never** — change anything during review.
 
-**Review observes Entity through a fixed set of checks**
+**Review observes the Entity Component through a fixed set of checks**
 
 - **Must** — make every listed observation on every review.
 - **Never** — replace an observation with a command, tool, or code, or judge by a different set.

@@ -1,6 +1,6 @@
 # Entity Service Definition
 
-Entity Service is the fixed internal Logic Service whose Interface gives every Entity published by Entity one Child Service that works directly through Database Interface.
+Entity Service is the fixed internal Logic Service whose Interface gives every Entity published by the Entity Component one Child Service that works directly through Database Interface.
 
 <br>
 
@@ -23,7 +23,7 @@ Entity Service is the fixed internal Logic Service whose Interface gives every E
 
 ### Overview
 
-Entity Service is a fixed internal Service of every Logic Component. For every Entity in the Entity Collection it provides one Child Service, so a caller selects an Entity once and then calls its Actions without passing the Entity again. Its Interface publishes Service, the Child Services; Entity, the Entity each binds; and, unchanged, three of the groups Database Interface publishes.
+Entity Service is a fixed internal Service of every Logic Component. For every Entity in the Entity Collection it provides one Child Service, so a caller selects an Entity once and then calls its Actions without passing the Entity again. Its Interface publishes Service, the Child Services; the Entity group, the Entity each binds; and, unchanged, three of the groups Database Interface publishes.
 
 ### Purpose
 
@@ -71,10 +71,10 @@ Interface
 └── database_error
 ```
 
-The gateway callers import from, in its own `interface` file, the only file of Entity Service that publishes: everything a caller needs to call Actions, build requests, read results, and catch errors without importing Entity or Database. It publishes its own two groups, Service and Entity, named in Entity Service Preferences, and three Database groups, and nothing else. Its Interface contract is these needs, with `contract_version` in Entity Service Preferences:
+The gateway callers import from, in its own `interface` file, the only file of Entity Service that publishes: everything a caller needs to call Actions, build requests, read results, and catch errors without importing the Entity Component or Database. It publishes its own two groups, Service and Entity, named in Entity Service Preferences, and three Database groups, and nothing else. Its Interface contract is these needs, with `contract_version` in Entity Service Preferences:
 
 1. **Service** — exactly one Child Service for every Entity in the Entity Collection, changing when the Collection changes.
-2. **Entity** — the Entity every Child Service binds, under the same name as its Child Service, as the original object the Entity Component's Interface publishes, never a copy, so no caller has to reach Entity directly.
+2. **Entity** — the Entity every Child Service binds, under the same name as its Child Service, as the original object the Entity Component's Interface publishes, never a copy, so no caller has to reach the Entity Component directly.
 3. **Database groups** — Database's Value, Instance, and Error groups, `database_value`, `database_instance`, and `database_error`, each passed on under its own name as the identical object, never a copy or a member taken out on its own, and read from Database Interface each time rather than listed by hand.
 4. **Nothing else** — Base, Database's Interface, Setup, and Result groups, and anything beyond these groups are never published; Interface runs no check, and loading it opens no connection and creates no data or file.
 5. **Versioned** — changing this structure requires raising `contract_version` and a consumer review; a change in the Entity Collection or in what Database Interface publishes flows through without one.
@@ -139,7 +139,7 @@ The root of this tree is the Entity Service directory, named in `settings` in En
 <!--------------------------------------------------------------------------------- Relationships --->
 ## Relationships
 
-- **Consumes Entity** — uses the Entity Collection the Entity Component's Interface publishes to know which Child Services exist, and each Entity it publishes by name to bind one, found from Entity's own Preferences.
+- **Consumes the Entity Component** — uses the Entity Collection the Entity Component's Interface publishes to know which Child Services exist, and each Entity it publishes by name to bind one, found from the Entity Component's own Preferences.
 - **Consumes Database** — uses every Entity Operation of Database's Interface group and Database's Value, Instance, and Error groups, only through Database Interface, found from Database's own Preferences.
 - **Consumes Development** — follows its shared rules and Defaults for every choice this Component leaves unstated.
 
@@ -214,7 +214,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 #### Every Entity has exactly one Child Service
 
 **Rule:** Entity Service has exactly one Child Service for every Entity in the Entity Collection. Each binds its own Entity and inherits Base.
-**Why:** The Child Services stay complete and in step with Entity.
+**Why:** The Child Services stay complete and in step with the Entity Component.
 **Boundary:** A Child Service never copies or redefines its Entity.
 
 #### A Child Service holds only what is its own
@@ -229,13 +229,13 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 **Rule:** Entity Service is conformant only when its Interface contract and its real Interface match one another.
 **Why:** A gap or a change here silently breaks every caller of Entity Service.
-**Boundary:** Review reads Entity and Database Interfaces only to compare; it changes nothing outside Entity Service.
+**Boundary:** Review reads the Entity Component and Database Interfaces only to compare; it changes nothing outside Entity Service.
 
 #### Review observes Entity Service through a fixed set of checks
 
 **Rule:** Review establishes Entity conformance through these observations, every one of them on every review:
-- Entity Service Interface publishes exactly Service, with one Child Service for every Entity in the Entity Collection; Entity, with the Entity each Child Service binds under the same name; and Database's Value, Instance, and Error groups; and nothing else.
-- Every object in Entity and every republished group is the identical object its source Interface publishes.
+- Entity Service Interface publishes exactly Service, with one Child Service for every Entity in the Entity Collection; the Entity group, with the Entity each Child Service binds under the same name; and Database's Value, Instance, and Error groups; and nothing else.
+- Every object in the Entity group and every republished group is the identical object its source Interface publishes.
 - Base has exactly one Action for every Entity Operation of Database's Interface group, in Database's order, with the same name, each written out as its own method and none produced by a generic or dynamic dispatcher.
 - Each Action has its Operation's parameter names, order, and defaults, without the Entity class parameter.
 - Each Action returns its Operation's result and raises its errors unchanged, and rejects an instance of another Entity with the Invalid Input error.
