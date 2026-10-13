@@ -74,7 +74,7 @@ Interface
 The gateway callers import from, in its own `interface` file, the only file of Entity Service that publishes: everything a caller needs to call Actions, build requests, read results, and catch errors without importing Entity or Database. It publishes its own two groups, Service and Entity, named in Entity Service Preferences, and three Database groups, and nothing else. Its Interface contract is these needs, with `contract_version` in Entity Service Preferences:
 
 1. **Service** — exactly one Child Service for every Entity in the Entity Collection, changing when the Collection changes.
-2. **Entity** — the Entity every Child Service binds, under the same name as its Child Service, as the original object Entity Interface publishes, never a copy, so no caller has to reach Entity directly.
+2. **Entity** — the Entity every Child Service binds, under the same name as its Child Service, as the original object the Entity Component's Interface publishes, never a copy, so no caller has to reach Entity directly.
 3. **Database groups** — Database's Value, Instance, and Error groups, `database_value`, `database_instance`, and `database_error`, each passed on under its own name as the identical object, never a copy or a member taken out on its own, and read from Database Interface each time rather than listed by hand.
 4. **Nothing else** — Base, Database's Interface, Setup, and Result groups, and anything beyond these groups are never published; Interface runs no check, and loading it opens no connection and creates no data or file.
 5. **Versioned** — changing this structure requires raising `contract_version` and a consumer review; a change in the Entity Collection or in what Database Interface publishes flows through without one.
@@ -139,7 +139,7 @@ The root of this tree is the Entity Service directory, named in `settings` in En
 <!--------------------------------------------------------------------------------- Relationships --->
 ## Relationships
 
-- **Consumes Entity** — uses the Entity Collection Entity Interface publishes to know which Child Services exist, and each Entity it publishes by name to bind one, found from Entity's own Preferences.
+- **Consumes Entity** — uses the Entity Collection the Entity Component's Interface publishes to know which Child Services exist, and each Entity it publishes by name to bind one, found from Entity's own Preferences.
 - **Consumes Database** — uses every Entity Operation of Database's Interface group and Database's Value, Instance, and Error groups, only through Database Interface, found from Database's own Preferences.
 - **Consumes Development** — follows its shared rules and Defaults for every choice this Component leaves unstated.
 

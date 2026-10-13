@@ -24,7 +24,7 @@ Database is the structured Development Component that persists public Entity dat
 <!-------------------------- Overview -->
 ### Overview
 
-Database enumerates every Entity through the Entity Collection published by Entity Interface, derives storage structure from each actual Entity and the Declaration it exposes, and persists Entity instances through a selected active DatabaseInstance. Interface is its only public boundary. Core routes every request, and one isolated Engine unit implements the contract for each Engine used by at least one active Instance.
+Database enumerates every Entity through the Entity Collection published by the Entity Component's Interface, derives storage structure from each actual Entity and the Declaration it exposes, and persists Entity instances through a selected active DatabaseInstance. Interface is its only public boundary. Core routes every request, and one isolated Engine unit implements the contract for each Engine used by at least one active Instance.
 
 <!-------------------------- Purpose -->
 ### Purpose
@@ -100,7 +100,7 @@ Operation
 
 #### Entity Operation
 
-Operations scoped to one Entity. Each receives the Entity itself — an Entity instance or the Entity class imported from Entity — never an Entity name or other string identity.
+Operations scoped to one Entity. Each receives the Entity itself — an Entity instance or the Entity class imported from the Entity Component — never an Entity name or other string identity.
 
 #### Setup Operation
 
@@ -299,7 +299,7 @@ The place where a file-backed database keeps its files. The database file of one
 <!--------------------------------------------------------------------------------- Relationships --->
 ## Relationships
 
-- **Consumes Entity** — uses the Entity Collection and Entity Exports Entity Interface publishes, found from Entity's own Preferences.
+- **Consumes Entity** — uses the Entity Collection and Entity Exports the Entity Component's Interface publishes, found from Entity's own Preferences.
 - **Consumes Development** — follows its shared rules and Defaults for every choice this Component leaves unstated.
 
 <br>
@@ -338,7 +338,7 @@ Every Principle below is mandatory.
 
 #### Database consumes Entity without owning it
 
-**Rule:** Database imports Entity Interface and reaches Entities only through the Entity Collection and Entity Exports of its Interface contract. It iterates the Entity Collection and uses each actual public Entity and the complete public Declaration it exposes. It never uses wildcard or attribute discovery, scans Entity directories, imports Entity-unit paths, builds another Entity registry, or creates, edits, builds, tests, documents, or generates an artifact inside Entity.
+**Rule:** Database imports the Entity Component's Interface and reaches Entities only through the Entity Collection and Entity Exports of its Interface contract. It iterates the Entity Collection and uses each actual public Entity and the complete public Declaration it exposes. It never uses wildcard or attribute discovery, scans Entity directories, imports Entity-unit paths, builds another Entity registry, or creates, edits, builds, tests, documents, or generates an artifact inside Entity.
 **Why:** One path to Entities keeps Database in step with Entity and prevents a second, drifting copy of Entity's meaning.
 **Boundary:** A missing or incompatible Entity capability is reported; Database does not repair or redefine Entity.
 
@@ -502,7 +502,7 @@ Every Principle below is mandatory.
 
 **Database consumes Entity without owning it**
 
-- **Must** — consume actual Entity and Declaration references only through Entity Interface's Entity Collection and Entity Exports.
+- **Must** — consume actual Entity and Declaration references only through the Entity Component's Interface's Entity Collection and Entity Exports.
 - **Never** — use wildcard or attribute discovery, directories, internal paths, or construct another Entity registry.
 - **Never** — change, generate, build, test, or document Entity output.
 
