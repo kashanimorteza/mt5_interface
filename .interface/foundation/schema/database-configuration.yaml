@@ -1,0 +1,132 @@
+schema:
+  id: "agent-interface-database-configuration"
+  version: "4.0"
+  purpose: "The independent structure of the Database Configuration file: Engines, complete Instances, runtime Settings, query defaults, Setup behavior, and shared Initial Data."
+  kind: "Structure standard"
+  applies_when: "The Implementation declares a Database Component."
+
+# <!--------------------------------------------------------------------------------- Structure -->
+structure:
+
+  engines:
+    required: true
+    purpose: "Database Engines supported by the generated Component."
+    shape:
+      "<engine-key>":
+        name: "<human-readable engine name>"
+        driver: "<engine driver or dialect>"
+        parameters: "<engine-specific configuration mapping>"
+
+  instances:
+    required: true
+    purpose: "Complete named database identities; Engine validation determines which connection values must be non-empty."
+    shape:
+      "<instance-key>":
+        name: "<unique human-readable Instance name>"
+        active: "<boolean>"
+        engine: "<engine-key declared under engines>"
+        host: "<host or null>"
+        port: "<integer port or null>"
+        database: "<database identity or file name>"
+        username: "<username or null>"
+        password: "<password or null>"
+        options: "<instance-specific configuration mapping>"
+
+  settings:
+    required: true
+    purpose: "Component-wide runtime settings and canonical serialized query defaults."
+    shape:
+      default_instance: "<active instance-key declared under instances>"
+      storage_root: "<Database-owned storage directory>"
+      query:
+        filter_combination: "<FilterCombination member name: AND or OR>"
+        default_limit: "<integer; zero or a negative value normalizes to -1>"
+        default_order:
+          field: "<public Entity Field name; default id>"
+          direction: "<OrderDirection member name: ASCENDING or DESCENDING>"
+      setup:
+        after_generation:
+          enabled: "<boolean>"
+          fail_on_error: "<boolean>"
+          command: "prepare"
+
+  initial_data:
+    required: true
+    purpose: "One complete shared, repeatable collection containing every Target-defined Initial Data record and targeting any active Instance."
+    shape:
+      - entity: "<public Entity identity>"
+        records: "<ordered list of complete Entity-compatible field mappings>"
+
+# <!--------------------------------------------------------------------------------- Rules -->
+rules:
+  sole_runtime_source: "The generated Database Configuration file is the sole runtime source. Runtime does not read Database Preferences."
+  no_write_back: "Runtime never writes back to Database Preferences."
+  regeneration: "Regeneration rebuilds config from the current Target and Preferences; no hidden merge or second runtime source exists."
+  credential_scope: "Connection values and credentials never appear in DatabaseInstance or in any Operation request; Core resolves them from config."
+  instance_identity: "Every Instance key and normalized public DatabaseInstance member is unique."
+  instance_completeness: "Every Instance contains name, active, engine, host, port, database, username, password, and options; its Engine validates applicable required values."
+  instance_integrity: "Every Instance names an existing Engine."
+  default_integrity: "settings.default_instance names an active existing Instance."
+  active_publication: "Exactly active Instances become DatabaseInstance members; exactly the Engines they use receive one Engine implementation file each."
+  membership_change: "A change to active membership takes effect through config and the next generation where generated units must change; an unresolved Instance selection fails configuration loading."
+  complete_update: "When an Instance definition changes in Configuration, its complete definition is replaced and revalidated; no hidden partial merge occurs."
+  query_vocabulary: "Serialized enum defaults use canonical member names and resolve before any public call; unknown names fail configuration loading."
+  limit_normalization: "An omitted limit uses -1; zero and every negative limit normalize to -1, meaning no limit."
+  storage_ownership: "A file-backed database path resolves beneath settings.storage_root in the Database Component and may not escape it or resolve from an installed package, virtual environment, working directory, or consumer."
+  storage_failure: "An invalid or escaping path fails before any connection. Only Database creates and manages its storage files."
+  initial_data_ownership: "Initial Data is shared Database Configuration, not Model data and not per-Instance or Engine-file content."
+  initial_data_completeness: "When the Target declares Initial Data, generation copies every declared record into this collection and may not emit an empty or partial collection."
+  generated_initial_values: "A Target Initial Data value that is not concrete, including Generate securely, is copied as an empty string; generation continues and no value is generated. The user fills such values later."
+  initial_data_security_boundary: "Sensitivity markers, credential Fields, at-rest instructions, and unavailable security processors never omit or block a record; Database stores each value unchanged without hash, encryption, masking, or authorization."
+  setup_order: "When enabled, Prepare runs after generation; its failure fails preparation when fail_on_error is true."
+
+# <!--------------------------------------------------------------------------------- Example -->
+example: |
+  engines:
+    sqlite:
+      name: "SQLite"
+      driver: "sqlite"
+      parameters: {}
+    postgresql:
+      name: "PostgreSQL"
+      driver: "postgresql"
+      parameters: {}
+
+  instances:
+    sqlite:
+      name: "SQLite"
+      active: true
+      engine: "sqlite"
+      host: null
+      port: null
+      database: "application.db"
+      username: null
+      password: null
+      options: {}
+    postgresql:
+      name: "PostgreSQL"
+      active: false
+      engine: "postgresql"
+      host: "127.0.0.1"
+      port: 5432
+      database: "application"
+      username: "postgres"
+      password: ""
+      options: {}
+
+  settings:
+    default_instance: "sqlite"
+    storage_root: "db"
+    query:
+      filter_combination: "AND"
+      default_limit: -1
+      default_order:
+        field: "id"
+        direction: "ASCENDING"
+    setup:
+      after_generation:
+        enabled: true
+        fail_on_error: true
+        command: "prepare"
+
+  initial_data: []

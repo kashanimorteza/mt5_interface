@@ -1,0 +1,318 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/database/database.yaml"
+  path_note: "The Preferences layer of the Database Component."
+  purpose: "Database identity, Instances, Interface contract, architecture, language profile, Engines, configuration, and documentation choices."
+  standard: "Agent Project Interface"
+  version: "17.0"
+  updated: "2026-10-09"
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Generation reads it without writing resolved choices back into it."
+  changed_by: "The human, directly."
+  precedence: "Every applicable Database Principle and explicit compatible Target value take precedence over a Preference default."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read settings and the Instance definitions in architecture; copy the Target Initial Data; generate config from its Foundation Schema; realize Interface from the interface entity and the other entities of architecture; realize the fixed Architecture; then apply development preferences."
+  selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
+  version_resolution: "Resolve Database-owned versioned technical items from the selected language profile in development. Resolve latest-compatible to a concrete compatible version and preserve that resolution in dependency or lock metadata."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - settings
+  - architecture
+  - development
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  settings: "Database's identity and the Model contract it consumes."
+  architecture: "The entities of the Architecture tree — Operation with its after-generation behavior, Query with its defaults, Condition, Sort, and Limit, Engine with the version, storage, and connection of every Engine, Error, Result, Instance with the default Instance and the default definition of every Instance; Interface with its contract version, group prefix, and six groups; Configuration with its file, location, format, and Schema; and Documentation with its file, location, and format."
+  development: "Development capabilities and the selected language and its profile with its Engine drivers."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- settings -->
+  settings:
+    component:
+      type: "library"
+      platform: "VPS"
+      directory: "database"
+      package: "database"
+    model_dependency:
+      definition: ".interface/implementation/development/model/model.md"
+      preferences: ".interface/implementation/development/model/model.yaml"
+
+  # <!-------------------------------------------- architecture -->
+  architecture:
+    entities:
+      operation:
+        entity_operation:
+          add:
+            parameters: ["entity", "instance"]
+            accepts: "one complete new Entity instance"
+            returns: "the stored Entity, including generated values"
+          update:
+            parameters: ["entity", "instance"]
+            accepts: "one complete Entity instance; its id only locates the record"
+            effect: "replaces every mutable Field; never changes id or another immutable Field"
+            returns: "the stored Entity, or null when no record exists"
+          list:
+            parameters: ["entity", "filters", "combination", "orders", "limit", "instance"]
+            accepts: "an Entity class, optional Filters, an optional FilterCombination, optional ordered Orders, and an optional limit; a zero or negative limit means no limit"
+            returns: "the matching Entity instances"
+          get_by_id:
+            parameters: ["entity", "id", "instance"]
+            accepts: "an Entity class and an id"
+            returns: "the Entity, or null when no record exists"
+          delete:
+            parameters: ["entity", "id", "instance"]
+            accepts: "an Entity class and an id"
+            returns: "the final deleted Entity, or null when no record exists"
+          enable:
+            parameters: ["entity", "id", "instance"]
+            accepts: "an Entity class and an id"
+            effect: "sets only is_active to true"
+            returns: "the final Entity, including when it was already enabled, or null when no record exists"
+          disable:
+            parameters: ["entity", "id", "instance"]
+            accepts: "an Entity class and an id"
+            effect: "sets only is_active to false"
+            returns: "the final Entity, including when it was already disabled, or null when no record exists"
+          count:
+            parameters: ["entity", "filters", "combination", "instance"]
+            accepts: "an Entity class, optional Filters, and an optional FilterCombination"
+            returns: "the matching count"
+          sum:
+            parameters: ["entity", "field", "filters", "combination", "instance"]
+            accepts: "an Entity class, one numeric Field reference of that Entity, optional Filters, and an optional FilterCombination"
+            effect: "ignores null values"
+            returns: "the total, or zero when nothing matches"
+          min:
+            parameters: ["entity", "field", "filters", "combination", "instance"]
+            accepts: "an Entity class, one comparable Field reference of that Entity, optional Filters, and an optional FilterCombination"
+            effect: "ignores null values"
+            returns: "the smallest value, or null when nothing matches"
+          max:
+            parameters: ["entity", "field", "filters", "combination", "instance"]
+            accepts: "an Entity class, one comparable Field reference of that Entity, optional Filters, and an optional FilterCombination"
+            effect: "ignores null values"
+            returns: "the largest value, or null when nothing matches"
+          truncate:
+            parameters: ["entity", "instance"]
+            accepts: "an Entity class"
+            effect: "removes every record of that Entity and keeps its Table"
+            returns: "the deleted count"
+        setup_operation:
+          create_tables:
+            parameters: ["instance"]
+            effect: "creates every Table from the Entities of the Model Entity Collection and their Declarations, using nothing else; matching Tables are left unchanged; a difference with an existing Table stops the command"
+            returns: "a SetupResult"
+          insert_initial_data:
+            parameters: ["instance"]
+            effect: "inserts every missing configured Initial Data record; skips an identical present record; fails on a conflicting one"
+            returns: "a SetupResult"
+          prepare:
+            parameters: ["instance"]
+            effect: "runs create_tables and then insert_initial_data; stops without running insert_initial_data when create_tables fails"
+            returns: "a SetupResult"
+        command_operation:
+          execute_command:
+            parameters: ["command", "parameters", "instance"]
+            accepts: "a native command in the Instance Engine's query language and its bound parameters"
+            effect: "runs any valid command the Engine supports, including a schema change; create_tables remains the standard schema-preparation path"
+            returns: "a CommandResult"
+        after_generation:
+          enabled: true
+          fail_on_error: true
+          command: "prepare"
+      query:
+        defaults:
+          filter_combination: "AND"
+          default_limit: -1
+          default_order:
+            field: "id"
+            direction: "ASCENDING"
+        condition:
+          filter:
+            immutable: true
+            fields:
+              field: "a Field reference the given Entity exposes, never a Field name string"
+              operator: "a FilterOperator member"
+              value: "an operator-compatible value; absent for IS_NULL and IS_NOT_NULL; a compatible collection for IN"
+            compatibility: "CONTAINS, STARTS_WITH, and ENDS_WITH require a textual Field; comparison operators require a value compatible with the Field"
+          operator: ["EQUALS", "NOT_EQUALS", "GREATER_THAN", "GREATER_OR_EQUAL", "LESS_THAN", "LESS_OR_EQUAL", "IN", "CONTAINS", "STARTS_WITH", "ENDS_WITH", "IS_NULL", "IS_NOT_NULL"]
+          combination: ["AND", "OR"]
+          checked:
+            immutable: true
+            fields: ["field", "type", "operator", "value"]
+        sort:
+          order:
+            immutable: true
+            fields:
+              field: "a Field reference the given Entity exposes, never a Field name string"
+              direction: "an OrderDirection member; ASCENDING when omitted"
+          direction: ["ASCENDING", "DESCENDING"]
+          checked:
+            immutable: true
+            fields: ["field", "type", "descending"]
+        limit:
+          rule: "a positive limit is the maximum returned count; zero or a negative limit means no limit"
+      engine:
+        sqlite:
+          version: "runtime-provided"
+          storage:
+            kind: "file"
+            relative_to: "the Storage directory of the Directory Structure in the Database Definition"
+            location: "<database>"
+            reject_escape: true
+          connection:
+            required_parameters: ["database"]
+            foreign_keys: true
+        postgresql:
+          version: "latest-compatible"
+          storage:
+            kind: "server"
+          connection:
+            default_port: 5432
+            required_parameters: ["host", "port", "database", "username", "password"]
+      error:
+        kinds:
+          invalid_configuration_or_instance: "invalid configuration or Instance"
+          inactive_instance: "inactive Instance selected"
+          invalid_input_or_field: "invalid input or Field"
+          declaration_incompatibility: "Declaration incompatibility"
+          connection_failure: "connection failure"
+          execution_failure: "execution failure"
+          incomplete_setup: "incomplete Setup execution"
+      result:
+        command_result:
+          immutable: true
+          fields:
+            rows: "returned row mappings, or null"
+            affected: "affected row count, or null"
+            columns: "ordered column names, or null"
+            success: "whether the command succeeded"
+            message: "a public result or error message"
+            instance: "the DatabaseInstance used"
+        setup_result:
+          immutable: true
+          fields:
+            command: "the Setup Operation name"
+            instance: "the DatabaseInstance used"
+            success: "whether the command succeeded"
+            affected: "the processed Table or record count, or null"
+            message: "a public result or error message"
+      instance:
+        members: "one member per active configured Instance; an inactive Instance has none"
+        selection:
+          rule: "Every Operation and Setup Operation accepts an optional DatabaseInstance member. When none is given, the call runs on the configured default Instance."
+          values: "Only members of DatabaseInstance; an unknown or inactive Instance fails the call before any storage is touched."
+        default_instance: "sqlite"
+        definitions:
+          sqlite:
+            name: "SQLite"
+            active: true
+            engine: "sqlite"
+            host: null
+            port: null
+            database: "application.db"
+            username: null
+            password: null
+            options: {}
+          postgresql:
+            name: "PostgreSQL"
+            active: false
+            engine: "postgresql"
+            host: "127.0.0.1"
+            port: 5432
+            database: "application"
+            username: "postgres"
+            password: "123456"
+            options: {}
+      interface:
+        contract_version: "3.0"
+        prefix: "database"
+        naming: "every group is published under prefix, an underscore, and its key, such as database_error"
+        groups:
+          interface:
+            holds: ["operation.entity_operation", "operation.command_operation"]
+          setup:
+            holds: ["operation.setup_operation"]
+          value:
+            holds: ["query.condition.filter", "query.condition.operator", "query.condition.combination", "query.sort.order", "query.sort.direction"]
+          instance:
+            holds: ["instance"]
+          result:
+            holds: ["result.command_result", "result.setup_result"]
+          error:
+            holds: ["error.kinds"]
+      configuration:
+        file: "config.yaml"
+        location: "the Component root"
+        format: "yaml"
+        schema: ".interface/foundation/schema/database-configuration.yaml"
+      documentation:
+        file: "README.md"
+        location: "the Component root"
+        format: "markdown"
+
+  # <!-------------------------------------------- development -->
+  development:
+    capabilities:
+      testing: false
+      error_handling: false
+      logging: false
+    language:
+      selected: "python"
+      options:
+        python:
+          modeling:
+            package:
+              name: "SQLModel"
+              version: "latest-compatible"
+            agent_skills:
+              - resource: "sqlmodel"
+                requirement: "required"
+                activation: "when_selected"
+                purpose: "Apply SQLModel guidance while realizing Tables and Engine units."
+            agent_avoid:
+              - "Never declare or subclass a table class inside Database; Tables come only from the Model Entities."
+          table_creation: "Core Tables creates exactly the Tables of the Model Entity Collection's table models through their shared metadata (create_all restricted to those Tables). It writes no per-Entity code."
+          interface_file: "The Interface is the interface file at the package root (database/interface.py); every __init__.py stays empty and publishes nothing."
+          value_shapes:
+            executable_groups: "the interface and setup groups are plain classes named by their group name and created with no argument, such as database_interface() and database_setup()"
+            namespace_groups: "the value, result, and error groups are namespace classes named by their group name; each holds its entities as class attributes under their own names, such as database_value.Filter and database_error.ConnectionFailureError"
+            instance_group: "the instance group is itself the enum.Enum of active Instances, named by its group name; each member name is its Instance key in upper case, such as database_instance.SQLITE"
+            publication: "the interface file publishes only the group names, as its __all__"
+            forms: "every immutable form in architecture is a frozen dataclass with exactly its listed fields, in that order"
+            enumerations: "enum.Enum for FilterOperator, FilterCombination, and OrderDirection; each member's value equals its name"
+          error_classes:
+            base: "DatabaseError"
+            invalid_configuration_or_instance: "ConfigurationError"
+            inactive_instance: "InactiveInstanceError"
+            invalid_input_or_field: "InvalidInputError"
+            declaration_incompatibility: "DeclarationMismatchError"
+            connection_failure: "ConnectionFailureError"
+            execution_failure: "ExecutionError"
+            incomplete_setup: "SetupError"
+          field_reference: "A Field reference is the Entity's class attribute for that Field, such as User.is_active."
+          row_materialization: "Build the Entity with its own constructor from all Field values."
+          engines:
+            sqlite:
+              driver:
+                name: "sqlite3"
+                version: "runtime-provided"
+                package: null
+              url_scheme: "sqlite"
+              connect_arguments:
+                check_same_thread: false
+            postgresql:
+              driver:
+                name: "psycopg"
+                version: "latest-compatible"
+                package: "psycopg"
+              url_scheme: "postgresql+psycopg"

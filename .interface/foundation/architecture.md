@@ -1,0 +1,42 @@
+# Architecture
+
+```text
+Agent Interface
+├── Target
+│   └── Target Definition
+├── Implementation
+│   ├── Development
+│   │   ├── Model
+│   │   ├── Database
+│   │   ├── Logic
+│   │   ├── API
+│   │   ├── Presentation
+│   │   └── Platform
+│   └── Operations
+│       ├── Configure
+│       ├── Plan
+│       ├── Develop
+│       ├── Review
+│       ├── Implement
+│       ├── Launch
+│       ├── Reset
+│       └── State
+├── Executor
+│   ├── Rule
+│   ├── Skill
+│   ├── Permission
+│   ├── Connection
+│   └── Output Style
+├── Config
+│   ├── State
+│   └── Plan
+└── Foundation
+    ├── Introduction
+    ├── Terms
+    ├── Architecture
+    ├── Understanding
+    ├── Authority and Ownership
+    ├── Workflow
+    ├── Agent Native Implement
+    └── Schemas
+```

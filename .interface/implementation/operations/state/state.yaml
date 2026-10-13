@@ -1,0 +1,53 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/operations/state/state.yaml"
+  path_note: "The Preferences layer of the State Component. It currently defines no technical choices for operational progress, runtime state, or the execution log."
+  purpose: "Where technical choices owned by State would be recorded. State currently makes none."
+  standard: "Agent Project Interface"
+  version: "2.0"
+  updated: "2026-09-12"
+
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned."
+  changed_by: "The human, directly."
+  precedence: "An explicit project value and every applicable Principle take precedence over this file."
+
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order."
+  selection: "Follows Development's resolution order."
+  version_resolution: "No entry carries a version."
+  matching: "No entry to match."
+
+
+
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - "selected"
+  - "options"
+  - "settings"
+
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  selected: "Empty. The State Component chooses among no catalogued alternatives and owns no code path."
+  options: "Empty. The State Component catalogues no alternatives."
+  settings: "Empty. The State Component configures nothing."
+
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- selected -->
+  selected: {}
+
+  # <!-------------------------------------------- options -->
+  options: {}
+
+  # <!-------------------------------------------- settings -->
+  settings: {}

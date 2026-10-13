@@ -1,0 +1,43 @@
+# Understanding
+
+This section defines how an Agent establishes Interface Understanding, Target Understanding, and Source Understanding before acting.
+
+<br>
+
+<!--------------------------------------------------------------------------------- Navigation --->
+## Navigation
+
+1. **[Interface Understanding](#interface-understanding)**
+2. **[Target Understanding](#target-understanding)**
+3. **[Source Understanding](#source-understanding)**
+
+<br>
+
+<!--------------------------------------------------------------------------------- Interface Understanding --->
+## Interface Understanding
+
+Interface Understanding is the understanding of Agent Interface that an Agent establishes before performing an ordinary Skill's role. It starts from `.interface/interface.md` and follows only the routes provided for the active role. Agent Native Implement is the sole explicit exception: it reads the Executor Module directly after explicit Human invocation and does not require Target Understanding.
+
+→ [Read more about Interface](../interface.md)
+
+<br>
+
+<!--------------------------------------------------------------------------------- Target Understanding --->
+## Target Understanding
+
+Target Understanding is the understanding of the project's Target that an Agent establishes when the role needs Target meaning. Target Definition is the Target authority. Configure uses only the phase identities and Platform selections required for its role. Reset establishes the minimum Target Understanding needed for a phase scope, omits it for Config scope, and uses only phase identity and ownership for Complete scope.
+
+Understanding is reconstructed from the current source when required and is never copied into Config as a second project definition.
+
+→ [Read more about the Target Definition](../target/target.md)
+
+<br>
+
+<!--------------------------------------------------------------------------------- Source Understanding --->
+## Source Understanding
+
+Source Understanding is the understanding of generated Source that an Agent establishes when its role needs to inspect, assess, or work from that Source. It may be limited to one or more selected Development Components — such as Model, Database, Logic, API, or Presentation — rather than requiring the Agent to read all generated Source.
+
+Source Understanding is established from the current generated Source within the required scope. It does not replace Interface Understanding or Target Understanding: each is established as well whenever the role needs the authorities or intent they provide.
+
+<br>

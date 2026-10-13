@@ -1,0 +1,144 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Glob",
+      "Grep",
+      "Edit",
+      "Write",
+      "NotebookEdit",
+      "Agent",
+      "TaskCreate",
+      "TaskGet",
+      "TaskList",
+      "TaskUpdate",
+      "TodoWrite",
+      "WebFetch",
+      "WebSearch",
+      "Bash(python3 -)",
+      "Bash(python3 -c ' *)",
+      "Skill(my-interface-configure)",
+      "Skill(my-interface-plan)",
+      "Skill(my-interface-develop)",
+      "Skill(my-interface-review)",
+      "Skill(my-interface-implement)",
+      "Skill(my-interface-launch)",
+      "Skill(fastapi)",
+      "Skill(sqlmodel)",
+      "Skill(claude-code-setup:*)",
+      "Skill(feature-dev:*)",
+      "Skill(commit-commands:*)",
+      "Skill(plugin-dev:*)",
+      "Skill(frontend-design:*)",
+      "Skill(example-skills:*)",
+      "Skill(document-skills:*)",
+      "Skill(adhd-output-style:*)",
+      "Skill(superpowers:*)",
+      "Skill(andrej-karpathy-skills:*)",
+      "Read(/.claude/skills/**)",
+      "Read(~/.claude/plugins/**)"
+    ],
+    "deny": [
+      "Edit(/.interface/**)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Bash(git restore:*)",
+      "Bash(git checkout:*)",
+      "Bash(git rebase:*)",
+      "Bash(git clean:*)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/interface_guard.py\" pre || exit 2",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/interface_guard.py\" prompt || exit 2",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/interface_guard.py\" revoke",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/interface_guard.py\" revoke",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "claude-code-setup@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "plugin-dev@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "example-skills@anthropic-agent-skills": true,
+    "document-skills@anthropic-agent-skills": true,
+    "adhd-output-style@claude-settings": true,
+    "claude-md-management@claude-plugins-official": false,
+    "superpowers@claude-plugins-official": true,
+    "andrej-karpathy-skills@karpathy-skills": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    },
+    "claude-settings": {
+      "source": {
+        "source": "github",
+        "repo": "fcakyon/claude-codex-settings"
+      }
+    },
+    "karpathy-skills": {
+      "source": {
+        "source": "github",
+        "repo": "forrestchang/andrej-karpathy-skills"
+      }
+    }
+  },
+  "outputStyle": "ADHD Explanatory",
+  "autoMemoryEnabled": false
+}

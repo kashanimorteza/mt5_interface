@@ -1,0 +1,72 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/logic/logic.yaml"
+  path_note: "The Preferences layer of the Logic Component."
+  purpose: "Identity, the entities of architecture with the Interface contract version, Service list, and documentation, and the language profile for Logic."
+  standard: "Agent Project Interface"
+  version: "19.0"
+  updated: "2026-10-09"
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Operations read it without writing resolved Logic choices back into it."
+  changed_by: "The human, directly."
+  precedence: "An explicit Target value and every applicable Logic Principle take precedence over this file."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order."
+  selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
+  version_resolution: "This file resolves versions for Logic-owned packages and tools."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - settings
+  - architecture
+  - development
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  settings: "Logic's identity: type, platform, directory, and package."
+  architecture: "The entities of the Architecture tree — Interface with its contract version, Services with the Definition and Preferences of every Service, and Documentation with its file, location, and format."
+  development: "Development capabilities and the selected language with its realization profile."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- settings -->
+  settings:
+    component:
+      type: library
+      platform: VPS
+      directory: logic
+      package: logic
+
+  # <!-------------------------------------------- architecture -->
+  architecture:
+    entities:
+      interface:
+        contract_version: '1.1'
+      services:
+        entity:
+          definition: services/entity/entity.md
+          preferences: services/entity/entity.yaml
+      documentation:
+        file: README.md
+        location: the Component root
+        format: markdown
+
+  # <!-------------------------------------------- development -->
+  development:
+    capabilities:
+      testing: false
+      error_handling: false
+      logging: false
+    language:
+      selected: "python"
+      options:
+        python:
+          identifier_case: "snake_case"
+          interface_file: "The Interface is the interface file at the package root (logic/interface.py); every __init__.py stays empty and publishes nothing."
+          interface: "For every listed Service, `from logic.services.<directory> import interface as <Name>`, then `__all__` with every Name. The interface file holds nothing else and performs no check, because conformance belongs to Review."

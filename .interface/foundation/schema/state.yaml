@@ -1,0 +1,128 @@
+schema:
+  id: "agent-interface-state"
+  version: "13.1"
+  purpose: "Operational State format; State Principles define record meaning and ownership."
+operational_scope:
+  stores: "Active Workflow position, aggregate Phase progress, and the project's recorded execution history."
+  excludes: "Target meaning, technical decisions, individual Task status or history, product code, secrets, and command transcripts."
+initialization:
+  source: "initial"
+  purpose: "Supply initial specialized State content. The generated Config file places this content inside the general YAML file structure. Phase identities are populated during Phase reconciliation."
+  preservation: "Reconciliation preserves existing operational records and never replaces them with defaults."
+generation:
+  purpose: "File-specific values Configure supplies while applying the general YAML file structure."
+  path: ".config/state.yaml"
+  path_note: "Mutable Workflow position, Phase progress, and execution Log."
+  agent_may_edit: true
+  policy_rule: "Apply the current State Component and the active operation's ownership rules."
+  resolution:
+    consumption: "Read active, then the Phase selected by stable Target phase identifier, then the Log Entries by identifier."
+    selection: "A requested phase resolves to the phases entry keyed by that phase identifier; a Log Entry resolves by its identifier."
+    absence: "No matching phases entry means no progress is recorded for that phase."
+  read_order: ["active", "phases", "log"]
+  content_map:
+    active: "Current Workflow position."
+    phases: "Aggregate progress for each Target phase."
+    log: "Recorded Skill executions and their outcomes."
+structure: ["active", "phases", "log"]
+sections:
+  active:
+    required: true
+    default: {}
+    fields:
+      mode:
+        required: true
+        default: "not set"
+        allowed: ["not set", "configuring", "planning", "development", "reviewing", "implementing"]
+      phase: {required: true, default: null, nullable: true}
+      mode_reason: {required: true, default: "No Workflow operation has been recorded."}
+      set_by: {required: true, default: "initialization"}
+      set_at: {required: true, default: null, nullable: true}
+  phases:
+    required: true
+    default: {}
+    purpose: "Aggregate operation progress keyed by stable Target phase identifier."
+    fields:
+      "<phase>":
+        required: false
+        default: {}
+        fields:
+          id: {required: true, default: ""}
+          planning:
+            required: true
+            default: "not started"
+            allowed: ["not started", "in progress", "completed", "blocked"]
+          development:
+            required: true
+            default: "not started"
+            allowed: ["not started", "in progress", "completed", "blocked"]
+          review:
+            required: true
+            default: "not started"
+            allowed: ["not started", "in progress", "satisfied", "not satisfied"]
+          completed_at:
+            required: true
+            default: null
+            nullable: true
+            purpose: "The time Review last marked this phase satisfied; cleared when Development reopens the phase."
+  log:
+    required: true
+    default: []
+    purpose: "The project's preserved history of recorded Skill executions and their outcomes."
+    item:
+      fields:
+        id:
+          required: false
+          default: ""
+          purpose: "The project-wide sequential identifier of this Log Entry, zero-padded to at least three digits (001, 002, …)."
+        skill: {required: false, default: "", purpose: "The Skill that performed this recorded action when one is assigned."}
+        parent_id: {required: false, default: "", purpose: "The identifier of the Skill or coordinator that invoked this record when applicable."}
+        phase: {required: false, default: null, nullable: true, purpose: "The stable Target Phase identifier when this execution concerns one Phase."}
+        event: {required: false, default: "", purpose: "The concise name of the recorded execution event."}
+        outcome: {required: false, default: "", purpose: "The current or final recorded result of this execution."}
+        started_at: {required: false, default: null, nullable: true, purpose: "The time this execution started when known."}
+        completed_at: {required: false, default: null, nullable: true, purpose: "The time this execution ended when known."}
+        duration:
+          required: false
+          default: null
+          nullable: true
+          purpose: "Elapsed execution time: '<seconds> seconds' below one minute, otherwise '<minutes>:<seconds>' with two-digit seconds."
+        token_usage:
+          required: false
+          default: {}
+          purpose: "Measured token consumption when the Runtime exposes it; unknown values remain null."
+          fields:
+            input: {required: false, default: null, nullable: true}
+            output: {required: false, default: null, nullable: true}
+            total: {required: false, default: null, nullable: true}
+        skills_used:
+          required: false
+          default: []
+          purpose: "The Skills actually used during this recorded execution."
+          item:
+            name: {required: false, default: ""}
+            duration: {required: false, default: null, nullable: true}
+            token_usage:
+              required: false
+              default: {}
+              fields:
+                input: {required: false, default: null, nullable: true}
+                output: {required: false, default: null, nullable: true}
+                total: {required: false, default: null, nullable: true}
+            report: {required: false, default: ""}
+        open_questions: {required: false, default: [], purpose: "References to Open Questions associated with this recorded execution when applicable."}
+        blockers: {required: false, default: [], purpose: "References to Blockers associated with this recorded execution when applicable."}
+        decisions: {required: false, default: [], purpose: "Identifiers of the Tasks whose Task Log records a decision made on the executor's own proposal during this execution."}
+        report: {required: false, default: "", purpose: "A concise report of this recorded execution and its outcome."}
+        data:
+          required: false
+          purpose: "An optional execution-specific YAML value. It may be a nested mapping or list and has no shared fixed fields."
+initial:
+  active:
+    mode: "not set"
+    phase: null
+    mode_reason: "No Workflow operation has been recorded."
+    set_by: "initialization"
+    set_at: null
+  phases: {}
+  log: []

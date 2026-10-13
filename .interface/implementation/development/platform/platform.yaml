@@ -1,0 +1,91 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/platform/platform.yaml"
+  path_note: "The Preferences layer of the Platform Component — named Launch Items with per-Component runtime requirements."
+  purpose: "Technical defaults for selecting and applying a complete launch definition to the Target."
+  standard: "Agent Project Interface"
+  version: "5.1"
+  updated: "2026-09-25"
+
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Operations read it without writing resolved Platform choices back into it."
+  changed_by: "The human, directly."
+  precedence: "An explicit Target value and every applicable Platform Principle take precedence over this file."
+
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read component, then resolve selected.launch to its exact entry under options.launches and apply each selected Component's runtime requirements as one coherent launch definition. Do not infer undeclared actions and do not write resolved values back into this file."
+  selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
+  version_resolution: "Preserve every explicit concrete version. Resolve an unpinned version to a concrete compatible stable version when a versioned package or tool is added to a Launch Item."
+  matching: "Match selected.launch to its exact key under options.launches and each Component's runtime requirements by its exact component key."
+
+
+
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - "component"
+  - "capabilities"
+  - "selected"
+  - "options"
+  - "settings"
+
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  component: "Platform type."
+  capabilities: "Component capabilities that are currently inactive."
+  selected: "The default named Launch Item."
+  options: "The supported named Launch Items, each containing runtime requirements for their applicable Components."
+  settings: "Platform's Component directory and package status. The complete current Platform configuration is owned by each Launch Item."
+
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- component -->
+  component:
+    type: "guideline"
+
+  # <!-------------------------------------------- capabilities -->
+  capabilities:
+    testing: false
+    error_handling: false
+    logging: false
+    encryption: false
+
+  # <!-------------------------------------------- selected -->
+  selected:
+    launch: "VPS"
+
+  # <!-------------------------------------------- options -->
+  options:
+    launches:
+      VPS:
+        presentation:
+          operating_system: "Linux"
+        api:
+          operating_system: "Linux"
+          web_server: "Nginx"
+          runtime_binding:
+            host: "0.0.0.0"
+            port: 8000
+            transport: "HTTP"
+            cors:
+              allowed_origins: []
+            shutdown:
+              graceful_timeout_seconds: 30
+            infrastructure_rate_limiting:
+              enabled: false
+        database:
+          operating_system: "Linux"
+
+  # <!-------------------------------------------- settings -->
+  settings:
+    component:
+      directory: "platform"
+      package: null

@@ -1,0 +1,53 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/operations/review/review.yaml"
+  path_note: "The Preferences layer of the Review Component. It currently defines no Component-specific technical choices or defaults."
+  purpose: "Where the Review Component's technical choices would be recorded. The Review Component currently makes none."
+  standard: "Agent Project Interface"
+  version: "2.1"
+  updated: "2026-09-21"
+
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned."
+  changed_by: "The human, directly."
+  precedence: "An explicit project value and every applicable Principle take precedence over this file."
+
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order."
+  selection: "Follows Development's resolution order."
+  version_resolution: "No entry carries a version."
+  matching: "No entry to match."
+
+
+
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - "selected"
+  - "options"
+  - "settings"
+
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  selected: "Empty. The Review Component chooses among no catalogued alternatives and owns no code path."
+  options: "Empty. The Review Component catalogues no alternatives."
+  settings: "Review-specific technical defaults remain empty."
+
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- selected -->
+  selected: {}
+
+  # <!-------------------------------------------- options -->
+  options: {}
+
+  # <!-------------------------------------------- settings -->
+  settings: {}

@@ -1,0 +1,110 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/development.yaml"
+  path_note: "The Preferences layer of the Development Subsystem — shared defaults, development standards, and Connections."
+  purpose: "Configurable shared coordination for the Development Components."
+  standard: "Agent Project Interface"
+  version: "10.0"
+  updated: "2026-10-12"
+
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Operations read it without writing resolved Development choices back into it."
+  changed_by: "The human, directly."
+  precedence: "An explicit Component Preference and every applicable Development Principle take precedence over this file."
+
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order."
+  selection: "Resolve an unstated choice by explicit Component Preference, then Development Default, then the executor's own proposal, recorded as a decision in the Task Log it serves."
+  version_resolution: "Preserve an explicit concrete version. Resolve an unpinned version only when it belongs to a Development-owned shared default; each Component resolves versions for its own packages and tools."
+
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - "defaults"
+  - "development"
+  - "connections"
+
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  defaults: "Shared language and platform defaults used only when a Component makes no explicit selection."
+  development: "Reusable language standards and quality-tool defaults."
+  connections: "The direct dependency graph between Components."
+
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- defaults -->
+  defaults:
+    component:
+      language: "Python"
+      platform: "VPS"
+      database: "SQLite"
+
+  # <!-------------------------------------------- development -->
+  development:
+    languages:
+      Python:
+        version: "latest-compatible"
+        package_management:
+          name: "uv"
+          version: "latest-compatible"
+          lockfile: "uv.lock"
+          isolated_environment_directory: ".venv"
+          skill_provisioning: "uvx library-skills --claude"
+        typing:
+          style: "modern Python typing"
+          prefer_builtin_generics: true
+          prefer_union_operator: true
+          nullable_fields: "T | None"
+        closed_value_sets:
+          reusable_named: "StrEnum"
+          small_local: "Literal"
+        concept_mappings:
+          exact_decimal_representation: "decimal.Decimal"
+          timezone_aware_datetime: "datetime.datetime with timezone information"
+        quality_tools:
+          formatter:
+            name: "ruff-format"
+            package: "ruff"
+            version: "latest-compatible"
+          linter:
+            name: "ruff"
+            package: "ruff"
+            version: "latest-compatible"
+          type_checker:
+            name: "ty"
+            package: "ty"
+            version: "latest-compatible"
+      TypeScript:
+        version: "latest-compatible"
+        package_management:
+          name: "npm"
+          version: "latest-compatible"
+
+  # <!-------------------------------------------- connections -->
+  connections:
+    presentation_to_api:
+      consumer: "presentation"
+      provider: "api"
+    presentation_to_model:
+      consumer: "presentation"
+      provider: "model"
+    api_to_logic:
+      consumer: "api"
+      provider: "logic"
+    logic_to_database:
+      consumer: "logic"
+      provider: "database"
+    logic_to_model:
+      consumer: "logic"
+      provider: "model"
+    database_to_model:
+      consumer: "database"
+      provider: "model"

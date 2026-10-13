@@ -1,0 +1,158 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/model/model.yaml"
+  path_note: "The Preferences layer of the Model Component."
+  purpose: "Configurable component, the entities of architecture with their Interface contract, Entity defaults, and documentation choices, and the language profile for Model."
+  standard: "Agent Project Interface"
+  version: "27.0"
+  updated: "2026-10-13"
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Operations read it without writing resolved Model choices back into it."
+  changed_by: "The human, directly."
+  precedence: "Explicit compatible Target meaning and every applicable Model Principle take precedence over this file."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order; realize the entities of architecture through the selected language profile in development."
+  selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
+  version_resolution: "Resolve Model-owned versioned technical items from the selected language profile in development. Resolve latest-compatible to a concrete compatible version and preserve that resolution in dependency or lock metadata."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - settings
+  - architecture
+  - development
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  settings: "Model's identity."
+  architecture: "The entities of the Architecture tree — Entity with the default properties of id and is_active, its Value Generation with the selected generated-identifier algorithm and its alternatives, and its Sensitivity with the recognized markers; Interface with its contract version and published symbol names, and Documentation with its file, location, and format."
+  development: "Development capabilities and the selected language and its realization profile."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- settings -->
+  settings:
+    component:
+      type: library
+      directory: model
+      package: model
+
+  # <!-------------------------------------------- architecture -->
+  architecture:
+    entities:
+      entity:
+        defaults:
+          identity:
+            type: integer
+            nullable: false
+            immutable: true
+            value_generation: auto_increment
+          activity:
+            type: boolean
+            nullable: false
+            default: true
+            immutable: false
+        value_generation:
+          generated_identifier:
+            selected: uuid4
+            options:
+              uuid4: {}
+              uuid1: {}
+              ulid: {}
+        sensitivity:
+          markers:
+          - password
+          - sensitive
+      interface:
+        contract_version: '2.1'
+        symbols:
+          entity_collection: entities
+          entity_declaration: declaration
+      documentation:
+        file: README.md
+        location: the Component root
+        format: markdown
+
+  # <!-------------------------------------------- development -->
+  development:
+    capabilities:
+      testing: false
+      error_handling: false
+      logging: false
+    language:
+      selected: python
+      options:
+        python:
+          interface_file: "The Interface is the interface file at the package root (model/interface.py); every __init__.py stays empty and publishes nothing."
+          naming:
+            entity: PascalCase
+            fields: snake_case
+            modules: snake_case
+          symbols:
+            declaration: Declaration
+            foundation: Foundation
+          types:
+            string: {python: str, json: string}
+            integer: {python: int, json: number}
+            float: {python: float, json: number}
+            decimal: {python: decimal.Decimal, json: string, note: never float; the string keeps precision exact}
+            boolean: {python: bool, json: true / false}
+            datetime: {python: pydantic.AwareDatetime, json: ISO 8601 string with offset, note: always timezone-aware, stored in UTC}
+            date: {python: datetime.date, json: ISO 8601 date string}
+            time: {python: datetime.time, json: ISO 8601 time string}
+            uuid: {python: uuid.UUID, json: string}
+          nullable: T | None
+          unknown_type: stop and report; never guess
+          declaration_access: class attribute
+          declaration_kind: frozen dataclass
+          pending_value: None
+          field_realization: Realize every Field with Field. Value rules (default, nullable, description, value constraints) come from the Field; primary_key, unique, index, and foreign_key are copied from the Entity's Declaration, which stays their only source.
+          table_model:
+            declaration: Every Entity class is declared with table=True.
+            table_name: exactly the Entity's physical name, set through __tablename__
+            column_name: exactly the Field name
+            construction: The Core base runs model_validate on every direct construction before initializing, because a table model skips validation on construction.
+            field_reference: Each Field's class attribute is its public Field reference.
+            auto_increment: An auto_increment Identity column carries an Identity construct, and its table sets sqlite_autoincrement to true.
+            constraint_names:
+              mechanism: SQLAlchemy naming_convention on the shared metadata
+              primary_key: pk_<table>
+              foreign_key: fk_<table>_<field>
+              unique: uq_<table>_<fields joined by _>
+              index: ix_<table>_<fields joined by _>
+            datetime_column: A datetime Field uses DateTime(timezone=True) and is always stored in UTC; where an Engine drops the offset, the value is read back as UTC-aware.
+            column_types: Every other column takes the library's default type for its Python type.
+            decimal_column: A decimal Field uses one fixed column type that stores the exact decimal text and returns decimal.Decimal when read, on every Engine.
+          declaration_members:
+            entity:
+              name: name
+              description: description
+              fields: fields
+              primary_key: primary_key
+              relations: relations
+              uniqueness_constraints: unique_constraints
+              indexes: indexes
+            relation:
+              local_field: local_field
+              target_entity: target_entity
+              target_field: target_field
+          foundation:
+            methods:
+              to_json: to_json
+              from_json: from_json
+          modeling:
+            package:
+              name: SQLModel
+              version: latest-compatible
+            realization: Implement each Entity as a SQLModel table model whose Fields and metadata realize its Declaration exactly.
+            agent_skills:
+            - resource: sqlmodel
+              requirement: required
+              activation: when_selected
+              purpose: Apply SQLModel guidance while realizing and reviewing Entities.
+

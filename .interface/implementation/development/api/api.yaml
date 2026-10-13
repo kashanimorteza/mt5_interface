@@ -1,0 +1,161 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/api/api.yaml"
+  path_note: "The Preferences layer of the API Component."
+  purpose: "Identity, the entities of architecture with the Interface and Group contract versions, Group list, Endpoint rules, Configuration defaults, and documentation, and the language profile for API."
+  standard: "Agent Project Interface"
+  version: "17.0"
+  updated: "2026-10-12"
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Operations read it without writing resolved API choices back into it."
+  changed_by: "The human, directly."
+  precedence: "Explicit Target meaning and every applicable API Principle take precedence over this file."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order."
+  selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
+  version_resolution: "Resolve latest-compatible to a concrete mutually compatible package version at implementation time and preserve every explicit compatible package version."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - settings
+  - architecture
+  - development
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  settings: "API's identity."
+  architecture: "The entities of the Architecture tree — Groups with the Interface and Group contract versions and every Group's Definition and Preferences, Endpoints with the verb-to-Method table, Path and Parameter placement, URL shape, value forms, error statuses, and description keywords, Configuration with its file, location, format, structure, and the network, identity, and runtime defaults it is generated with, and Documentation with its file, location, and format."
+  development: "Development capabilities and the selected language with its realization profile."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- settings -->
+  settings:
+    component:
+      type: executable
+      platform: VPS
+      directory: api
+      package: api
+
+  # <!-------------------------------------------- architecture -->
+  architecture:
+    entities:
+      groups:
+        contract_version: '1.4'
+        group_contract_version: '1.0'
+        list:
+          entity:
+            definition: groups/entity/entity.md
+            preferences: groups/entity/entity.yaml
+      endpoints:
+        method_by_verb:
+          GET:
+          - get
+          - list
+          - find
+          - search
+          - count
+          - sum
+          - min
+          - max
+          - read
+          PUT:
+          - update
+          - replace
+          PATCH:
+          - enable
+          - disable
+          - set
+          - patch
+          DELETE:
+          - delete
+          - remove
+          - truncate
+          - clear
+        default_method: POST
+        path: /<operation>
+        path_with_id: /<operation>/{id}
+        parameter_placement:
+          path:
+          - id
+          query_methods:
+          - GET
+          - DELETE
+          body_methods:
+          - POST
+          - PUT
+          - PATCH
+          complex_in_query_method: POST
+        url: <base_url>/<group segment>/<adapter segment><endpoint path>
+        value_forms:
+          Filter: "{field, operator, value}, in Body"
+          Order: "{field, direction}, in Body"
+          DatabaseInstance: "its name"
+        error_status:
+          Invalid Input: 422
+          Inactive Instance: 503
+          Connection Failure: 503
+          Execution: 500
+          Declaration Mismatch: 500
+          Configuration: 500
+      configuration:
+        file: config.yaml
+        location: the Component root
+        format: yaml
+        structure: .interface/foundation/schema/api-configuration.yaml
+        defaults:
+          network:
+            transport_protocol: HTTP
+            host: 127.0.0.1
+            port: 8000
+            key: true
+            key_length: 32
+            url: http://127.0.0.1:8000/<key>
+          identity:
+            title: Target API
+            description: ''
+          runtime:
+            workers: 2
+      documentation:
+        file: README.md
+        location: the Component root
+        format: markdown
+
+  # <!-------------------------------------------- development -->
+  development:
+    capabilities:
+      testing: false
+      error_handling: false
+      logging: false
+    language:
+      selected: "python"
+      options:
+        python:
+          identifier_case: "snake_case"
+          package:
+            name: "FastAPI"
+            package: "fastapi[standard]"
+            version: "latest-compatible"
+            skill: "fastapi"
+          documentation_ui:
+            sections: "One tag per Adapter named <Group> · <Adapter>; Groups as tag groups (x-tagGroups) where the viewer supports them."
+            swagger: "/docs"
+            redoc: "/redoc"
+          middleware:
+            cors:
+              name: "CORSMiddleware"
+              allow_origins: ["*"]
+              allow_credentials: false
+              allow_methods: ["*"]
+              allow_headers: ["*"]
+          group:
+            adapter: "One module per Adapter holding one APIRouter with one explicitly written route function per Endpoint; Adapters share no base class, router factory, or loop that generates routes."
+            endpoint: "One route function per Endpoint, decorated with its method and path; its parameters copy the operation's names, types, and defaults, placed by architecture.entities.endpoints.parameter_placement."
+            handler: "Each route calls the operation its Group names and returns the result unchanged."
+          bootstrap: "Create one FastAPI app from config.yaml and include each Group's routers under its segment; Bootstrap performs no check, because conformance belongs to Review."

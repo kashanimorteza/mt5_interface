@@ -1,0 +1,153 @@
+# Foundation Files
+
+This guide explains what Foundation Files contain, why they are shared, and who owns them.
+
+Foundation is not one of the three Modules (Target, Implementation, Executor). It is the set of shared resources those Modules and every Skill depend on.
+
+<br>
+
+<!--------------------------------------------------------------------------------- Navigation --->
+## Navigation
+
+This guide maps Foundation Files to their authoritative sources.
+
+1. **[Introduction](#introduction)**
+2. **[Terms](#terms)**
+3. **[Architecture](#architecture)**
+4. **[Agent Native Implement](#agent-native-implement)**
+5. **[Schema](#schema)**
+
+<br>
+
+<!--------------------------------------------------------------------------------- Introduction --->
+## Introduction
+
+### Overview
+
+This document explains the Foundation directory: what it holds, why those files are shared by the whole Interface, and who may change them. It is Human-owned and explains; it does not redefine. The canonical definition remains `interface.md`, one level above this directory, which describes the complete system; this document describes only this directory and its contents.
+
+Foundation Files provide the foundational definitions and schemas required by the Interface: the canonical Interface document that every Understanding starts from and the Schemas that define how authored and generated files are shaped. Config is a separate operational boundary that uses some of these Schemas.
+
+Config contains the generated Application, Plan, and State records. It is outside the Foundation directory and is the only writable area of the Interface for Agent and Skills.
+
+### Purpose
+
+Foundation keeps shared Interface resources separate from the Target, Implementation, and Executor Modules.
+
+### How It Works
+
+The Interface routes an Agent to the relevant Foundation source or Schema. Config records use the applicable Foundation Schemas.
+
+<br>
+
+<!--------------------------------------------------------------------------------- Terms --->
+## Terms
+
+- **Foundation** — shared resources required by the Modules and Skills.
+- **Schema** — the structure of an authored source or operational record.
+- **Config** — an operational record used by the Workflow.
+- **Interface file** — the canonical navigation entry point for Agent Interface.
+
+<br>
+
+<!--------------------------------------------------------------------------------- Architecture --->
+## Architecture
+
+```text
+.interface/
+└── foundation/
+    ├── foundation.md
+    ├── introduction.md
+    ├── terms.md
+    ├── architecture.md
+    ├── understanding.md
+    ├── authority.md
+    ├── workflow.md
+    ├── create-agent-native-implement.md
+    └── schema/
+        ├── yaml.yaml
+        ├── <component>.md
+        ├── <component>.yaml
+        ├── state.yaml
+        ├── plan.yaml
+```
+
+<br>
+
+<!--------------------------------------------------------------------------------- Agent Native Implement --->
+## Agent Native Implement
+
+The Foundation instruction that creates and updates the `/my-interface-native-implement` Skill and uses it to realize the complete Executor Module in the Agent Native.
+
+Responsibility: Defines the Agent Native Implement Skill and its read-only Executor Module realization procedure.
+
+→ [Read more about Agent Native Implement](create-agent-native-implement.md)
+
+<br>
+
+<!--------------------------------------------------------------------------------- Schema --->
+## Schema
+
+Schemas define the structure followed by authored Interface files and generated operational records. Two kinds exist: **Structure standards**, the shape a Human-authored file follows, and **Operational formats**, the stored structure and initial template of a generated record. Schema definition files use their own formats and do not follow the outer YAML frame they define.
+
+```text
+.interface/foundation/schema/
+├── yaml.yaml
+├── <component>.md
+├── <component>.yaml
+├── database.yaml
+├── state.yaml
+├── plan.yaml
+```
+
+### YAML Schema
+
+The common outer frame (meta, policy, read_order, content_map, content) followed by Component Preferences and Config files.
+
+Responsibility: Defines the common outer structure followed by Component Preferences and Config files. Schema definition files use their own formats and do not follow this outer structure.
+
+→ [Read more about YAML Schema](schema/yaml.yaml)
+
+### Definition Schema
+
+The common Markdown structure of every Implementation and Executor Component `<component>.md`.
+
+Responsibility: Defines the common Markdown structure followed by every Implementation and Executor Component `<component>.md` file.
+
+→ [Read more about Definition Schema](schema/schema.md)
+
+### Preferences Schema
+
+The common structure of every Component `<component>.yaml` file.
+
+Responsibility: Defines the common Preferences structure followed by every Component `<component>.yaml` file.
+
+→ [Read more about Preferences Schema](schema/schema.yaml)
+
+#### Database Configuration Schema
+
+The structure of the Database Component's runtime configuration file — supported Engines, selectable Instances with their connection settings and credentials, and the default Instance. It is conditional: it applies when the Implementation declares a Database Component, and an Implementation without one ignores it.
+
+Responsibility: Defines the conditional shape of the Database Component's runtime configuration file so that adding an Instance or changing a credential is one edit in one file and no value is hardcoded in source.
+
+→ [Read more about Database Configuration Schema](schema/database-configuration.yaml)
+
+### Operational formats
+
+The stored structure and initial template of a generated record.
+
+### State Schema
+
+Generates `.config/state.yaml`.
+
+Responsibility: Defines the stored structure and initial values of State Config for `.config/state.yaml`.
+
+→ [Read more about State Schema](schema/state.yaml)
+
+### Plan Schema
+
+Generates `.config/plan.yaml`.
+
+Responsibility: Defines the stored structure and initial values of Plan Config for `.config/plan.yaml`.
+
+→ [Read more about Plan Schema](schema/plan.yaml)
