@@ -26,7 +26,7 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 39
+  task_count: 69
   plans:
     P1:
       id: "P1"
@@ -1012,3 +1012,827 @@ content:
                 - {at: "2026-10-13T00:08:24Z", by: "006", event: "claimed", note: "Dependencies P2-G7-T2, P2-G8-T1, and P2-G8-T2 are done."}
                 - {at: "2026-10-13T00:11:59Z", by: "006", event: "done", note: "Wrote database/README.md with Overview, Interface (each of the six groups with every Operation and parameter, every enumeration member, defaults, Results, and errors, each with an example), Instances, Setup, Use, Setup Operations, Initial Data (all 17 records listed, inserted unchanged without security-based omission), Verify, and Troubleshooting; ruff formats its code blocks. Observed: all 15 Python examples run in fresh interpreters through the published Interface and print exactly what the text states; the Verify steps (uv sync --locked, ruff format --check, ruff check, ty check, scripts/prepare.py, the file check, and the Python check) pass; the store was restored afterwards from a copy taken before the examples ran, because the truncate example renumbers Assets; only placeholder and empty credentials appear. Cache directories created by these checks (__pycache__, .ruff_cache) were removed."}
                 - {at: "2026-10-13T00:11:59Z", by: "006", event: "decision", note: "Unset: how consumers depend on Database. Chosen: documented as an editable local path dependency. Why: Database finds config.yaml and its storage in its own Component directory; a copied installation fails loading with ConfigurationError rather than resolving storage elsewhere."}
+    P3:
+      id: "P3"
+      title: "Logic"
+      order: 3
+      target: "Logic"
+      does: "The Logic Component exists as the reusable, project-internal Logic library whose Interface publishes its Entity Service, through which every Entity's stored records are reached by one Child Service per Entity working only through Database Interface."
+      constraints: []
+      task_count: 8
+      groups:
+        P3-G1:
+          id: "P3-G1"
+          title: "Library setup"
+          description: "Establishes the Logic Component as its own library, connected to the Entity and Database libraries it consumes, so that its Services and Interface have a place to be built and their dependencies resolve."
+          area: "Component packaging and environment"
+          does: "The Logic library exists as a project-internal package whose environment resolves the Entity and Database libraries, ready to receive its Services."
+          constraints: []
+          task_count: 1
+          tasks:
+            P3-G1-T1:
+              id: "P3-G1-T1"
+              source_id: "008"
+              title: "Establish the Logic library package"
+              description: "Create the Logic Component as a project-internal library package with an isolated environment in which its declared third-party dependencies and its Connections to the Entity and Database libraries resolve to recorded concrete versions, containing no Service yet."
+              reason: "Every later Task builds inside this library, and Entity Service reaches Entities and storage only through those two Connections."
+              inputs:
+                - "The Entity library and its published Interface"
+                - "The Database library and its published Interface"
+              skills: []
+              expected_result: "An empty, importable Logic library whose environment resolves the Entity and Database libraries from the repository."
+              acceptance: "The library installs from the repository into its isolated environment and imports without error; the Entity and Database Interfaces import from that environment, and a Database Operation called from it runs on Database's own default Instance storage; every declared dependency resolves to a recorded concrete version; nothing is published or installed outside the project."
+              depends_on: []
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T00:57:55Z", by: "009", event: "claimed", note: "No dependencies; claimed by Develop."}
+                - {at: "2026-10-13T00:58:04Z", by: "009", event: "done", note: "Created the Logic library at logic/ (pyproject.toml, empty logic/__init__.py, logic/services/__init__.py, logic/services/entity/__init__.py, placeholder README.md). uv sync created logic/.venv (covered by the root ignore entry .venv/) and logic/uv.lock. Resolved: database 0.1.0 (editable local path ../database), entity 0.1.0 (local path ../entity), and transitively sqlmodel 0.0.48, sqlalchemy 2.1.4, pydantic 2.14.1, pyyaml 6.0.3; dev group ruff 0.17.0, ty 0.0.86. Observed from the filesystem root: logic, entity.interface, and database.interface import; a read-only count through Database returns the 8 Currencies of Database's default store, whose Component root resolves to the repository's database directory; nothing installed outside the project."}
+                - {at: "2026-10-13T00:58:04Z", by: "009", event: "decision", note: "Unset: how Logic depends on its two providers. Chosen: database as an editable local path dependency and entity as a local path dependency, with no third-party dependency of Logic's own. Why: Database locates its Configuration and storage in its own Component directory (its documented consumer form); Logic imports only the two Interfaces."}
+                - {at: "2026-10-13T00:58:04Z", by: "009", event: "decision", note: "Unset: build backend and Python floor. Chosen: uv_build with the package at the Component root and requires-python >=3.14. Why: matches the Entity and Database Components."}
+        P3-G2:
+          id: "P3-G2"
+          title: "Entity Service Base"
+          description: "The one shared structure every Child Service inherits, holding one Database object and one Action per Entity Operation of Database's Interface group. Its Tasks are grouped because every Action shares that object and the same forwarding rules."
+          area: "Entity Service Base: the shared Actions"
+          does: "Any structure bound to an Entity can perform every Entity Operation of Database for that Entity through one shared Database object, with Database's answers and errors returned unchanged."
+          constraints: []
+          task_count: 2
+          tasks:
+            P3-G2-T1:
+              id: "P3-G2-T1"
+              source_id: "008"
+              title: "Mirror the Entity Operations that take an Entity class"
+              description: "Provide in Base one Action for each Entity Operation whose Entity parameter is an Entity class, supplying the bound Entity in its place and passing every other argument unchanged to the one Database object Base holds."
+              reason: "Callers select an Entity once through its Child Service instead of passing it on every call."
+              inputs:
+                - "Database's published Interface group and its Entity Operations"
+              skills: []
+              expected_result: "Base Actions for listing, getting by id, deleting, enabling, disabling, counting, summing, minimum, maximum, and truncating that answer exactly as Database does for the bound Entity."
+              acceptance: "For a structure bound to an Entity, each of these Actions has its Operation's name and its parameter names, order, and defaults without the Entity class, returns what the Operation returns for that Entity, and raises the Operation's errors unchanged; every Action of one bound structure uses the one Database object created with it; no Action adds validation, retry, or Instance selection."
+              depends_on:
+                - "P3-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T00:58:24Z", by: "009", event: "claimed", note: "Dependency P3-G1-T1 is done."}
+                - {at: "2026-10-13T00:58:53Z", by: "009", event: "done", note: "Generated logic/services/entity/base.py from Database Interface with the scratch generator gen_base.py (scope class): class BaseEntity creating one database_interface() in __init__, and the ten Actions whose Entity parameter is a class (list, get_by_id, delete, enable, disable, count, sum, min, max, truncate), each an explicit method passing self._entity and every other argument in order. Observed against an isolated copy of the Database Component: every Action's parameter names and defaults and its docstring equal Database's without the entity parameter; list with a Filter, an Order, and limit 1, get_by_id, count, sum, min, max, disable, enable, and a missing id return what Database returns for Asset; a Field of another Entity raises Database's InvalidInputError unchanged; two bound structures hold different Database objects, each used by all of its Actions. ruff format, ruff check, and ty check pass."}
+                - {at: "2026-10-13T00:58:53Z", by: "009", event: "decision", note: "Unset: how the Actions are produced without being named by hand. Chosen: a generator reads Database Interface's published methods, signatures, and docstrings and writes each Action as an explicit method; its output is formatted by ruff. Why: the Definition requires Actions derived from Database, each written out, none dispatched dynamically."}
+                - {at: "2026-10-13T00:58:53Z", by: "009", event: "decision", note: "Unset: annotations of the Actions. Chosen: Database's annotations with the Entity type variable as Any and query values qualified through database_value. Why: Base names no Entity, and its consumers reach the vocabulary only through Database's published groups."}
+            P3-G2-T2:
+              id: "P3-G2-T2"
+              source_id: "008"
+              title: "Mirror the Entity Operations that take an Entity instance"
+              description: "Provide in Base the Actions for the Entity Operations whose Entity parameter is an Entity instance, keeping that parameter, refusing an instance of another Entity with Database's Invalid Input error before Database is called, and otherwise forwarding unchanged."
+              reason: "Selecting a Child Service must reliably select the Entity a new or stored instance belongs to."
+              inputs:
+                - "Database's published Interface group and its Entity Operations"
+              skills: []
+              expected_result: "Base Actions for adding and updating that accept only instances of the bound Entity."
+              acceptance: "Adding and updating through a bound structure take their Operation's parameters unchanged and return what Database returns; an instance of another Entity is refused with the Invalid Input error and nothing reaches Database; Base then holds exactly one Action per Entity Operation of Database's Interface group, in Database's order, each written out as its own method, and none for a Command Operation."
+              depends_on:
+                - "P3-G2-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T00:58:53Z", by: "009", event: "claimed", note: "Dependency P3-G2-T1 is done."}
+                - {at: "2026-10-13T00:58:59Z", by: "009", event: "done", note: "Regenerated logic/services/entity/base.py with gen_base.py (scope all), adding add and update, which keep the entity parameter, pass self._own(entity) and every other argument in order, and refuse an instance of another Entity with Database's InvalidInputError. Observed against the isolated Database copy: Base's Actions are exactly add, update, list, get_by_id, delete, enable, disable, count, sum, min, max, truncate, Database's order of its Entity Operations, each an explicit function with no __getattr__ and none for execute_command; add and update keep Database's parameters and return Database's results; a User instance given to a Broker-bound structure is refused before the Database object is called."}
+                - {at: "2026-10-13T00:58:59Z", by: "009", event: "decision", note: "Unset: how an instance of another Entity is recognized. Chosen: its type must be exactly the bound Entity. Why: Entities are flat and not subclassed; the check concerns Entity identity only."}
+        P3-G3:
+          id: "P3-G3"
+          title: "Child Services"
+          description: "One Child Service per Entity of the Entity Collection, each inheriting Base and binding its own Entity. Grouped because together they make Entity Service complete for the Collection."
+          area: "Entity Service Child Services"
+          does: "Every Entity of the Entity Collection has exactly one Child Service that offers every Base Action for that Entity."
+          constraints: []
+          task_count: 1
+          tasks:
+            P3-G3-T1:
+              id: "P3-G3-T1"
+              source_id: "008"
+              title: "Provide one Child Service for every Entity"
+              description: "Provide a Child Service for each Entity of the Entity Collection that inherits Base and binds exactly that Entity."
+              reason: "Each Entity needs its own place for its Actions and for any Behavior specific to it."
+              inputs:
+                - "The Entity Collection and the Entities the Entity Interface publishes"
+                - "The Entity Service Base"
+              skills: []
+              expected_result: "One Child Service per Entity of the Entity Collection, each bound to its own Entity."
+              acceptance: "Each Entity of the Entity Collection has exactly one Child Service, whose name and unit follow the configured naming patterns and are valid and unique, that inherits Base, binds exactly its own Entity, and adds nothing to Base; listing through any Child Service returns that Entity's stored records."
+              depends_on:
+                - "P3-G2-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T00:59:10Z", by: "009", event: "claimed", note: "Dependency P3-G2-T2 is done."}
+                - {at: "2026-10-13T00:59:23Z", by: "009", event: "done", note: "Generated with the scratch generator gen_children.py from the Entity Collection: logic/services/entity/user.py, instance.py, currency.py, broker.py, asset.py, account_group.py, account.py, each holding class <Entity>(BaseEntity) with _entity = entity.<Entity> from 'from entity import interface as entity' and nothing else. Observed against the isolated Database copy: each Child inherits BaseEntity, binds exactly the Entity of its name, defines only _entity, and listing returns that Entity's stored records (User 1, Instance 1, Currency 8, Broker 1, Asset 4, AccountGroup 1, Account 1) as instances of that Entity. ruff format, ruff check, and ty check pass."}
+                - {at: "2026-10-13T00:59:23Z", by: "009", event: "decision", note: "Unset: how the Child naming patterns <entity> resolve. Chosen: the structure takes the Entity's exported name (AccountGroup) and the unit its snake_case form (account_group), with generation stopping on an invalid, reserved (base, interface), or colliding name. Why: Entity Service Preferences select snake_case identifiers and the child form class <Entity>(BaseEntity)."}
+        P3-G4:
+          id: "P3-G4"
+          title: "Entity Service Interface"
+          description: "The gateway callers import from, publishing the Child Services, their Entities, and Database's Value, Instance, and Error groups. Kept separate because it publishes completed work rather than defining Actions."
+          area: "Entity Service Interface"
+          does: "A caller can call every Action, build requests, and catch errors through Entity Service Interface alone."
+          constraints: []
+          task_count: 1
+          tasks:
+            P3-G4-T1:
+              id: "P3-G4-T1"
+              source_id: "008"
+              title: "Publish the Entity Service Interface"
+              description: "Publish the Service group holding every Child Service, the Entity group holding the Entity each binds under the same name, and Database's Value, Instance, and Error groups, and nothing else."
+              reason: "Callers need everything to use Entity Service without importing Entity or Database."
+              inputs:
+                - "Every Child Service"
+                - "Database's published Value, Instance, and Error groups"
+              skills: []
+              expected_result: "An Interface holding exactly the Service and Entity groups and the three Database groups."
+              acceptance: "A caller imports the five published names and nothing else is published; Service holds exactly one Child Service per Entity of the Entity Collection; each Entity group member is the identical object the Entity Interface publishes, under its Child's name; each Database group is the identical object Database Interface publishes; loading the Interface opens no connection and creates no data or file."
+              depends_on:
+                - "P3-G3-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T00:59:23Z", by: "009", event: "claimed", note: "Dependency P3-G3-T1 is done."}
+                - {at: "2026-10-13T00:59:51Z", by: "009", event: "done", note: "Generated logic/services/entity/interface.py with the scratch generator gen_interface.py from the Entity Collection: imports database_error, database_instance, and database_value from Database Interface, the namespace classes Service (each Child class) and Entity (each Child's bound _entity, under the Child's name) in Entity Collection order, and __all__ with exactly those five names. Observed against the isolated Database copy: loading it creates no file in the store's directory, no thread, and no engine; __all__ is the five names; Service and Entity hold exactly the seven Entity names in Collection order; every Entity member is the object entity.interface publishes and the three Database groups are Database Interface's own objects; Service.User().list with a database_value.Filter on Entity.User.is_active returns ['Admin']; adding an Entity.Account through Service.User raises database_error.InvalidInputError."}
+                - {at: "2026-10-13T00:59:51Z", by: "009", event: "decision", note: "Unset: how the Entity group reaches each Entity. Chosen: from each Child's bound Entity, so the group always holds exactly what each Child binds. Why: the contract defines the group as the Entity every Child Service binds."}
+        P3-G5:
+          id: "P3-G5"
+          title: "Logic Interface"
+          description: "Logic's single outward surface, publishing every listed Service under its configured name. Kept separate because Logic itself holds no Behavior."
+          area: "Logic Interface"
+          does: "A consumer reaches every Logic Service through Logic Interface by the Service's configured name."
+          constraints: []
+          task_count: 1
+          tasks:
+            P3-G5-T1:
+              id: "P3-G5-T1"
+              source_id: "008"
+              title: "Publish every listed Service through Logic Interface"
+              description: "Publish one entry for every Service the Logic Preferences list, under that Service's configured name, each being that Service's own Interface."
+              reason: "Consumers find every Service in one place without depending on where it lives inside Logic."
+              inputs:
+                - "The Entity Service Interface"
+              skills: []
+              expected_result: "A Logic Interface holding exactly one entry per listed Service."
+              acceptance: "A consumer imports Logic Interface and finds exactly one entry for every listed Service under its configured name and nothing else; each entry is the identical Interface object of its Service; no Service imports Logic Interface, and no Service but Entity Service imports Database Interface; importing Logic Interface has no storage side effect."
+              depends_on:
+                - "P3-G4-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T00:59:51Z", by: "009", event: "claimed", note: "Dependency P3-G4-T1 is done."}
+                - {at: "2026-10-13T01:00:07Z", by: "009", event: "done", note: "Wrote logic/interface.py: 'from logic.services.entity import interface as Entity' and __all__ = ['Entity'], following the Logic Preferences' interface form for the one listed Service, named by Entity Service Preferences (Entity). Observed against the isolated Database copy: __all__ is ['Entity']; logic.interface.Entity is the Entity Service Interface module itself; importing it adds nothing to the store's directory; logic/__init__.py is empty; under logic/services only the entity Service exists, no unit imports Logic Interface, and only Entity Service units import Database Interface."}
+        P3-G6:
+          id: "P3-G6"
+          title: "Documentation"
+          description: "The Entity Service's own documentation and Logic's root documentation. Grouped because both describe finished public surfaces for consumers rather than producing behavior."
+          area: "Entity Service and Logic documentation"
+          does: "A consumer can understand, set up, use, and verify Logic and its Entity Service from their documentation alone."
+          constraints: []
+          task_count: 2
+          tasks:
+            P3-G6-T1:
+              id: "P3-G6-T1"
+              source_id: "008"
+              title: "Document the Entity Service"
+              description: "Write the Entity Service documentation with its required sections, covering every published group and member, how a caller imports a Child Service and how a Child Service adds its own Behavior, and how to verify Entity Service against the Entity Collection and Database's Interface group."
+              reason: "Callers learn the Entity Service contract without reading Base or the Child Services."
+              inputs:
+                - "The Entity Service Interface"
+              skills: []
+              expected_result: "Entity Service documentation that describes its current Interface completely and accurately."
+              acceptance: "The documentation presents its required sections in order; covers every Child Service and its Actions, every Entity, and every member of the three Database groups, each with an example; its examples work as written; and it contains no real credential."
+              depends_on:
+                - "P3-G4-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:00:07Z", by: "009", event: "claimed", note: "Dependency P3-G4-T1 is done."}
+                - {at: "2026-10-13T01:00:52Z", by: "009", event: "done", note: "Wrote logic/services/entity/README.md (the Entity Service directory) with Overview, Interface (Service with every Child Service and an example for each, the twelve Actions in a table with an example for each, Entity with every member, database_value, database_instance, and database_error each with an example), Use, and Verify; ruff formatted its code blocks. Observed: all 10 Python examples, run in fresh interpreters against an isolated copy of the Database store, print exactly what the text states; the Verify example prints verified; only placeholder values appear."}
+                - {at: "2026-10-13T01:00:52Z", by: "009", event: "decision", note: "Unset: where the documentation's examples run. Chosen: against Database's default Instance as a consumer would, with changing examples undoing their own changes (the truncate example re-adds the Assets with new ids) and evidence gathered on an isolated copy of the store. Why: Entity Service has no storage of its own, and Develop changes nothing outside Logic."}
+            P3-G6-T2:
+              id: "P3-G6-T2"
+              source_id: "008"
+              title: "Document the Logic Component"
+              description: "Write Logic's root documentation with its required sections, covering what Logic Interface publishes, links to each Service's own documentation and authorities, setup beside the Entity and Database libraries, use, verification, and troubleshooting."
+              reason: "Consumers learn how to reach Logic's Services without reading its internals."
+              inputs:
+                - "The Logic Interface"
+                - "The Entity Service documentation"
+              skills: []
+              expected_result: "Root documentation that describes the current Logic Component completely and accurately."
+              acceptance: "The documentation presents its required sections in order, lists every name Logic Interface publishes, links each Service's documentation, Definition, and Preferences without copying its contract, and every example runs as shown through Logic Interface."
+              depends_on:
+                - "P3-G5-T1"
+                - "P3-G6-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:00:52Z", by: "009", event: "claimed", note: "Dependencies P3-G5-T1 and P3-G6-T1 are done."}
+                - {at: "2026-10-13T01:01:39Z", by: "009", event: "done", note: "Wrote logic/README.md with Overview, Interface (the one published name Entity), Services (links to the Entity Service README, Definition, and Preferences; the reserved MT5 Service noted as not yet published), Setup, Use, Verify, and Troubleshooting; ruff formatted its code blocks. Observed: all 3 Python examples run through Logic Interface against an isolated copy of the Database store and print what the text states; the Verify shell steps (uv sync --locked, ruff format --check, ruff check, ty check) pass; the documented no-such-table case raises ExecutionError when the store is unprepared. Cache directories created by these checks (__pycache__, .ruff_cache) were removed; the real Database store's hash is unchanged."}
+    P4:
+      id: "P4"
+      title: "API"
+      order: 4
+      target: "API"
+      does: "The API Component exists as the project's executable network boundary, serving Entity Group beneath its segment of the configured Base URL, with one Adapter per Entity and one Endpoint per Action of Entity Service, reached only through Logic Interface."
+      constraints: []
+      task_count: 10
+      groups:
+        P4-G1:
+          id: "P4-G1"
+          title: "Component setup"
+          description: "Establishes API as its own executable Component, connected to the Logic library it serves, so that its Configuration, serving rules, Group, and Bootstrap have a place to be built and their dependencies resolve."
+          area: "Component packaging and environment"
+          does: "The API Component exists as a project-internal executable package whose environment resolves its selected API package and the Logic library."
+          constraints: []
+          task_count: 1
+          tasks:
+            P4-G1-T1:
+              id: "P4-G1-T1"
+              source_id: "012"
+              title: "Establish the API executable package"
+              description: "Create the API Component as a project-internal executable package with an isolated environment in which its selected API package and its Connection to the Logic library resolve to recorded concrete versions, containing no Group yet."
+              reason: "Every later Task builds inside this Component, and Entity Group reaches the application only through the Logic library."
+              inputs:
+                - "The Logic library and its published Interface"
+              skills:
+                - "fastapi"
+              expected_result: "An empty, importable API package whose environment resolves its API package and the Logic library from the repository."
+              acceptance: "The package installs from the repository into its isolated environment and imports without error; Logic Interface imports there, and an Action called through it answers from Database's own default Instance storage; every declared dependency resolves to a recorded concrete version; nothing is published or installed outside the project."
+              depends_on: []
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:20:33Z", by: "013", event: "claimed", note: "No dependencies; claimed by Develop."}
+                - {at: "2026-10-13T01:20:51Z", by: "013", event: "done", note: "Created the API Component at api/ (pyproject.toml, empty api/__init__.py, api/groups/__init__.py, api/groups/entity/__init__.py, placeholder README.md). uv sync created api/.venv (covered by the root ignore entry .venv/) and api/uv.lock. Resolved: fastapi[standard] 0.143.0 (with uvicorn 0.54.0, fastapi-cli 0.0.32, httpx 0.28.1), logic 0.1.0 (local path ../logic), and through Logic's own sources database 0.1.0 (editable ../database) and entity 0.1.0; dev group ruff 0.17.0, ty 0.0.86. Observed from the filesystem root: api and logic.interface import; Entity.Service.Currency().count() returns 8 from Database's default store, whose Component root resolves to the repository's database directory (read only); nothing installed outside the project."}
+                - {at: "2026-10-13T01:20:51Z", by: "013", event: "decision", note: "Unset: how API depends on the application. Chosen: logic as a local path dependency only, with fastapi[standard] as the selected API package at a lower bound of its resolved version. Why: Development declares only the api-to-logic Connection; uv applies Logic's own sources, so Database stays editable and keeps its own Configuration and storage."}
+        P4-G2:
+          id: "P4-G2"
+          title: "Runtime Configuration"
+          description: "The runtime values that identify and run the API, generated once from the API Preferences in the shape of the API Configuration Structure. Kept separate because Bootstrap reads every changeable value only from it."
+          area: "API runtime Configuration"
+          does: "API has a complete runtime Configuration from which its Base URL, identity, workers, and documentation addresses are read."
+          constraints: []
+          task_count: 1
+          tasks:
+            P4-G2-T1:
+              id: "P4-G2-T1"
+              source_id: "012"
+              title: "Generate the runtime Configuration"
+              description: "Generate the runtime Configuration with every value the API Configuration Structure defines from the API Preferences' network, identity, and runtime defaults, including a URL Key generated once and kept on every later generation."
+              reason: "An operator finds and changes the API's address and behavior in one place, never in source."
+              inputs:
+                - "The API Preferences' network, identity, and runtime defaults"
+                - "The API Configuration Structure"
+              skills: []
+              expected_result: "A runtime Configuration holding every Structure value, with a non-empty URL Key and a Base URL derived from its parts."
+              acceptance: "The Configuration holds every value the Structure defines, each even when equal to its default; its URL Key is a random URL-safe value of the configured length and is unchanged when the Configuration is generated again; its Base URL and documentation addresses equal those formed from the transport protocol, host, port, and key; its port is a valid port and its workers a positive integer."
+              depends_on:
+                - "P4-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:21:06Z", by: "013", event: "claimed", note: "Dependency P4-G1-T1 is done."}
+                - {at: "2026-10-13T01:21:15Z", by: "013", event: "done", note: "Generated api/config.yaml with the scratch generator gen_api_config.py from the API Preferences' configuration defaults: title, description, key, host, port, workers, transport_protocol, url, and documentation (swagger, redoc), each written even when equal to its default. Observed: the key is 32 URL-safe characters; running the generator again kept the same key; url equals the value formed from transport protocol, host, port, and key, and both documentation addresses are url plus /docs and /redoc; port 8000 is valid and workers 2 positive. The key value is not recorded here."}
+                - {at: "2026-10-13T01:21:15Z", by: "013", event: "decision", note: "Unset: how the URL Key is produced and kept. Chosen: secrets.token_urlsafe truncated to the configured length, generated only when the Configuration holds no key, so every later generation keeps it. Why: the Principle requires a random URL-safe key generated once and never regenerated."}
+                - {at: "2026-10-13T01:21:15Z", by: "013", event: "decision", note: "Unset: the scheme spelling inside url. Chosen: the transport protocol in lower case (http). Why: a URL scheme is written in lower case; the transport_protocol value itself stays HTTP."}
+        P4-G3:
+          id: "P4-G3"
+          title: "Endpoint serving rules"
+          description: "The common HTTP rules API applies to every Group's Endpoints around their Handlers: turning Action errors into Problem Details and turning non-simple request values into the source's own types. Grouped because both are part of serving, owned by API, and shared by every Adapter."
+          area: "API common Endpoint rules"
+          does: "Every Endpoint receives its non-simple Parameters as the source's own values and returns every Action error as Problem Details."
+          constraints: []
+          task_count: 2
+          tasks:
+            P4-G3-T1:
+              id: "P4-G3-T1"
+              source_id: "012"
+              title: "Return every Action error as Problem Details"
+              description: "Provide the error mapping that sends every error an Endpoint returns as Problem Details whose type is the error's class name and whose status follows the API Preferences' error table."
+              reason: "Every client reads every Group's errors the same way, with the error's class unchanged."
+              inputs:
+                - "The Database error kinds Entity Service republishes"
+                - "The API Preferences' error table"
+              skills:
+                - "fastapi"
+              expected_result: "A shared error mapping that turns each error kind into its Problem Details response."
+              acceptance: "An Invalid Input error is answered with status 422, an Inactive Instance or Connection Failure error with 503, and an Execution, Declaration Mismatch, or Configuration error with 500, and an error the table does not name with 500; every such answer has the Problem Details media type, the error's class name as its type, and the error's message, and carries no connection value or credential."
+              depends_on:
+                - "P4-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:21:06Z", by: "013", event: "claimed", note: "Dependency P4-G1-T1 is done."}
+                - {at: "2026-10-13T01:22:36Z", by: "013", event: "done", note: "Wrote the error part of api/endpoints.py: ERROR_STATUS from the API Preferences' error table and problem(request, error), which answers application/problem+json with type and title set to the error's class name, the status from the table or 500, and detail. Observed with a scratch test app and FastAPI's test client: InvalidInputError 422; InactiveInstanceError and ConnectionFailureError 503; ExecutionError, DeclarationMismatchError, ConfigurationError, and the unnamed SetupError and RuntimeError 500; each with the Problem Details media type and its class name as type; a malformed request answered 422 as RequestValidationError. Also declared pydantic>=2.14.1, which api/endpoints.py imports directly."}
+                - {at: "2026-10-13T01:22:36Z", by: "013", event: "decision", note: "Unset: the status of a request FastAPI itself rejects before the Handler. Chosen: 422 under its own class name RequestValidationError. Why: it is invalid input, which the error table sets to 422."}
+                - {at: "2026-10-13T01:22:36Z", by: "013", event: "decision", note: "Unset: the detail of each Problem Details answer. Chosen: the source error's own message (already free of connection values and credentials), the request validation locations and messages, and a fixed text for any other error. Why: an unexpected error's text could carry internal values."}
+                - {at: "2026-10-13T01:22:36Z", by: "013", event: "decision", note: "Unset: where API's common Endpoint rules live. Chosen: one api/endpoints.py module beside bootstrap, the Architecture's Endpoints entity. Why: the rules are API's, shared by every Group, and the Directory Structure gives Groups only Adapters and documentation."}
+            P4-G3-T2:
+              id: "P4-G3-T2"
+              source_id: "012"
+              title: "Convert non-simple Parameters before their Handler"
+              description: "Provide the conversion that turns each non-simple request value into the source's own value before a Handler runs: an Entity object from its fields, a Field reference from its name on the bound Entity, a Filter and an Order from their objects, and an Instance from its name."
+              reason: "Handlers only call their Action, so every value must already be the type the Action takes."
+              inputs:
+                - "The Entities and Database value groups Entity Service republishes"
+                - "The API Preferences' value table"
+              skills:
+                - "fastapi"
+              expected_result: "A shared conversion every Adapter uses for its non-simple Parameters."
+              acceptance: "A JSON object of an Entity's fields becomes that Entity; a Field name of the bound Entity becomes that Entity's Field reference and an unknown name fails with the source's Invalid Input error; a Filter object and an Order object become the source's Filter and Order with their enumeration members; an Instance name becomes its Instance member; the conversion happens before the Handler is called and never changes a value's meaning."
+              depends_on:
+                - "P4-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:21:06Z", by: "013", event: "claimed", note: "Dependency P4-G1-T1 is done."}
+                - {at: "2026-10-13T01:22:36Z", by: "013", event: "done", note: "Wrote the conversion part of api/endpoints.py as FastAPI dependencies resolved before a route's Handler: entity_in(bound) builds the bound Entity from a JSON object of its fields with Entity.from_json; filters_in and orders_in turn {field, operator, value} and {field, direction} objects into the source's Filter and Order with Field references of the bound Entity, decoding decimal, datetime, date, time, and uuid values from their text forms; field_in turns a Field name into its reference; instance_in_query and instance_in_body turn a DatabaseInstance member name into the member; and ResultResponse sends results with every Entity in its own JSON form and decimals as text. Observed through the test app: an Account object becomes an Account with Decimal('10.25'); filters become Filters on Account.balance with Decimal('1.5') and an IN list; orders keep DESCENDING and default ASCENDING; field becomes Account.balance; SQLITE becomes the member; an unknown Field name answers 422 InvalidInputError, an unknown Instance name 500 ConfigurationError, an invalid Entity object 422 InvalidInputError naming only the Field, an unknown operator 422."}
+                - {at: "2026-10-13T01:22:36Z", by: "013", event: "decision", note: "Unset: forms the value table does not name. Chosen: FilterCombination and OrderDirection travel as their member names (equal to their values) and are validated by the request model; every Body Parameter is embedded under its own name. Why: like DatabaseInstance, an enumeration travels by name, and embedding keeps every Parameter's name on the wire."}
+                - {at: "2026-10-13T01:22:36Z", by: "013", event: "decision", note: "Unset: the error for an unknown Instance name. Chosen: the source's ConfigurationError (invalid configuration or Instance). Why: Database raises that kind for a value that is not a DatabaseInstance member."}
+                - {at: "2026-10-13T01:22:36Z", by: "013", event: "decision", note: "Unset: how results are serialized. Chosen: a response class encoding each Entity with its own to_json form and decimals, UUIDs, and dates as text. Why: the default JSON encoder turns decimals into floats, which would change the Action's result."}
+        P4-G4:
+          id: "P4-G4"
+          title: "Entity Group Adapters"
+          description: "One standalone Adapter for every Entity Child Service of Entity Service, each writing out one Endpoint per Action of its Child Service. Grouped because together they make Entity Group a complete representation of Entity Service."
+          area: "Entity Group: Adapters and their Endpoints"
+          does: "Every Entity has one Adapter, and every Action of its Child Service has one Endpoint that calls it through Logic Interface and returns its result and errors unchanged."
+          constraints: []
+          task_count: 2
+          tasks:
+            P4-G4-T1:
+              id: "P4-G4-T1"
+              source_id: "012"
+              title: "Provide an Adapter for every Entity with its reading Endpoints"
+              description: "Provide one Adapter per Entity Child Service, bound to its Entity, holding one explicitly written Endpoint for each Action that reads: listing, getting by id, counting, summing, minimum, and maximum."
+              reason: "Clients read every Entity's records through the API without naming the Entity again."
+              inputs:
+                - "Entity Service's Child Services and their Actions through Logic Interface"
+                - "The shared error mapping and Parameter conversion"
+              skills:
+                - "fastapi"
+              expected_result: "One Adapter per Entity serving its reading Endpoints."
+              acceptance: "Each Entity has exactly one Adapter named by the Adapter pattern; each reading Action has one Endpoint whose Method follows the verb table, or the default when a Parameter cannot travel in Query, whose Path is the operation's name with an id segment when it takes an id, and whose Parameters keep the Action's names, requirements, and defaults in their required places; a request returns exactly what the Action returns for that Entity."
+              depends_on:
+                - "P4-G3-T1"
+                - "P4-G3-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:23:17Z", by: "013", event: "claimed", note: "Dependencies P4-G3-T1 and P4-G3-T2 are done."}
+                - {at: "2026-10-13T01:24:01Z", by: "013", event: "done", note: "Generated api/groups/entity/user.py, instance.py, currency.py, broker.py, asset.py, account_group.py, account.py with the scratch generator gen_adapters.py (scope read), which reads Entity Service's Child Services and their Actions through Logic Interface and applies the API Preferences' verb table, default Method, Path rule, and placement rule. Each Adapter binds its Entity (Entity.Entity.<Entity>), creates its Child Service once, and holds an APIRouter with prefix /<adapter> and tag 'Entity · <adapter>' and six explicitly written route functions: POST /list, GET /get_by_id/{id}, POST /count, /sum, /min, /max (list, count, sum, min, and max take filters, which Query cannot carry, so they use POST). Parameters keep the Action's names in Action order, placed through api/endpoints.py dependencies, to which combination_in_* and limit_in_* were added. Observed with a scratch app on an isolated Database copy: a filtered, ordered, limited list returns exactly the Action's result in each Entity's JSON form; get_by_id returns the Entity or null and accepts ?instance=SQLITE; count, sum, min, and max return 1/8, 15, 0.0001, 5, and the decimal sum '0'; a sum over a text Field answers 422 InvalidInputError; OR combination works; ruff format, ruff check, and ty check pass."}
+                - {at: "2026-10-13T01:24:01Z", by: "013", event: "decision", note: "Unset: how the Adapter naming pattern <entity> and the Group segment resolve. Chosen: the Adapter unit and segment are the Entity's snake_case name (account_group) and the Group segment is the configured name in lower case (entity). Why: API Preferences select snake_case identifiers."}
+                - {at: "2026-10-13T01:24:01Z", by: "013", event: "decision", note: "Unset: how simple Parameters are placed while keeping the Action's parameter order. Chosen: every Parameter except id is declared through a small placement dependency (Query or Body by Method). Why: Python cannot place a required Parameter after a defaulted one, and the order must stay the Action's."}
+            P4-G4-T2:
+              id: "P4-G4-T2"
+              source_id: "012"
+              title: "Add the changing Endpoints to every Adapter"
+              description: "Add to each Adapter one explicitly written Endpoint for each Action that changes records: adding, updating, deleting, enabling, disabling, and truncating."
+              reason: "Clients manage every Entity's records through the API."
+              inputs:
+                - "Entity Service's Child Services and their Actions through Logic Interface"
+              skills:
+                - "fastapi"
+              expected_result: "Every Adapter serves one Endpoint for every Action of its Child Service."
+              acceptance: "Each changing Action has one Endpoint with the Method the verb table or default gives it and the Path and Parameter placement the rules require; adding and updating take the Entity as a JSON object of its fields and return the stored Entity; every Adapter then has exactly one Endpoint per Action of its Child Service and nothing else, written out in its own unit with no shared base or generated route; every Handler only calls its Action through Logic Interface."
+              depends_on:
+                - "P4-G4-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:24:01Z", by: "013", event: "claimed", note: "Dependency P4-G4-T1 is done."}
+                - {at: "2026-10-13T01:25:14Z", by: "013", event: "done", note: "Regenerated the seven Adapters with gen_adapters.py (scope all): each now holds twelve explicitly written route functions in the Child Service's Action order: POST /add, PUT /update, POST /list, GET /get_by_id/{id}, DELETE /delete/{id}, PATCH /enable/{id}, PATCH /disable/{id}, POST /count, /sum, /min, /max, DELETE /truncate. Observed with a scratch app on an isolated Database copy: add with {entity: {...}} returns the stored Broker with its id; update returns the replaced description; disable and enable (with instance SQLITE in Body) return the final is_active; delete returns the deleted record, then null; a duplicate name answers 500 ExecutionError and an object carrying an id 422 InvalidInputError; a decimal balance updates exactly to 1050.25; truncate returns 4 and count then 0. In every Adapter the route functions equal the Child Service's Actions in order, the unit imports only typing, fastapi, api, and logic.interface, and holds no class or loop. ruff format, ruff check, and ty check pass."}
+        P4-G5:
+          id: "P4-G5"
+          title: "Bootstrap and serving"
+          description: "The single runtime entry point that composes API from its Configuration and serves every listed Group, together with the interactive documentation of what it serves. Grouped because both concern the one running boundary rather than any Group."
+          area: "Bootstrap and the running API"
+          does: "One running API serves Entity Group beneath its segment of the Base URL, with interactive documentation of every served Endpoint."
+          constraints: []
+          task_count: 2
+          tasks:
+            P4-G5-T1:
+              id: "P4-G5-T1"
+              source_id: "012"
+              title: "Compose and serve every Group from the runtime Configuration"
+              description: "Provide Bootstrap, which reads the runtime Configuration, creates the API, registers every listed Group beneath its segment of the Base URL, and starts serving with the configured workers."
+              reason: "Clients need one running address for every capability area."
+              inputs:
+                - "The runtime Configuration"
+                - "Every Entity Group Adapter"
+              skills:
+                - "fastapi"
+              expected_result: "A running API whose only Endpoints are the Entity Group's, beneath its segment of the Base URL."
+              acceptance: "Started from its entry point, API listens on the configured host and port and serves every Entity Group Endpoint at the Base URL, including its URL Key, followed by the Group segment and the Adapter segment; a request without the key or outside a Group finds nothing; API serves no Endpoint of its own; every Group, Adapter, and Method-and-Path combination is unique; Bootstrap reads only the runtime Configuration at runtime."
+              depends_on:
+                - "P4-G2-T1"
+                - "P4-G4-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:25:44Z", by: "013", event: "claimed", note: "Dependencies P4-G2-T1 and P4-G4-T2 are done."}
+                - {at: "2026-10-13T01:26:47Z", by: "013", event: "done", note: "Generated api/bootstrap.py with the scratch generator gen_bootstrap.py from the API Preferences' Group list and Entity Group's Adapters (read through Logic Interface): it reads config.yaml beside the package, creates one FastAPI app (title, description, ResultResponse default, CORS middleware from the API Preferences, the Problem Details handlers for source errors, request validation errors, and any other error), and includes each Adapter router beneath /<key>/entity; main() runs uvicorn with the configured host, port, and workers. Declared pyyaml>=6.0.3 and uvicorn>=0.54.0, which Bootstrap imports directly, and the console entry point api. Observed after starting it with the api entry point against an isolated Database copy: a parent and two worker processes started on 127.0.0.1:8000; count, get_by_id, and a filtered, ordered list answer beneath the Base URL with its key, the entity segment, and the Adapter segment; the same path without the key, a path outside the Group, and the Base URL itself answer 404; a sum over text answers 422 application/problem+json InvalidInputError; the served description holds 84 operations, all beneath /<key>/entity/, unique, across the seven Adapter segments. The server was then stopped."}
+                - {at: "2026-10-13T01:26:47Z", by: "013", event: "decision", note: "Unset: how API is started. Chosen: a console entry point api calling uvicorn.run with the import string, host, port, and workers from the runtime Configuration. Why: several workers require an import string, and every runtime value must come from the Configuration."}
+            P4-G5-T2:
+              id: "P4-G5-T2"
+              source_id: "012"
+              title: "Serve the interactive documentation by Group and Adapter"
+              description: "Enable the API package's interactive documentation of the served Endpoints, with one section per Group and, within it, one section per Adapter."
+              reason: "Every client can discover and try every Endpoint without reading source."
+              inputs:
+                - "The running API"
+              skills:
+                - "fastapi"
+              expected_result: "Interactive documentation listing every served Endpoint, sectioned by Group and Adapter."
+              acceptance: "The documentation addresses in the runtime Configuration answer; the served description lists every Entity Group Endpoint and nothing else, each in the section of its Adapter, with the Adapter sections gathered under the Group."
+              depends_on:
+                - "P4-G5-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:26:47Z", by: "013", event: "claimed", note: "Dependency P4-G5-T1 is done."}
+                - {at: "2026-10-13T01:27:43Z", by: "013", event: "done", note: "Regenerated api/bootstrap.py with gen_bootstrap.py: the app is an Application(FastAPI) whose openapi() adds x-tagGroups, one entry per Group (Entity) holding the tags of its Adapter routers; Swagger UI and ReDoc are served at the Base URL's /docs and /redoc, the description at /openapi.json. Observed after starting API with its entry point against an isolated Database copy: both documentation addresses from config.yaml answer 200; the description has one tag group, Entity, holding the seven sections 'Entity · user' … 'Entity · account'; every operation sits in its Adapter's section; it lists the 84 Entity Group operations and nothing else. The server was then stopped."}
+                - {at: "2026-10-13T01:27:43Z", by: "013", event: "decision", note: "Unset: how Adapter sections are gathered under their Group. Chosen: the x-tagGroups extension, built from the Adapter routers' own tags, added by overriding openapi in a FastAPI subclass. Why: API Preferences name x-tagGroups; a subclass keeps the override typed."}
+        P4-G6:
+          id: "P4-G6"
+          title: "Documentation"
+          description: "The Entity Group's own documentation and API's root documentation. Grouped because both describe the finished served surface for clients rather than producing behavior."
+          area: "Entity Group and API documentation"
+          does: "A client can start the API, reach every Endpoint, and verify what is served from the documentation alone."
+          constraints: []
+          task_count: 2
+          tasks:
+            P4-G6-T1:
+              id: "P4-G6-T1"
+              source_id: "012"
+              title: "Document the Entity Group"
+              description: "Write the Entity Group documentation with its required sections, covering every Entity's Endpoints with Method, Path, and Parameters, how a client calls an Endpoint, and how to verify that every Entity and Action has its Endpoint."
+              reason: "Clients learn the Entity Group surface without reading its Adapters."
+              inputs:
+                - "The running API and its Entity Group Endpoints"
+              skills:
+                - "fastapi"
+              expected_result: "Entity Group documentation that describes its current Endpoints completely and accurately."
+              acceptance: "The documentation presents its required sections in order; lists every Entity's Endpoints with Method, Path, and Parameters, each with a request example; its examples answer as shown against the running API; and it contains no real credential or URL Key."
+              depends_on:
+                - "P4-G5-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:27:43Z", by: "013", event: "claimed", note: "Dependency P4-G5-T1 is done."}
+                - {at: "2026-10-13T01:29:25Z", by: "013", event: "done", note: "Wrote api/groups/entity/README.md (the Entity Group directory) with Overview, Endpoints (the seven Adapters with an example for each, the twelve Endpoints with Method, Path, Parameters, and result, and an example for each), Use (request form and Problem Details), and Verify (comparing the served description with every Child Service's Actions through Logic Interface). Observed against API started with its entry point on a freshly copied Database store: every one of the 16 shell example groups printed exactly the stated output and the Verify example printed verified; the stated Problem Details line was corrected to the compact JSON API sends; examples use BASE read from config.yaml, and the README holds no URL Key or real credential. A second run on the same store differs only in ids, as the README states its examples assume a freshly prepared database; the real Database store's hash is unchanged."}
+                - {at: "2026-10-13T01:29:25Z", by: "013", event: "decision", note: "Unset: how the documentation shows the Base URL without its key. Chosen: every example reads BASE from config.yaml first. Why: the examples run as written while the README never contains the URL Key."}
+            P4-G6-T2:
+              id: "P4-G6-T2"
+              source_id: "012"
+              title: "Document the API Component"
+              description: "Write API's root documentation with its required sections, covering every runtime Configuration value and how the Base URL is formed, every Group beneath its segment with a link to its documentation, setup and start, how a client reaches a Group, verification, and troubleshooting."
+              reason: "Operators and clients learn how to run and reach API without reading its source."
+              inputs:
+                - "The runtime Configuration"
+                - "The Entity Group documentation"
+              skills: []
+              expected_result: "Root documentation that describes the current API Component completely and accurately."
+              acceptance: "The documentation presents its required sections in order, explains every Configuration value and the Base URL, links the Entity Group documentation without copying its Endpoints, its request examples answer as shown against the running API, and it shows no real URL Key."
+              depends_on:
+                - "P4-G5-T2"
+                - "P4-G6-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:29:25Z", by: "013", event: "claimed", note: "Dependencies P4-G5-T2 and P4-G6-T1 are done."}
+                - {at: "2026-10-13T01:30:03Z", by: "013", event: "done", note: "Wrote api/README.md with Overview (one request example), Configuration (every config.yaml value and how the Base URL and documentation addresses are formed), Groups (Entity beneath entity, linking the Entity Group documentation without copying its Endpoints; the reserved MT5 Group noted), Setup, Use, Verify, and Troubleshooting. Observed against API started with its entry point on an isolated Database copy: every shell example and the Python Verify example run as shown (failures: 0); the Verify shell steps (uv sync --locked, ruff format --check, ruff check, ty check) pass; the README holds no URL Key. API was then stopped, and cache directories created by the checks (__pycache__, .ruff_cache) were removed; the real Database store's hash is unchanged."}
+    P5:
+      id: "P5"
+      title: "Presentation"
+      order: 5
+      target: "Presentation"
+      does: "The Presentation Component exists as the web dashboard with a menu and navigation, giving every Entity one page through which its records are listed, viewed, searched, filtered, ordered, added, edited, enabled, disabled, and deleted, reaching the application only through API."
+      constraints: []
+      task_count: 12
+      groups:
+        P5-G1:
+          id: "P5-G1"
+          title: "Project setup"
+          description: "Establishes Presentation as its own web application project, so that its metadata, API Access, shell, shared parts, and pages have a place to be built and its packages resolve."
+          area: "Component project and environment"
+          does: "The Presentation project exists with its selected client technology resolved, and builds and starts as an empty application that knows the API address from one setting."
+          constraints: []
+          task_count: 1
+          tasks:
+            P5-G1-T1:
+              id: "P5-G1-T1"
+              source_id: "017"
+              title: "Establish the Presentation web application project"
+              description: "Create the Presentation Component as a project-internal web application of the selected client, with its packages resolved to recorded concrete versions and the API address read from one setting, containing no page yet."
+              reason: "Every later Task builds inside this project, and API Access needs the API address from one place."
+              inputs:
+                - "The selected client profile in the Presentation Preferences"
+                - "The Base URL API's runtime Configuration states"
+              skills:
+                - "run"
+              expected_result: "An empty web application that installs, builds, and starts, with its API address taken from one setting."
+              acceptance: "The project installs its packages from their lockfile, builds without error, and starts serving an empty application; every package resolves to a recorded concrete version; the API address is read from one setting and appears nowhere in source; nothing is published or installed outside the project."
+              depends_on: []
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:50:07Z", by: "019", event: "claimed", note: "No dependencies; claimed by Develop."}
+                - {at: "2026-10-13T01:54:49Z", by: "019", event: "done", note: "Created the Presentation project at presentation/: package.json (scripts dev, build, preview, typecheck), package-lock.json, tsconfig.json (strict), vite.config.ts, index.html, src/main.tsx, src/App.tsx, src/vite-env.d.ts, api/address.ts (reads and validates the one VITE_API_URL setting), and .env holding VITE_API_URL with API's Base URL from api/config.yaml (excluded by the root ignore entry .env; node_modules/ and dist/ are excluded too). npm resolved: react 19.3.0, react-dom 19.3.0, @refinedev/core 5.0.12, @refinedev/antd 6.0.3, @refinedev/react-router 2.0.4, react-router 7.18.4, antd 5.29.3, @ant-design/icons 5.6.1, dayjs 1.11.23, @tanstack/react-query 5.104.2, i18next 26.4.4, react-i18next 17.0.16, zod 4.6.7, vazirmatn 33.0.3; dev typescript 5.9.3, vite 8.3.4, @vitejs/plugin-react 6.1.2, @types/react 19.3.0, @types/react-dom 19.3.0, openapi-typescript 7.13.0. Observed: tsc passes and vite build succeeds (its dist output was removed); the dev server on 127.0.0.1:5173 serves the empty application; the API address appears in no source file."}
+                - {at: "2026-10-13T01:54:49Z", by: "019", event: "decision", note: "Unset: the concrete latest-compatible versions. Chosen: antd 5 (not 6), react-router 7 (not 8), and TypeScript 5 (not 7), each the newest release its consumers accept: @refinedev/antd requires antd ^5.23, @refinedev/react-router requires react-router ^7, and openapi-typescript requires TypeScript ^5. @tanstack/react-query is declared because Refine requires it as a peer; no Presentation code uses it directly. Why: the profile asks for mutually compatible latest versions."}
+                - {at: "2026-10-13T01:54:49Z", by: "019", event: "decision", note: "Unset: the Node.js and npm used. Chosen: the installed Node.js 22.22.1 (an LTS line) and npm 9.2.0. Why: the runtime only runs tools and the project rules forbid machine-wide installation; npm warns that @redocly/openapi-core (inside the type generator) asks for npm >= 9.5, which does not affect the build or the app."}
+                - {at: "2026-10-13T01:54:49Z", by: "019", event: "decision", note: "Unset: project layout. Chosen: api/ for API Access, src/ for the Vite entry files, with pages/, navigation/, and shared components/ to follow. Why: the profile's feature-based layout keeps each part in its own directory and the Vite entry files only import from them."}
+        P5-G2:
+          id: "P5-G2"
+          title: "Entity metadata"
+          description: "The generated description of every Entity, its Fields, Relations, and dependencies, read from the Entity Declarations only when Presentation is generated. Kept separate because Navigation, routes, and every Entity Page read it instead of listing any Entity or Field by hand."
+          area: "Generated Entity metadata"
+          does: "Presentation holds one generated description of every Entity of the Entity Collection that all its parts read at run time instead of Entity itself."
+          constraints: []
+          task_count: 1
+          tasks:
+            P5-G2-T1:
+              id: "P5-G2-T1"
+              source_id: "017"
+              title: "Generate the Entity metadata from the Entity Declarations"
+              description: "Generate, from the Entity Collection and each Entity's Declaration, the metadata of every Entity: its name, its API resource, its ordered Fields with their types, descriptions, nullability, sensitivity, immutability, and generation, and its Relations and dependencies."
+              reason: "Every column, field, filter, order, menu entry, and route must follow its Entity's own definition without a hand-written copy."
+              inputs:
+                - "The Entity Collection and Declarations the Entity Interface publishes"
+              skills: []
+              expected_result: "One generated metadata description covering exactly the Entities of the Entity Collection in their order."
+              acceptance: "The metadata holds exactly one entry per Entity of the Entity Collection, in its order, each with every Field of its Declaration in Declaration order and with the Declaration's type, description, nullability, sensitivity, immutability, generation, and Relation for that Field; generating it again from unchanged Entities gives an identical result; nothing at run time reads Entity itself."
+              depends_on:
+                - "P5-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:55:12Z", by: "019", event: "claimed", note: "Dependency P5-G1-T1 is done."}
+                - {at: "2026-10-13T01:55:26Z", by: "019", event: "done", note: "Generated presentation/navigation/resources.config.ts with the scratch generator gen_metadata.py from the Entity Collection and Declarations (read through entity.interface at generation only): typed EntityMeta entries in Collection order, each with the Entity's logical name, API resource (its Adapter segment), route, record label Field, description, ordered Fields (type, description, nullable, required, sensitive, immutable, generated, size, relation to the related Entity's resource), and an empty dependsOn; plus entityOf(resource). Observed: 7 Entities with labels user:name, instance:name, currency:code, broker:name, asset:symbol, account_group:name, account:name; tsc passes; generating again gives an identical file; the file imports nothing from Entity, so nothing reads Entity at run time."}
+                - {at: "2026-10-13T01:55:26Z", by: "019", event: "decision", note: "Unset: which Field names a record where it is shown or chosen. Chosen: the name Field when the Entity declares one, otherwise its first non-sensitive string Field that takes part in a uniqueness constraint (Currency code, Asset symbol). Why: the profile shows the related record's name instead of its id, and not every Entity declares a name."}
+                - {at: "2026-10-13T01:55:26Z", by: "019", event: "decision", note: "Unset: where the generated metadata unit lives. Chosen: navigation/resources.config.ts, the name the profile gives it, beside Navigation, which derives the menu and routes from it. Why: the metadata is not an Architecture part of its own."}
+        P5-G3:
+          id: "P5-G3"
+          title: "API Access"
+          description: "The single door from Presentation to the application: the types taken from API's machine-readable description and the one Data Provider that alone communicates with API. Grouped because both make up the client boundary to API."
+          area: "API Access: API types and the Data Provider"
+          does: "Every page reaches API's Entity Group Endpoints only through one Data Provider whose calls and types follow API's machine-readable description."
+          constraints: []
+          task_count: 2
+          tasks:
+            P5-G3-T1:
+              id: "P5-G3-T1"
+              source_id: "017"
+              title: "Generate the API types from API's machine-readable description"
+              description: "Generate the request and response types of the Entity Group's Endpoints from API's machine-readable description."
+              reason: "Calls to API must follow its published contract instead of a hand-written guess."
+              inputs:
+                - "API's machine-readable description served by the running API"
+              skills: []
+              expected_result: "Generated types for every Entity Group Endpoint's Parameters and results."
+              acceptance: "Every Entity Group Endpoint the description lists has generated types for its Parameters and request Body, and generating them again from an unchanged description gives an identical result; no Endpoint or field absent from the description appears in them."
+              depends_on:
+                - "P5-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T01:55:12Z", by: "019", event: "claimed", note: "Dependency P5-G1-T1 is done."}
+                - {at: "2026-10-13T02:05:50Z", by: "020", event: "done", note: "Continued from Log Entry 019, which claimed the Task. Added presentation/scripts/generate-api.mjs and the package.json script generate:api: it reads VITE_API_URL through Vite's loadEnv, fetches the running API's openapi.json, rewrites every path relative to the Base URL (refusing a path outside it), and writes api/schema.d.ts with openapi-typescript. Observed against API started on an isolated Database copy: the types hold all 84 Entity Group operations under /entity/<adapter>/<operation>, including FilterForm, OrderForm, and every request body; the URL Key appears 0 times; generating again gives an identical file; tsc passes."}
+                - {at: "2026-10-13T02:05:50Z", by: "020", event: "decision", note: "Unset: how the generated types keep the API address out of source. Chosen: paths are rewritten relative to the Base URL before generation. Why: API's description lists every path beneath the URL Key, and Presentation Preferences allow the address only in the VITE_API_URL setting."}
+            P5-G3-T2:
+              id: "P5-G3-T2"
+              source_id: "017"
+              title: "Provide the Data Provider for the Entity Group"
+              description: "Provide the one Data Provider through which Presentation lists, counts, views, adds, edits, deletes, enables, and disables an Entity's records by calling the Entity Group Endpoints as API's description states, returning API's results and errors as API returns them."
+              reason: "One door keeps the transport in one place, so no page depends on how API is reached."
+              inputs:
+                - "The generated API types"
+                - "The API address setting"
+              skills: []
+              expected_result: "A Data Provider that performs every record operation API serves for any Entity."
+              acceptance: "Against the running API, the Data Provider lists an Entity's records with Filters, a combination, and Orders, counts them, gets one by id, adds, edits, deletes, enables, and disables one, each through the Endpoint API's description gives for it; API's Problem Details errors reach the caller with their type and detail; no other part of Presentation sends a request to API."
+              depends_on:
+                - "P5-G3-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:05:50Z", by: "020", event: "claimed", note: "Dependency P5-G3-T1 is done."}
+                - {at: "2026-10-13T02:07:58Z", by: "020", event: "done", note: "Wrote presentation/api/dataProvider.ts, a Refine DataProvider (getApiUrl, getList, getMany, getOne, create, update, deleteOne) calling the Entity Group Endpoints relative to the one apiUrl setting with the generated schema types: Refine filters map to API Filter forms (eq, ne, gt, gte, lt, lte, in, containss, startswiths, endswiths, null, nnull) with AND for a flat list and the group's operator for one or/and group; sorters map to Orders; Problem Details become Refine HttpErrors with API's status, type, and detail. Added i18n/index.ts with en.json and fa.json holding its own messages. Observed in a Vite SSR harness against API on an isolated Database copy: list, page 2 of 3 by code (EUR, GBP, JPY, total 8), AND and OR filters, getMany, getOne, create, a partial update keeping every other stored Field, disable, enable, and delete answer as API does; a missing record, a duplicate (500 ExecutionError), an unknown Field (422 InvalidInputError), an unsupported operator, and deleting a referenced User surface as errors; only api/dataProvider.ts sends requests."}
+                - {at: "2026-10-13T02:07:58Z", by: "020", event: "decision", note: "Unset: how pages are requested when API has a limit but no offset (OQ-017-1). Chosen: for page N of size S the Data Provider asks list for N*S records under the same Filters and Orders, keeps the last page, and asks count for the total. Why: every page is then correct using only what API serves, with filtering and ordering still on the server."}
+                - {at: "2026-10-13T02:07:58Z", by: "020", event: "decision", note: "Unset: how an edit keeps Fields the form leaves unset, since API's update replaces every mutable Field. Chosen: update reads the stored record, overlays only the values the form set, and sends the complete Entity. Why: a sensitive Field is entered but never shown, so an edit that leaves it empty must keep the stored value instead of erasing it."}
+                - {at: "2026-10-13T02:07:58Z", by: "020", event: "decision", note: "Unset: how enable and disable are reached. Chosen: update with meta.operation enable or disable calls those Endpoints. Why: every API call stays inside the one Data Provider."}
+                - {at: "2026-10-13T02:07:58Z", by: "020", event: "decision", note: "Unset: which Refine text operators are offered. Chosen: only the case-sensitive containss, startswiths, and endswiths, matching API's literal case-sensitive matching; any other operator is refused before a request. Why: mapping a case-insensitive operator onto API's would change its meaning."}
+        P5-G4:
+          id: "P5-G4"
+          title: "Application shell"
+          description: "The frame every page sits in: the layout, the Navigation menu, the route of every Entity Page, the internationalization of every visible text, and the theme. Grouped because together they make the dashboard the Target names, around the pages."
+          area: "Layout, Navigation, routes, language, and theme"
+          does: "A user opens the dashboard, chooses Persian or English, and reaches every Entity Page from its menu."
+          constraints: []
+          task_count: 2
+          tasks:
+            P5-G4-T1:
+              id: "P5-G4-T1"
+              source_id: "017"
+              title: "Provide the layout, Navigation, and Entity Page routes"
+              description: "Provide the dashboard layout with its Navigation menu holding one entry per Entity, named from its Entity, and one route per Entity Page, both derived from the Entity metadata."
+              reason: "Users need one menu leading to every Entity's page."
+              inputs:
+                - "The Entity metadata"
+                - "The Data Provider"
+              skills:
+                - "run"
+              expected_result: "A running dashboard whose menu has exactly one entry per Entity, each leading to that Entity's route."
+              acceptance: "The running dashboard shows its layout and a menu with exactly one entry per Entity of the Entity Collection and no other entry, each named from its Entity and leading to that Entity's route; no Entity is listed by hand outside the generated metadata."
+              depends_on:
+                - "P5-G2-T1"
+                - "P5-G3-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:08:19Z", by: "020", event: "claimed", note: "Dependencies P5-G2-T1 and P5-G3-T2 are done."}
+                - {at: "2026-10-13T02:11:53Z", by: "020", event: "done", note: "Wrote presentation/navigation/menu.ts (one Refine resource per metadata entry, with list, show, create, and edit routes beneath the Entity's route), navigation/routes.tsx (one route per Entity Page, derived from the metadata; each route's page is attached when the pages exist), i18n/provider.ts (Refine translations through i18next), and src/App.tsx (BrowserRouter, antd App, Refine with the Data Provider, i18n provider, antd notification provider, and resources, ThemedLayout with its Sider, and the first Entity as the landing route); src/main.tsx loads the internationalization layer first. The scratch generator gen_locales.py merged each Entity's name into i18n/en.json (its Declaration name) and i18n/fa.json (its Persian translation) under Refine's menu key. Observed by rendering the app in jsdom through Vite (no browser can start on this machine: the cached Chromium lacks system libraries): it lands on /user; the menu has exactly 7 entries, کاربر, نمونه, ارز, کارگزار, دارایی, گروه حساب, حساب, in Entity Collection order, and clicking each leads to /user, /instance, /currency, /broker, /asset, /account_group, /account; tsc passes. The one console warning (antd Menu children) comes from Refine's own Sider."}
+                - {at: "2026-10-13T02:11:53Z", by: "020", event: "decision", note: "Unset: the language the dashboard opens in. Chosen: Persian, with English as the fallback. Why: the profile lists Persian first and sets direction by language; switching is provided with the remaining texts."}
+                - {at: "2026-10-13T02:11:53Z", by: "020", event: "decision", note: "Unset: how the menu is named from each Entity. Chosen: Refine's <resource>.<resource> translation key, filled from the Entity's Declaration name in English and its translation in Persian. Why: every visible text must come through the internationalization layer, and Refine's Sider reads that key."}
+            P5-G4-T2:
+              id: "P5-G4-T2"
+              source_id: "017"
+              title: "Provide Persian and English text, direction, and theme"
+              description: "Provide the internationalization of every visible text in Persian and English, with the layout direction following the chosen language, and the theme the client profile selects."
+              reason: "The dashboard must read correctly in both languages, and its appearance must come from one place."
+              inputs:
+                - "The application shell"
+              skills: []
+              expected_result: "A dashboard whose every visible text switches between Persian and English, right to left for Persian and left to right for English."
+              acceptance: "Switching the language changes every visible text of the shell between Persian and English and the layout direction between right to left and left to right; no visible text is written in a component instead of the language resources; the appearance comes from the theme's settings."
+              depends_on:
+                - "P5-G4-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:12:35Z", by: "020", event: "claimed", note: "Dependency P5-G4-T1 is done."}
+                - {at: "2026-10-13T02:23:37Z", by: "021", event: "done", note: "Continued from Log Entry 020, which claimed the Task. Wrote navigation/header.tsx (language Select and dark-mode Switch), navigation/title.tsx (the dashboard title), navigation/theme.ts (Design Tokens colorPrimary, borderRadius, Vazirmatn font, with darkAlgorithm or defaultAlgorithm), and updated src/App.tsx to wrap the app in ConfigProvider with direction rtl for Persian and ltr for English, the matching antd locale, and the theme, set the document's lang and dir, and load the Vazirmatn font. Added to i18n/en.json and i18n/fa.json the dashboard's own texts and Refine's standard texts (buttons, actions, notifications, table, pages), and gen_locales.py now also generates each Entity's page titles. Observed by rendering in jsdom through Vite: Persian opens right to left with every shell text in Persian; switching to English makes the document ltr, removes the RTL classes, and leaves no Persian text except the name of the Persian language in the switcher; the dark-mode switch turns the layout background from rgb(245, 245, 245) to rgb(0, 0, 0); no visible text is written in a component; tsc passes."}
+                - {at: "2026-10-13T02:23:37Z", by: "021", event: "decision", note: "Unset: Design Token values. Chosen: colorPrimary #1677ff and borderRadius 6 (antd's defaults) with fontFamily Vazirmatn, sans-serif. Why: the profile requires tokens and Vazirmatn but sets no colors."}
+                - {at: "2026-10-13T02:23:37Z", by: "021", event: "decision", note: "Unset: the dashboard title. Chosen: the Target's name, MT5 Interface, translated in Persian as رابط MT5. Why: the Target names the system; the title replaces Refine's default text."}
+                - {at: "2026-10-13T02:23:37Z", by: "021", event: "decision", note: "Unset: where the header, title, and theme live. Chosen: navigation/, beside the menu and routes. Why: they belong to the application shell that surrounds every page, and the Vite entry files only import them."}
+        P5-G5:
+          id: "P5-G5"
+          title: "Shared record Components"
+          description: "The Components every Entity Page uses to show and enter records: the field inputs and the record table. Grouped because both turn the Entity metadata into what the user sees, for every Entity alike."
+          area: "Shared Components for fields and tables"
+          does: "Any Entity Page can show its records in a table and enter them in a form, every column and field following its Entity's Declaration."
+          constraints: []
+          task_count: 2
+          tasks:
+            P5-G5-T1:
+              id: "P5-G5-T1"
+              source_id: "017"
+              title: "Provide the shared field inputs"
+              description: "Provide the shared Component that renders the input of one Field from its metadata, choosing the input by the Field's type and behaving as its Declaration states."
+              reason: "Every form of every Entity must enter values the same way its Declaration defines them."
+              inputs:
+                - "The Entity metadata"
+                - "The Data Provider"
+                - "The language resources"
+              skills: []
+              expected_result: "One Component that renders any Field's input as its Declaration states."
+              acceptance: "A Field's input matches its type; its label is its description in the chosen language; an immutable or generated Field is shown but cannot be entered; a sensitive Field can be entered but its stored value is never shown; a related Field is chosen from the related Entity's records, shown by name; a required Field cannot be left empty."
+              depends_on:
+                - "P5-G2-T1"
+                - "P5-G3-T2"
+                - "P5-G4-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:23:37Z", by: "021", event: "claimed", note: "Dependencies P5-G2-T1, P5-G3-T2, and P5-G4-T2 are done."}
+                - {at: "2026-10-13T02:34:03Z", by: "021", event: "done", note: "Wrote presentation/components/FieldRenderer.tsx (one Form.Item per Field: label from the Field's description in the chosen language, input by type: Input, InputNumber, InputNumber in string mode for decimals, Switch, DatePicker for datetime, date, and time, Input.Password for a sensitive Field, and a Select over the related Entity's records labeled by their label Field; immutable or generated Fields shown disabled; required Fields refused when empty, except a sensitive Field when editing; nullable empties sent as null; temporal values sent in API's text forms) and components/records.ts (label keys, temporal conversion, and withoutSensitive). gen_locales.py now also generates every Field label (English from the Declaration descriptions, Persian from its translation table), and the language resources gained value, validation, and filter texts. A first check passed only because the inputs were not connected: the inner control did not pass on the value and change handler Form.Item hands it; fixed by forwarding them. Observed by filling the Account form through its UI in jsdom against API on an isolated Database copy: id is disabled, the credential is a password input, each related Field lists the related records by name (Default), an empty submit is refused for exactly the 9 required Fields, and the filled form yields {name, group_id 1, broker_id 1, instance_id 1, base_currency_id 1, username, password, leverage 200, balance '1050.25', account_type}; tsc passes."}
+                - {at: "2026-10-13T02:34:03Z", by: "021", event: "decision", note: "Unset: how an edit form avoids showing a stored secret. Chosen: sensitive Fields are left out of a record before it fills a form (withoutSensitive), and an untouched sensitive input is not sent, so the Data Provider keeps the stored value. Why: a sensitive Field is entered without being shown."}
+                - {at: "2026-10-13T02:34:03Z", by: "021", event: "decision", note: "Unset: inputs for decimals and times. Chosen: InputNumber in string mode for decimals, keeping exact text, and DatePicker in time mode for time Fields. Why: the profile's FieldRenderer picks among Input, InputNumber, Select, DatePicker, Switch, and Upload."}
+            P5-G5-T2:
+              id: "P5-G5-T2"
+              source_id: "017"
+              title: "Provide the shared record table"
+              description: "Provide the shared Component that shows an Entity's records in a table whose columns, filters, and orders come from its metadata, with search, filtering, and ordering requested from API."
+              reason: "Every Entity's records must be listed, searched, filtered, and ordered the same way, on the server."
+              inputs:
+                - "The Entity metadata"
+                - "The Data Provider"
+                - "The language resources"
+              skills: []
+              expected_result: "One table Component that lists any Entity's records with search, filter, and order on any Field."
+              acceptance: "The table shows one column per Field in Declaration order, labeled by its description, never showing a sensitive Field's value and showing a related Field by the related record's name; a filter or search on any Field, combined with AND or OR, and an order by any Field in either direction are sent to API and the table shows exactly the records API returns."
+              depends_on:
+                - "P5-G2-T1"
+                - "P5-G3-T2"
+                - "P5-G4-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:23:37Z", by: "021", event: "claimed", note: "Dependencies P5-G2-T1, P5-G3-T2, and P5-G4-T2 are done."}
+                - {at: "2026-10-13T02:34:03Z", by: "021", event: "done", note: "Wrote presentation/components/RecordTable.tsx (Refine's antd useTable with server pagination, sorting, and filtering; one sortable column per Field in Declaration order labeled by its description; related Fields shown by the related record's label through one useMany per related Field), components/FieldValue.tsx (a sensitive value shown only as the hidden text, booleans as yes or no, empty values as a dash), and components/FilterBuilder.tsx (conditions of Field, operator, and value, with the operators API serves for the Field's type, combined with AND or OR). The same unconnected-input bug was fixed in the filter values, and the AND/OR choice was moved out of the condition list, where antd had stored it under the list's path. api/dataProvider.ts now converts filter values to their Field's type, because Refine restores filters from the address bar as text. Observed in jsdom against API on an isolated Database copy: Account shows 13 Persian-labeled columns with Default, FxPro, MetaTrader, and USD for its related Fields and the hidden text for its password; filters and orders restored from the address bar return EUR/USD and EUR/GBP (category Currency, symbol descending), XAU/USD and USOil (OR on digits 2 or symbol USOil), and EUR/GBP and EUR/USD (point_size < 0.01, descending); through the filter builder's UI, an OR of category Commodity and symbol starting EUR/U lists EUR/USD, XAU/USD, USOil, the AND lists none, and reset lists all four; tsc passes."}
+                - {at: "2026-10-13T02:34:03Z", by: "021", event: "decision", note: "Unset: how related names are fetched for a table. Chosen: one useMany per related Field over the ids on the current page. Why: the profile shows related records by name through useMany."}
+                - {at: "2026-10-13T02:34:03Z", by: "021", event: "decision", note: "Unset: how search relates to filtering. Chosen: one filter builder serves both, with AND or OR applying to all its conditions. Why: API combines one list of Filters with a single combination and cannot nest them."}
+        P5-G6:
+          id: "P5-G6"
+          title: "Entity Pages"
+          description: "One page per Entity of the Entity Collection, each written out in its own unit with the shared Components, offering the record operations API serves for that Entity. Grouped because together they give every Entity its page."
+          area: "Entity Pages, one per Entity"
+          does: "Every Entity has one page through which a user lists, views, searches, filters, orders, adds, edits, deletes, enables, and disables its records."
+          constraints: []
+          task_count: 3
+          tasks:
+            P5-G6-T1:
+              id: "P5-G6-T1"
+              source_id: "017"
+              title: "Provide one page per Entity with listing and viewing"
+              description: "Provide each Entity's page, written out in its own unit, listing its records in the shared table with search, filter, and order, and showing one record by its id."
+              reason: "Users must see and find every Entity's records."
+              inputs:
+                - "The shared record table"
+                - "The Entity Page routes"
+              skills:
+                - "run"
+              expected_result: "One page per Entity that lists, searches, filters, orders, and views its records."
+              acceptance: "Each Entity's route opens its own page, which lists exactly the records API returns for that Entity, narrows them by search and filters and orders them as chosen, and opens one record's view showing its Fields as the Declaration states; no page serves another Entity and no generic page serves several."
+              depends_on:
+                - "P5-G4-T1"
+                - "P5-G5-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:34:42Z", by: "021", event: "claimed", note: "Dependencies P5-G4-T1 and P5-G5-T2 are done."}
+                - {at: "2026-10-13T02:35:49Z", by: "021", event: "done", note: "Generated presentation/pages/<entity>.tsx for the seven Entities (user, instance, currency, broker, asset, account_group, account) with the scratch generator gen_pages.py (scope list) from the generated metadata: each unit writes out its own <Entity>List (the shared RecordTable with a view action) and <Entity>Show (the shared RecordView), and navigation/routes.tsx imports each page from pages/ under its route. Added components/related.ts (related-name lookups shared by the table and the view) and components/RecordView.tsx. Observed by driving the real App in jsdom against API on an isolated Database copy: each of the seven routes opens its own page under its Persian title and lists exactly its records (User 1, Instance 1, Currency 8, Broker 1, Asset 4, Account Group 1, Account 1), with related Fields shown by name; the Account view at /account/show/1 shows every Field in Declaration order, related records by name, and the password as the hidden text; tsc passes. The remaining console warning comes from the search form inside Refine's own useTable, which Presentation does not use."}
+                - {at: "2026-10-13T02:35:49Z", by: "021", event: "decision", note: "Unset: how each page unit is structured. Chosen: one unit per Entity exporting its List, Show, Create, and Edit page components, written out per Entity from the metadata by a generator; shared Components hold everything common. Why: every Entity Page is written out in its own unit without a generic page, while pages share Components."}
+            P5-G6-T2:
+              id: "P5-G6-T2"
+              source_id: "017"
+              title: "Add the add and edit forms to every page"
+              description: "Add to each Entity's page a form built from its Fields with the shared field inputs, used to add a record and, filled with a record, to edit it."
+              reason: "Users must create and change every Entity's records."
+              inputs:
+                - "The shared field inputs"
+                - "Every Entity Page"
+              skills:
+                - "run"
+              expected_result: "Every page adds and edits its Entity's records through API."
+              acceptance: "Submitting the add form stores a new record through API and the list then shows it; the edit form opens filled with the record and its submission stores the change through API; an error API returns is shown as API returned it, and the form decides no rule of its own."
+              depends_on:
+                - "P5-G6-T1"
+                - "P5-G5-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:35:49Z", by: "021", event: "claimed", note: "Dependencies P5-G6-T1 and P5-G5-T1 are done."}
+                - {at: "2026-10-13T02:39:46Z", by: "021", event: "done", note: "Regenerated the seven pages with gen_pages.py (scope all): each unit now also writes out <Entity>Create and <Entity>Edit, a Form of one FieldRenderer per Field from the metadata inside Refine's antd Create or Edit with Refine's useForm; Edit leaves sensitive Fields out of the record that fills it and passes the id parsed from the route, as does Show; navigation/routes.tsx imports the create and edit pages under each Entity's route. tsconfig.json now type-checks every source directory, which surfaced and fixed a typing error in the related select (its options are now typed {id, label} records). Observed by driving the real App in jsdom against API on a freshly copied Database store: the Broker add form stores Page Broker and returns to the list showing it; the edit form opens filled with id disabled, and saving a description stores it; a duplicate name stays on the form and shows API's own message (Execution failed on Instance sqlite: UNIQUE constraint failed: broker.user_id, broker.name) in the could-not-be-added notice; the User edit form opens with empty password and api_key inputs, and saving a description keeps both stored credentials unchanged; tsc passes."}
+                - {at: "2026-10-13T02:39:46Z", by: "021", event: "decision", note: "Unset: how an edit page obtains its record id when the page names its resource. Chosen: the id parsed from the route (useParsed) is passed to useForm and useShow. Why: Refine cannot infer the id from the address when a resource is given explicitly."}
+            P5-G6-T3:
+              id: "P5-G6-T3"
+              source_id: "017"
+              title: "Add delete, enable, and disable to every page"
+              description: "Add to each Entity's page the actions that delete, enable, and disable one record through API."
+              reason: "Users must remove records and switch them on and off."
+              inputs:
+                - "Every Entity Page"
+              skills:
+                - "run"
+              expected_result: "Every page deletes, enables, and disables its Entity's records through API."
+              acceptance: "Each action calls API for the chosen record and the page then shows API's result: a deleted record no longer listed and an enabled or disabled record with its new state; an error API returns, such as a record still referenced by another, is shown as returned; every page offers exactly the operations API serves for its Entity."
+              depends_on:
+                - "P5-G6-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:35:49Z", by: "021", event: "claimed", note: "Dependency P5-G6-T1 is done."}
+                - {at: "2026-10-13T02:39:46Z", by: "021", event: "done", note: "The pages generated with scope all give each list row, beside View and Edit, an Enable or Disable button (by the record's is_active) that calls the Data Provider's update with the enable or disable operation, and Refine's DeleteButton with its confirmation. Observed in jsdom against API on a freshly copied Database store: on the Broker page, Disable shows the record inactive and the button turns to Enable, Enable shows it active again, and Delete with its confirmation removes it from the list; errors API returns are shown in Refine's notification with API's message. Every page offers list, view, add, edit, delete, enable, and disable, the operations of the Presentation Definition that API serves for every Entity."}
+                - {at: "2026-10-13T02:39:46Z", by: "021", event: "decision", note: "Unset: how enable and disable appear on a page. Chosen: one button per row showing the action that changes the record's current state (Disable for an active record, Enable for an inactive one). Why: both are served for every Entity, and is_active decides which one applies."}
+        P5-G7:
+          id: "P5-G7"
+          title: "Documentation"
+          description: "Presentation's root documentation, kept separate because it describes the finished dashboard for users and developers rather than producing behavior."
+          area: "Component root documentation"
+          does: "A user or developer can install, start, use, extend, and verify Presentation from its documentation alone."
+          constraints: []
+          task_count: 1
+          tasks:
+            P5-G7-T1:
+              id: "P5-G7-T1"
+              source_id: "017"
+              title: "Document the Presentation Component"
+              description: "Write Presentation's root documentation with its required sections, covering one page as an example, setup and the API address it needs, how Entity Pages, Navigation, and API Access fit together and where a new page or API call belongs, verification, and troubleshooting."
+              reason: "Users and developers learn Presentation without reading its source."
+              inputs:
+                - "The finished dashboard"
+              skills: []
+              expected_result: "Root documentation that describes the current Presentation Component completely and accurately."
+              acceptance: "The documentation presents its required sections in order, its setup steps start a dashboard that reaches the running API, its verification shows that every Entity has its page and that only API Access calls API, and it contains no URL Key or real credential."
+              depends_on:
+                - "P5-G6-T2"
+                - "P5-G6-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T02:40:16Z", by: "021", event: "claimed", note: "Dependencies P5-G6-T2 and P5-G6-T3 are done."}
+                - {at: "2026-10-13T02:42:03Z", by: "021", event: "done", note: "Wrote presentation/README.md with Overview (the Account page as the example), Setup (npm ci, writing .env with VITE_API_URL from ../api/config.yaml, starting API and the dashboard), Use (Navigation, Entity Pages, shared Components, and API Access, where a change to an Entity, a new page, or a new API call belongs, regenerating the API types, and paging without an offset), Verify, and Troubleshooting. Observed from the Presentation directory: npm ci installs from the lockfile; the Setup command writes a .env identical to the existing one; the Verify steps show the type check passing, api/dataProvider.ts as the only unit that sends requests, and one page unit per Entity; the README holds no URL Key or credential. Running the production build exposed a single 1.9 MB script and a chunk-size warning; vite.config.ts now splits dependencies into antd, refine, and vendor chunks of at most 400 kB, and the build completes with 32 script chunks and no warning (its dist output was removed). The generated metadata, language resources, routes, and seven page units regenerate byte-identical."}
+                - {at: "2026-10-13T02:42:03Z", by: "021", event: "decision", note: "Unset: how the production build stays within the chunk-size limit. Chosen: Rolldown code-splitting groups for antd (with its rc and @rc-component parts), Refine with TanStack Query, and the remaining dependencies, each capped at 400 kB. Why: the bundler's warning is fixable and Review accepts no fixable warning."}

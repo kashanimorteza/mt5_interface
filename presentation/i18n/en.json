@@ -1,0 +1,237 @@
+{
+  "errors": {
+    "notFound": "No {{resource}} record has id {{id}}.",
+    "unsupportedFilter": "This filter cannot be sent to API.",
+    "unexpected": "API answered with status {{status}}."
+  },
+  "user": {
+    "user": "User",
+    "titles": {
+      "list": "User",
+      "create": "User",
+      "edit": "User",
+      "show": "User"
+    },
+    "fields": {
+      "id": "id",
+      "name": "The user's display name.",
+      "username": "The username used to identify the user.",
+      "password": "The password credential used by the user.",
+      "api_key": "The API key assigned to the user.",
+      "is_active": "Indicates whether the user is active.",
+      "description": "Describes the user."
+    }
+  },
+  "instance": {
+    "instance": "Instance",
+    "titles": {
+      "list": "Instance",
+      "create": "Instance",
+      "edit": "Instance",
+      "show": "Instance"
+    },
+    "fields": {
+      "id": "id",
+      "user_id": "Identifies the user who owns this instance.",
+      "name": "The instance's display name.",
+      "ip": "Identifies the technical network address used to reach MetaTrader 5 when required.",
+      "username": "Defines the technical username used to establish the Instance connection when required.",
+      "password": "Defines the technical password used to establish the Instance connection when required.",
+      "api_key": "Defines the technical API credential used to establish the Instance connection when required.",
+      "is_active": "Indicates whether the instance is active.",
+      "description": "Describes the instance."
+    }
+  },
+  "currency": {
+    "currency": "Currency",
+    "titles": {
+      "list": "Currency",
+      "create": "Currency",
+      "edit": "Currency",
+      "show": "Currency"
+    },
+    "fields": {
+      "id": "id",
+      "user_id": "Identifies the user who owns this currency.",
+      "code": "The currency's standard three-letter code, such as `USD` or `EUR`.",
+      "symbol": "The currency's display symbol, such as `$`, `€`, or `£`.",
+      "country": "Identifies the country or region associated with the currency.",
+      "decimal_digits": "Defines the number of decimal digits normally used for monetary values in the currency.",
+      "is_active": "Indicates whether the currency is active.",
+      "description": "Describes the currency."
+    }
+  },
+  "broker": {
+    "broker": "Broker",
+    "titles": {
+      "list": "Broker",
+      "create": "Broker",
+      "edit": "Broker",
+      "show": "Broker"
+    },
+    "fields": {
+      "id": "id",
+      "name": "The broker's display name.",
+      "user_id": "Identifies the user who owns the broker configuration.",
+      "is_active": "Indicates whether the broker is active.",
+      "description": "Describes the broker."
+    }
+  },
+  "asset": {
+    "asset": "Asset",
+    "titles": {
+      "list": "Asset",
+      "create": "Asset",
+      "edit": "Asset",
+      "show": "Asset"
+    },
+    "fields": {
+      "id": "id",
+      "broker_id": "Identifies the broker that provides this asset.",
+      "symbol": "Identifies the tradable asset, such as `EUR/USD`, `XAU/USD`, or `USOil`.",
+      "category": "Identifies the asset category, such as `Currency`, `Commodity`, or `Cryptocurrency`.",
+      "point_size": "Stores the size of one point for the asset.",
+      "digits": "Stores the number of decimal digits used for the asset's price.",
+      "is_active": "Indicates whether the asset is active.",
+      "description": "Describes the asset."
+    }
+  },
+  "account_group": {
+    "account_group": "Account Group",
+    "titles": {
+      "list": "Account Group",
+      "create": "Account Group",
+      "edit": "Account Group",
+      "show": "Account Group"
+    },
+    "fields": {
+      "id": "id",
+      "user_id": "Identifies the user who owns the account group.",
+      "name": "The account group's display name.",
+      "is_active": "Indicates whether the account group is active.",
+      "description": "Describes the account group."
+    }
+  },
+  "account": {
+    "account": "Account",
+    "titles": {
+      "list": "Account",
+      "create": "Account",
+      "edit": "Account",
+      "show": "Account"
+    },
+    "fields": {
+      "id": "id",
+      "name": "The account's display name.",
+      "group_id": "Identifies the account group that contains the account.",
+      "broker_id": "Identifies the broker that owns the account.",
+      "instance_id": "Identifies the trading-platform instance used to connect this account.",
+      "base_currency_id": "Identifies the base currency used by the account.",
+      "username": "The username identifier used to access the trading account.",
+      "password": "The credential used to access the trading account.",
+      "leverage": "Defines the account's leverage multiplier.",
+      "balance": "Stores the account's current balance.",
+      "account_type": "Identifies the account model, such as `cfd` or `spread_betting`.",
+      "is_active": "Indicates whether the account is active.",
+      "description": "Describes the account."
+    }
+  },
+  "app": {
+    "title": "MT5 Interface"
+  },
+  "language": {
+    "label": "Language",
+    "fa": "فارسی",
+    "en": "English"
+  },
+  "theme": {
+    "dark": "Dark mode"
+  },
+  "buttons": {
+    "create": "Add",
+    "save": "Save",
+    "logout": "Log out",
+    "delete": "Delete",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "confirm": "Are you sure?",
+    "filter": "Filter",
+    "clear": "Clear",
+    "refresh": "Refresh",
+    "show": "View",
+    "undo": "Undo",
+    "import": "Import",
+    "clone": "Clone",
+    "notAccessTitle": "You don't have permission to access",
+    "enable": "Enable",
+    "disable": "Disable",
+    "addFilter": "Add filter",
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "actions": {
+    "list": "List",
+    "create": "Add",
+    "edit": "Edit",
+    "show": "View",
+    "clone": "Clone"
+  },
+  "notifications": {
+    "success": "Done",
+    "error": "Error (status code: {{statusCode}})",
+    "undoable": "You have {{seconds}} seconds to undo",
+    "createSuccess": "{{resource}} added",
+    "createError": "{{resource}} could not be added (status code: {{statusCode}})",
+    "deleteSuccess": "{{resource}} deleted",
+    "deleteError": "{{resource}} could not be deleted (status code: {{statusCode}})",
+    "editSuccess": "{{resource}} saved",
+    "editError": "{{resource}} could not be saved (status code: {{statusCode}})",
+    "importProgress": "Importing: {{processed}}/{{total}}"
+  },
+  "warnWhenUnsavedChanges": "Are you sure you want to leave? You have unsaved changes.",
+  "loading": "Loading",
+  "tags": {
+    "clone": "Clone"
+  },
+  "table": {
+    "actions": "Actions"
+  },
+  "pages": {
+    "error": {
+      "info": "This page is not available for {{resource}}.",
+      "404": "This page does not exist.",
+      "resource404": "{{resource}} does not exist.",
+      "backHome": "Back to the dashboard"
+    }
+  },
+  "values": {
+    "yes": "Yes",
+    "no": "No",
+    "hidden": "Hidden",
+    "empty": "—"
+  },
+  "validation": {
+    "required": "{{field}} is required."
+  },
+  "filters": {
+    "field": "Field",
+    "operator": "Operator",
+    "value": "Value",
+    "and": "All conditions",
+    "or": "Any condition",
+    "remove": "Remove",
+    "operators": {
+      "eq": "equals",
+      "ne": "does not equal",
+      "gt": "greater than",
+      "gte": "greater than or equal",
+      "lt": "less than",
+      "lte": "less than or equal",
+      "containss": "contains",
+      "startswiths": "starts with",
+      "endswiths": "ends with",
+      "null": "is empty",
+      "nnull": "is not empty"
+    }
+  }
+}

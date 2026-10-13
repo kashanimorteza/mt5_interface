@@ -1,0 +1,237 @@
+{
+  "errors": {
+    "notFound": "هیچ رکورد {{resource}} با شناسه {{id}} وجود ندارد.",
+    "unsupportedFilter": "این فیلتر را نمی‌توان به API فرستاد.",
+    "unexpected": "API با وضعیت {{status}} پاسخ داد."
+  },
+  "user": {
+    "user": "کاربر",
+    "titles": {
+      "list": "کاربر",
+      "create": "کاربر",
+      "edit": "کاربر",
+      "show": "کاربر"
+    },
+    "fields": {
+      "id": "شناسه",
+      "name": "نام نمایشی کاربر.",
+      "username": "نام کاربری برای شناسایی کاربر.",
+      "password": "گذرواژهٔ کاربر.",
+      "api_key": "کلید API اختصاص‌یافته به کاربر.",
+      "is_active": "فعال بودن کاربر.",
+      "description": "توضیح کاربر."
+    }
+  },
+  "instance": {
+    "instance": "نمونه",
+    "titles": {
+      "list": "نمونه",
+      "create": "نمونه",
+      "edit": "نمونه",
+      "show": "نمونه"
+    },
+    "fields": {
+      "id": "شناسه",
+      "user_id": "کاربری که مالک این نمونه است.",
+      "name": "نام نمایشی نمونه.",
+      "ip": "نشانی فنی شبکه برای دسترسی به MetaTrader 5 در صورت نیاز.",
+      "username": "نام کاربری فنی برای برقراری اتصال نمونه در صورت نیاز.",
+      "password": "گذرواژهٔ فنی برای برقراری اتصال نمونه در صورت نیاز.",
+      "api_key": "اعتبارنامهٔ فنی API برای برقراری اتصال نمونه در صورت نیاز.",
+      "is_active": "فعال بودن نمونه.",
+      "description": "توضیح نمونه."
+    }
+  },
+  "currency": {
+    "currency": "ارز",
+    "titles": {
+      "list": "ارز",
+      "create": "ارز",
+      "edit": "ارز",
+      "show": "ارز"
+    },
+    "fields": {
+      "id": "شناسه",
+      "user_id": "کاربری که مالک این ارز است.",
+      "code": "کد استاندارد سه‌حرفی ارز، مانند `USD` یا `EUR`.",
+      "symbol": "نماد نمایشی ارز، مانند `$`، `€` یا `£`.",
+      "country": "کشور یا منطقهٔ مرتبط با ارز.",
+      "decimal_digits": "تعداد ارقام اعشاری معمول برای مقادیر پولی این ارز.",
+      "is_active": "فعال بودن ارز.",
+      "description": "توضیح ارز."
+    }
+  },
+  "broker": {
+    "broker": "کارگزار",
+    "titles": {
+      "list": "کارگزار",
+      "create": "کارگزار",
+      "edit": "کارگزار",
+      "show": "کارگزار"
+    },
+    "fields": {
+      "id": "شناسه",
+      "name": "نام نمایشی کارگزار.",
+      "user_id": "کاربری که مالک پیکربندی کارگزار است.",
+      "is_active": "فعال بودن کارگزار.",
+      "description": "توضیح کارگزار."
+    }
+  },
+  "asset": {
+    "asset": "دارایی",
+    "titles": {
+      "list": "دارایی",
+      "create": "دارایی",
+      "edit": "دارایی",
+      "show": "دارایی"
+    },
+    "fields": {
+      "id": "شناسه",
+      "broker_id": "کارگزاری که این دارایی را ارائه می‌کند.",
+      "symbol": "دارایی قابل معامله، مانند `EUR/USD`، `XAU/USD` یا `USOil`.",
+      "category": "دستهٔ دارایی، مانند `Currency`، `Commodity` یا `Cryptocurrency`.",
+      "point_size": "اندازهٔ یک پوینت برای دارایی.",
+      "digits": "تعداد ارقام اعشاری قیمت دارایی.",
+      "is_active": "فعال بودن دارایی.",
+      "description": "توضیح دارایی."
+    }
+  },
+  "account_group": {
+    "account_group": "گروه حساب",
+    "titles": {
+      "list": "گروه حساب",
+      "create": "گروه حساب",
+      "edit": "گروه حساب",
+      "show": "گروه حساب"
+    },
+    "fields": {
+      "id": "شناسه",
+      "user_id": "کاربری که مالک گروه حساب است.",
+      "name": "نام نمایشی گروه حساب.",
+      "is_active": "فعال بودن گروه حساب.",
+      "description": "توضیح گروه حساب."
+    }
+  },
+  "account": {
+    "account": "حساب",
+    "titles": {
+      "list": "حساب",
+      "create": "حساب",
+      "edit": "حساب",
+      "show": "حساب"
+    },
+    "fields": {
+      "id": "شناسه",
+      "name": "نام نمایشی حساب.",
+      "group_id": "گروه حسابی که این حساب در آن است.",
+      "broker_id": "کارگزاری که مالک حساب است.",
+      "instance_id": "نمونهٔ پلتفرم معاملاتی برای اتصال این حساب.",
+      "base_currency_id": "ارز پایهٔ حساب.",
+      "username": "نام کاربری برای دسترسی به حساب معاملاتی.",
+      "password": "اعتبارنامهٔ دسترسی به حساب معاملاتی.",
+      "leverage": "ضریب اهرم حساب.",
+      "balance": "موجودی فعلی حساب.",
+      "account_type": "مدل حساب، مانند `cfd` یا `spread_betting`.",
+      "is_active": "فعال بودن حساب.",
+      "description": "توضیح حساب."
+    }
+  },
+  "app": {
+    "title": "رابط MT5"
+  },
+  "language": {
+    "label": "زبان",
+    "fa": "فارسی",
+    "en": "English"
+  },
+  "theme": {
+    "dark": "حالت تیره"
+  },
+  "buttons": {
+    "create": "افزودن",
+    "save": "ذخیره",
+    "logout": "خروج",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "cancel": "انصراف",
+    "confirm": "آیا مطمئن هستید؟",
+    "filter": "فیلتر",
+    "clear": "پاک کردن",
+    "refresh": "بازخوانی",
+    "show": "مشاهده",
+    "undo": "بازگردانی",
+    "import": "ورود",
+    "clone": "رونوشت",
+    "notAccessTitle": "اجازهٔ دسترسی ندارید",
+    "enable": "فعال کردن",
+    "disable": "غیرفعال کردن",
+    "addFilter": "افزودن فیلتر",
+    "apply": "اعمال",
+    "reset": "بازنشانی"
+  },
+  "actions": {
+    "list": "فهرست",
+    "create": "افزودن",
+    "edit": "ویرایش",
+    "show": "مشاهده",
+    "clone": "رونوشت"
+  },
+  "notifications": {
+    "success": "انجام شد",
+    "error": "خطا (کد وضعیت: {{statusCode}})",
+    "undoable": "{{seconds}} ثانیه برای بازگردانی فرصت دارید",
+    "createSuccess": "{{resource}} افزوده شد",
+    "createError": "{{resource}} افزوده نشد (کد وضعیت: {{statusCode}})",
+    "deleteSuccess": "{{resource}} حذف شد",
+    "deleteError": "{{resource}} حذف نشد (کد وضعیت: {{statusCode}})",
+    "editSuccess": "{{resource}} ذخیره شد",
+    "editError": "{{resource}} ذخیره نشد (کد وضعیت: {{statusCode}})",
+    "importProgress": "در حال ورود: {{processed}}/{{total}}"
+  },
+  "warnWhenUnsavedChanges": "آیا می‌خواهید بروید؟ تغییرات ذخیره نشده‌اند.",
+  "loading": "در حال بارگذاری",
+  "tags": {
+    "clone": "رونوشت"
+  },
+  "table": {
+    "actions": "عملیات"
+  },
+  "pages": {
+    "error": {
+      "info": "این صفحه برای {{resource}} در دسترس نیست.",
+      "404": "این صفحه وجود ندارد.",
+      "resource404": "{{resource}} وجود ندارد.",
+      "backHome": "بازگشت به داشبورد"
+    }
+  },
+  "values": {
+    "yes": "بله",
+    "no": "خیر",
+    "hidden": "پنهان",
+    "empty": "—"
+  },
+  "validation": {
+    "required": "{{field}} الزامی است."
+  },
+  "filters": {
+    "field": "فیلد",
+    "operator": "عملگر",
+    "value": "مقدار",
+    "and": "همهٔ شرط‌ها",
+    "or": "هر یک از شرط‌ها",
+    "remove": "حذف",
+    "operators": {
+      "eq": "برابر با",
+      "ne": "نابرابر با",
+      "gt": "بزرگ‌تر از",
+      "gte": "بزرگ‌تر یا برابر با",
+      "lt": "کوچک‌تر از",
+      "lte": "کوچک‌تر یا برابر با",
+      "containss": "شامل",
+      "startswiths": "شروع با",
+      "endswiths": "پایان با",
+      "null": "خالی است",
+      "nnull": "خالی نیست"
+    }
+  }
+}

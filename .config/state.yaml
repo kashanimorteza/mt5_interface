@@ -29,11 +29,11 @@ content_map:
 # <!--------------------------------------------------------------------------------- Content -->
 content:
   active:
-    mode: "reviewing"
-    phase: "P2"
-    mode_reason: "Review judged P2 satisfied."
-    set_by: "my-interface-review"
-    set_at: "2026-10-13T00:12:56Z"
+    mode: "development"
+    phase: "P5"
+    mode_reason: "Develop executed every P5 Task."
+    set_by: "my-interface-develop"
+    set_at: "2026-10-13T02:23:21Z"
   phases:
     P1:
       id: "P1"
@@ -47,6 +47,24 @@ content:
       development: "completed"
       review: "satisfied"
       completed_at: "2026-10-13T00:21:05Z"
+    P3:
+      id: "P3"
+      planning: "completed"
+      development: "completed"
+      review: "satisfied"
+      completed_at: "2026-10-13T01:05:40Z"
+    P4:
+      id: "P4"
+      planning: "completed"
+      development: "completed"
+      review: "satisfied"
+      completed_at: "2026-10-13T01:40:04Z"
+    P5:
+      id: "P5"
+      planning: "completed"
+      development: "completed"
+      review: "not started"
+      completed_at: null
   log:
     - id: "001"
       skill: "my-interface-configure"
@@ -374,8 +392,481 @@ content:
       skill: "my-interface-plan"
       phase: "P3"
       event: "plan"
-      outcome: "in progress"
+      outcome: "completed"
       started_at: "2026-10-13T00:25:24Z"
-      completed_at: null
-      duration: null
-      report: "Planning requested for phase 3."
+      completed_at: "2026-10-13T00:27:35Z"
+      duration: "2:11"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Created the P3 Plan."
+      open_questions:
+        - "OQ-008-1"
+      blockers: []
+      report: "Requested phase 3 resolved to Target phase P3 (Logic, enabled and ready). P2 has no open Blocker and its Review is satisfied. No earlier P3 Plan existed; created the P3 Plan with 6 Groups and 8 Tasks covering library setup, the Entity Service Base, the Child Services, the Entity Service Interface, Logic Interface, and documentation. Set aggregate Planning progress for P3 to completed. Total stored Tasks: 47. One Open Question was recorded."
+      data:
+        phase_selection:
+          requested: "3"
+          resolved: "P3"
+          reason: "The Target names its phases P1 to P5 and the Workflow selects them by number."
+        prior_phase: "P2 has no open Blocker; its Review is satisfied."
+        changes:
+          added:
+            - {id: "P3-G1-T1", reason: "Required library package with its Entity and Database Connections."}
+            - {id: "P3-G2-T1", reason: "Required Base Actions for the Entity Operations that take an Entity class."}
+            - {id: "P3-G2-T2", reason: "Required Base Actions for the Entity Operations that take an Entity instance, with the bound-Entity check."}
+            - {id: "P3-G3-T1", reason: "Required Child Service for every Entity of the Entity Collection."}
+            - {id: "P3-G4-T1", reason: "Required Entity Service Interface."}
+            - {id: "P3-G5-T1", reason: "Required Logic Interface publishing every listed Service."}
+            - {id: "P3-G6-T1", reason: "Required Entity Service documentation."}
+            - {id: "P3-G6-T2", reason: "Required Logic root documentation."}
+          changed: []
+          removed: []
+          preserved: []
+          replaced: []
+        notes:
+          - "The MT5 Service is not planned: the Target marks it reserved and not yet defined, and Logic Preferences list only Entity Service. The P3 goal names it for once it is defined."
+          - "The Child Services are planned as one Task: they share one uniform shape, and the Target defines no Entity-specific Behavior for any of them."
+          - "Database locates its Configuration and storage in its own Component directory, so Logic's Connection to Database must keep Database's Operations running on Database's own default Instance storage (P3-G1-T1 acceptance)."
+        open_questions:
+          OQ-008-1:
+            question: "Which Component should realize the Target's credential storage rules (User password and api_key hashed, Instance password and api_key and Account password encrypted at rest)?"
+            context: "Entity and Database exclude hashing and encryption by their Boundaries; Entity Service Base adds no behavior of its own; a Child Service may add Entity-specific Behavior but nothing assigns this to it; Platform's encryption capability is inactive. The Database Initial Data stores these credentials as empty strings."
+            current_choice: "Not planned in P3; Entity Service mirrors Database unchanged."
+    - id: "009"
+      skill: "my-interface-develop"
+      phase: "P3"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-13T00:57:14Z"
+      completed_at: "2026-10-13T01:01:39Z"
+      duration: "4:25"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Executed all 8 P3 Tasks."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P3-G1-T1"
+        - "P3-G2-T1"
+        - "P3-G2-T2"
+        - "P3-G3-T1"
+        - "P3-G4-T1"
+        - "P3-G6-T1"
+      report: "Developed all 8 P3 Tasks; every Task is done and was claimed before its work began. The Logic library is at logic/: the Logic Interface publishing Entity; the Entity Service with Base (twelve Actions generated from Database Interface in its order), seven Child Services generated from the Entity Collection, its Interface, and README; and the root README. ruff format, ruff check, and ty check pass; all documentation examples run as written against an isolated copy of the Database store, and the real Database store was only read. P3 development progress set to completed. Conformance is for Review to establish."
+      data:
+        component: "logic"
+        resolved_versions:
+          python: "3.14.4"
+          database: "0.1.0 (editable local path)"
+          entity: "0.1.0 (local path)"
+          ruff: "0.17.0"
+          ty: "0.0.86"
+        notes:
+          - "Base, the Child Services, and the Entity Service Interface were produced by generators kept in the session scratchpad (gen_base.py, gen_children.py, gen_interface.py) that read Database Interface and the Entity Collection; the generators are not part of the Component."
+          - "The MT5 Service is not realized; the Target reserves it and Logic Preferences do not list it."
+          - "The Target's credential storage rules remain unrealized (OQ-008-1); Entity Service mirrors Database unchanged."
+          - "No Component other than Logic was changed."
+    - id: "010"
+      skill: "my-interface-review"
+      phase: "P3"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-13T01:03:01Z"
+      completed_at: "2026-10-13T01:05:40Z"
+      duration: "2:39"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P3 against its Plan and the Logic and Entity Service Review categories."
+      open_questions: []
+      blockers: []
+      report: "P3 satisfied. Judged all 8 Task acceptances, the 5 Logic and 9 Entity Service Review observations by independent transient checks (testing is disabled, so nothing was persisted) on an isolated copy of the Database store: 114 checks, including a spy Database object showing that every Action forwards its arguments, returns Database's answer, and raises Database's error unchanged and that add and update refuse another Entity before Database is called; all 14 documentation examples against their stated output; and a read-only check that Logic reaches Database's real default store. Technical checks: uv lock --check, uv sync --locked, uv pip check, compile of all 13 modules, ruff format, ruff check, ty check, two byte-identical builds, and an isolated wheel install that imports. Rerunning Develop's generators reproduced base.py, the seven Child units, and the Entity Service Interface with zero difference. One Finding was recorded and resolved: F1 (five database_error members had no example in the Entity Service documentation). The review ran in the same session that developed P3."
+      data:
+        findings:
+          F1:
+            state: "resolved"
+            resolution: "Added to the database_error section a paragraph stating where each remaining kind comes from and an example that raises ConfigurationError through a Child Service and tells every kind apart by its class. Recheck: every database_error member appears in an example; ruff format and ruff check pass; all 14 documentation examples print what their text states."
+            baseline: "Entity Service Definition, Documentation section 2 (Interface): every group with its members, including every member of the three Database groups, each with one example. P3-G6-T1 acceptance: covers every member of the three Database groups, each with an example."
+            expected: "Every member of database_error is shown in an example."
+            observed: "The README's examples use DatabaseError, InvalidInputError, and ExecutionError; ConfigurationError, InactiveInstanceError, DeclarationMismatchError, ConnectionFailureError, and SetupError are only listed in prose, in no example."
+            location: "logic/logic/services/entity/README.md, section Interface > database_error"
+        observations:
+          - "Independence: Develop and this Review ran in the same session. Every check was written anew from the P3 Plan acceptance and the Logic and Entity Service Definitions."
+          - "Zero-diff regeneration was observed for the generated units by rerunning Develop's generators (kept in the session scratchpad, not in the repository) from the unchanged Database Interface and Entity Collection; Logic Interface and the two READMEs are agent-authored and have no generator Review can run (as in OQ-004-1)."
+          - "InactiveInstanceError, DeclarationMismatchError, ConnectionFailureError, and SetupError cannot be raised by Entity Service Actions on the current Configuration and store (SetupError only by Database's Setup Operations), so their documentation example shows how a caller tells them apart rather than raising each."
+          - "The P2 Database README shows the same pattern for its error members (a table, with examples for some kinds); that is outside this P3 review."
+          - "The isolated wheel install of Logic, Database, and Entity imports, and a Database call refuses to run without Database's Configuration, as Database documents; within the repository Logic depends on Database as an editable path dependency."
+          - "Checks used copies in the session scratchpad and a temporary environment; the real Database store was only read (its hash is unchanged) and no Component other than Logic was changed."
+        established:
+          plan_acceptance: "All 8 P3 Task acceptance criteria were observed to hold."
+          review_category_logic: "All 5 Logic Review observations hold: Logic Interface publishes exactly Entity; it is the identical Entity Service Interface; no Service other than Entity Service imports Database Interface; no Service imports Logic Interface; no two Services share a name or directory."
+          review_category_entity_service: "All 9 Entity Service Review observations hold: exactly Service, Entity, and the three Database groups are published; every Entity member and republished group is the identical source object; Base has one explicit Action per Entity Operation in Database's order; each Action keeps its Operation's parameter names, order, and defaults without the Entity class; results and errors pass unchanged and another Entity's instance is refused with InvalidInputError; every Action uses the one Database object and adds no validation, retry, or Instance selection; Child names follow the patterns and are valid and unique; every Child binds its own Entity, inherits Base, and sits directly in the Entity Service directory; loading the Interface opens no connection and creates no data or file."
+          technical: "uv lock --check, uv sync --locked, and uv pip check pass; all 13 modules compile; ruff format, ruff check, and ty check pass; uv build gives a wheel holding only the package (with the Entity Service README) and an sdist, byte-identical across two builds; the wheel installs with the Database and Entity wheels into an isolated environment and imports."
+    - id: "011"
+      skill: "my-interface-implement"
+      phase: "P4"
+      event: "implement"
+      outcome: "completed"
+      started_at: "2026-10-13T01:10:41Z"
+      completed_at: "2026-10-13T01:33:22Z"
+      duration: "22:41"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Log Entry 012: created the P4 Plan (6 Groups, 10 Tasks); completed."
+        - name: "my-interface-develop"
+          report: "Log Entry 013: developed all 10 P4 Tasks; completed."
+        - name: "my-interface-review"
+          report: "Log Entry 014: P4 satisfied with no Finding."
+      open_questions: []
+      blockers: []
+      report: "Implemented phase 4 (P4, API). Config records were valid, so Configure was not run. Plan, Develop, and Review ran in order with this Entry as parent: Plan completed, Develop completed, Review satisfied. Associated Open Questions: 0; associated Blockers: 0. The Human answered OQ-007-1 during this run by keeping the PostgreSQL password copied into database/config.yaml."
+      data:
+        phases:
+          requested: "4"
+          resolved: ["P4"]
+        configure: "not run; Plan Config and State Config were valid"
+        operations:
+          - {phase: "P4", operation: "plan", log_entry: "012", outcome: "completed"}
+          - {phase: "P4", operation: "develop", log_entry: "013", outcome: "completed"}
+          - {phase: "P4", operation: "review", log_entry: "014", outcome: "satisfied"}
+        counts:
+          open_questions: 0
+          blockers: 0
+        human_decisions:
+          OQ-007-1:
+            answer: "keep it"
+            recorded_as: "database/config.yaml keeps the inactive PostgreSQL Instance's password as Database Preferences define it; nothing was changed."
+        outstanding_project_open_questions:
+          - "OQ-002-1"
+          - "OQ-003-1"
+          - "OQ-003-2"
+          - "OQ-004-1"
+          - "OQ-006-1"
+          - "OQ-006-2"
+          - "OQ-008-1"
+    - id: "012"
+      skill: "my-interface-plan"
+      parent_id: "011"
+      phase: "P4"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-13T01:10:48Z"
+      completed_at: "2026-10-13T01:12:21Z"
+      duration: "1:33"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Created the P4 Plan."
+      open_questions: []
+      blockers: []
+      report: "Requested phase 4 resolved to Target phase P4 (API, enabled and ready). P3 has no open Blocker and its Review is satisfied. No earlier P4 Plan existed; created the P4 Plan with 6 Groups and 10 Tasks covering Component setup, the runtime Configuration, the common Endpoint serving rules, the Entity Group Adapters, Bootstrap with interactive documentation, and documentation. Set aggregate Planning progress for P4 to completed. Total stored Tasks: 57."
+      data:
+        phase_selection:
+          requested: "4"
+          resolved: "P4"
+          reason: "The Target names its phases P1 to P5 and the Workflow selects them by number."
+        prior_phase: "P3 has no open Blocker; its Review is satisfied."
+        changes:
+          added:
+            - {id: "P4-G1-T1", reason: "Required executable package with its Logic Connection."}
+            - {id: "P4-G2-T1", reason: "Required runtime Configuration in the API Configuration Structure, with the URL Key setting on."}
+            - {id: "P4-G3-T1", reason: "Required error mapping to Problem Details by the error table."}
+            - {id: "P4-G3-T2", reason: "Required conversion of non-simple Parameters before Handlers."}
+            - {id: "P4-G4-T1", reason: "Required Adapter per Entity with its reading Endpoints."}
+            - {id: "P4-G4-T2", reason: "Required changing Endpoints, completing one Endpoint per Action."}
+            - {id: "P4-G5-T1", reason: "Required Bootstrap serving every Group beneath its segment."}
+            - {id: "P4-G5-T2", reason: "Required interactive documentation sectioned by Group and Adapter."}
+            - {id: "P4-G6-T1", reason: "Required Entity Group documentation."}
+            - {id: "P4-G6-T2", reason: "Required API root documentation."}
+          changed: []
+          removed: []
+          preserved: []
+          replaced: []
+        notes:
+          - "The MT5 Group is not planned: the Target marks it reserved and not yet defined, and API Preferences list only Entity Group."
+          - "The Adapters are planned as two Tasks across all Entities (reading and changing Endpoints): every Adapter has the same Actions, and the Target defines no Entity-specific Action."
+          - "Launch-time runtime requirements (Platform's VPS Launch Item for api: host 0.0.0.0, port 8000, Nginx, CORS origins) belong to Launch and are not planned here; the runtime Configuration is generated from API Preferences."
+          - "OQ-008-1 (credential storage rules) remains open; Entity Group exposes Entity Service unchanged."
+    - id: "013"
+      skill: "my-interface-develop"
+      parent_id: "011"
+      phase: "P4"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-13T01:12:27Z"
+      completed_at: "2026-10-13T01:30:03Z"
+      duration: "17:36"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Executed all 10 P4 Tasks."
+        - name: "fastapi"
+          report: "Applied to Annotated parameters and dependencies, router-level prefix and tags, regular def Handlers, and the app's documentation; its return-type serialization was not used because results must keep each Entity's own JSON form (decimals as text)."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P4-G1-T1"
+        - "P4-G2-T1"
+        - "P4-G3-T1"
+        - "P4-G3-T2"
+        - "P4-G4-T1"
+        - "P4-G5-T1"
+        - "P4-G5-T2"
+        - "P4-G6-T1"
+      report: "Developed all 10 P4 Tasks; every Task is done and was claimed before its work began. The API Component is at api/: config.yaml (with a URL Key generated once), the common Endpoint rules (Problem Details error mapping, non-simple Parameter conversion, result encoding), seven Entity Group Adapters with twelve explicitly written Endpoints each, Bootstrap with CORS and interactive documentation sectioned by Group and Adapter, the console entry point api, and two READMEs. ruff format, ruff check, and ty check pass; API was started from its entry point and exercised over HTTP on an isolated Database copy, and every documentation example ran as shown; the real Database store was only read. P4 development progress set to completed. Conformance is for Review to establish."
+      data:
+        component: "api"
+        resolved_versions:
+          python: "3.14.4"
+          fastapi: "0.143.0"
+          uvicorn: "0.54.0"
+          pydantic: "2.14.1"
+          pyyaml: "6.0.3"
+          logic: "0.1.0 (local path)"
+          ruff: "0.17.0"
+          ty: "0.0.86"
+        notes:
+          - "config.yaml, the Adapters, and Bootstrap were produced by generators kept in the session scratchpad (gen_api_config.py, gen_adapters.py, gen_bootstrap.py); the Adapters and Bootstrap read the application only through Logic Interface, and the API Preferences' verb table, placement, and defaults were transcribed into them as read."
+          - "config.yaml holds the generated URL Key; it is not authentication, but it is not repeated in any record or document."
+          - "Responses carry stored credential Fields as Entity Service returns them (OQ-008-1 remains open)."
+          - "The MT5 Group is not realized; the Target reserves it."
+          - "No Component other than API was changed."
+    - id: "014"
+      skill: "my-interface-review"
+      parent_id: "011"
+      phase: "P4"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-13T01:30:24Z"
+      completed_at: "2026-10-13T01:32:46Z"
+      duration: "2:22"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P4 against its Plan and the API and Entity Group Review categories."
+        - name: "fastapi"
+          report: "Used to judge routing, parameter placement, and the served description."
+      open_questions: []
+      blockers: []
+      report: "P4 satisfied. Judged all 10 Task acceptances, the 12 API and 6 Entity Group Review observations by independent transient checks (testing is disabled, so nothing was persisted) on an isolated Database copy: 314 checks through the Bootstrap app, deriving every Endpoint's Method, Path, Parameter placement, and requirements independently from the verb table and placement rule, a spy Child Service showing each Handler makes exactly one Action call with converted values and returns its answer, every error kind's Problem Details status, the URL Key, the interactive documentation sections, the runtime Configuration, and an audit hook showing Bootstrap opens only config.yaml. API was started from its entry point (127.0.0.1:8000, two server processes) and every documentation example ran as shown on a fresh store. Technical checks: uv lock --check, uv sync --locked, uv pip check, compile of all 12 modules, ruff format, ruff check, ty check, two byte-identical builds, and an isolated wheel install that imports. Rerunning Develop's generators reproduced config.yaml (with its kept key), Bootstrap, and the seven Adapters with zero difference. No Finding was recorded. The review ran in the same session that developed P4."
+      data:
+        findings: {}
+        observations:
+          - "Independence: Develop and this Review ran in the same session. Every check was written anew from the P4 Plan acceptance and the API and Entity Group Definitions, and the Endpoint rules were derived independently of the generator."
+          - "Zero-diff regeneration was observed for config.yaml, Bootstrap, and the Adapters by rerunning Develop's generators (kept in the session scratchpad, not in the repository); api/endpoints.py and both READMEs are agent-authored and have no generator Review can run (as in OQ-004-1)."
+          - "list, count, sum, min, and max have verbs the table maps to GET but take Filters, which Query cannot carry, so they use POST as the placement rule requires."
+          - "The Entity Group documentation lists the twelve Endpoints once, shared by every Adapter, with an example for each Endpoint and for each Adapter, rather than repeating all 84 Endpoint and Entity combinations; judged to list every Entity's Endpoints."
+          - "The built wheel holds no config.yaml, so an installed copy's Bootstrap cannot start; API is an executable run from its Component directory, as its documentation's Setup states."
+          - "Responses carry stored credential Fields unchanged, as Entity Service returns them (OQ-008-1 remains open)."
+          - "Checks used copies in the session scratchpad and a temporary environment; the real Database store was only read (its hash is unchanged), the API process started for the review was stopped, and no Component other than API was changed."
+        established:
+          plan_acceptance: "All 10 P4 Task acceptance criteria were observed to hold."
+          review_category_api: "All 12 API Review observations hold: the Entity Group alone is registered beneath its segment; every segment and Method-and-Path is unique; Entity Group conforms to the Group contract; API serves no Endpoint of its own; every Method and Path follows the verb table and Path rule; every Parameter is placed by the rule; every non-simple Parameter travels in its stated form and is converted before its Handler; every error is Problem Details with its class name and the table's status; the Base URL carries a non-empty URL Key; the interactive documentation is served, lists every Endpoint, and has one section per Group and per Adapter; the runtime Configuration holds every Structure value and follows its rules; Bootstrap reads no Definition or Preferences file."
+          review_category_entity_group: "All 6 Entity Group Review observations hold: its source, Adapters, and Endpoints follow the Group contract; one Adapter per Entity Entity Service presents; one explicitly written Endpoint per Action in each Adapter, with no shared base or generated route; Parameters keep the Action's names, requirements, and defaults; every Handler calls only its Action through Logic Interface and returns its result and errors unchanged; Adapters import nothing but Logic Interface for the application."
+          technical: "uv lock --check, uv sync --locked, and uv pip check pass; all 12 modules compile; ruff format, ruff check, and ty check pass; uv build gives a wheel holding only the package and an sdist, byte-identical across two builds; the wheel installs with the Logic, Database, and Entity wheels into an isolated environment and its modules import."
+    - id: "015"
+      skill: "my-interface-review"
+      phase: "P4"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-13T01:37:13Z"
+      completed_at: "2026-10-13T01:40:04Z"
+      duration: "2:51"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P4 again against its Plan and the API and Entity Group Review categories."
+        - name: "fastapi"
+          report: "Used to trace how FastAPI serializes a route's return value and to realize the fix through a route class."
+      open_questions: []
+      blockers: []
+      report: "P4 satisfied after one Finding was resolved. This second review of P4 reran the first pass's 314 transient checks on a fresh isolated Database copy and added 15 checks it had not made: real add, update, enable, disable, delete, and truncate over HTTP compared with Entity Service; error answers free of supplied credential values; an unknown Instance name; exact decimals through Entity objects, Filters, and aggregates; and CORS as API Preferences select it. F1: decimal sum, minimum, and maximum answered a float instead of the Action's exact Decimal; resolved in API's own files with a route class that hands each Handler's result to ResultResponse, Handlers unchanged. Recheck: 314/314 and 15/15 pass; decimal aggregates answer exact text; ruff format, ruff check, ty check, uv lock --check, uv sync --locked, and uv pip check pass; two builds are byte-identical; Develop's generators, with the Adapter generator updated for the route class, reproduce config.yaml, Bootstrap, and the seven Adapters with zero difference; API started from its entry point with two server processes and both READMEs' examples ran as shown. The review ran in the same session that developed P4."
+      data:
+        findings:
+          F1:
+            state: "resolved"
+            resolution: "api/endpoints.py gains ResultRoute, an APIRoute whose endpoint hands the Handler's own return value to ResultResponse, so FastAPI's generic encoder never sees it; every Adapter router is created with route_class=endpoints.ResultRoute (the scratch generator gen_adapters.py now emits it, and all seven Adapters were regenerated). Route functions are unchanged: each still only calls its Action and returns its result. Recheck: with balance 0.10, sum, min, and max answer \"0.10\"; an integer sum answers 15, a float minimum 0.0001, a missing record null; the 12345678901234567890.123456789 sum answers exactly; all 329 checks pass."
+            baseline: "P4-G4-T1 acceptance: a request returns exactly what the Action returns for that Entity. Group contract (API Definition) and Entity Group Review observation: every Handler returns its Action's result unchanged. P4-G3-T2 expected result: results keep each value's meaning."
+            expected: "A sum, minimum, or maximum over a decimal Field answers the Action's exact Decimal value."
+            observed: "With Account balance 12345678901234567890.123456789 on an isolated Database copy, Entity.Service.Account().sum(balance) returns Decimal('12345678901234567890.123456789') while the sum Endpoint answers 1.2345678901234567e+19: for a route without a response model FastAPI 0.143 passes the Handler's return value through its generic jsonable_encoder, which turns a Decimal into a float before ResultResponse renders it. Entity results are unaffected because pydantic serializes their decimals as text."
+            location: "api/api/groups/entity/<adapter>.py routers (generated) and api/api/endpoints.py ResultResponse; observed on POST <base>/entity/account/sum, /min, /max"
+        observations:
+          - "The first review of P4 (Log Entry 014) judged it satisfied without observing a decimal aggregate over HTTP: its sums ran through a spy returning an integer. Develop's evidence for P4-G4-T1 records a decimal sum of '0', which was the integer 0 after FastAPI's encoder; Review does not change Task Logs."
+          - "Independence: Develop and both Reviews ran in the same session; this pass's added checks were written anew from the P4 Plan acceptance and the API and Entity Group Definitions."
+          - "A wrong Method on an Endpoint path answers 405 and an unknown path 404, both as FastAPI's plain JSON rather than Problem Details; these are routing answers outside any Endpoint, not errors an Endpoint returns, so not a Finding."
+          - "Zero-diff regeneration covers config.yaml, Bootstrap, and the Adapters through Develop's generators (kept in the session scratchpad); api/endpoints.py and both READMEs are agent-authored (as in OQ-004-1)."
+          - "Checks used copies in the session scratchpad; the real Database store was only read (its hash is unchanged), every API process started for the review was stopped, and no Component other than API was changed."
+        established:
+          plan_acceptance: "All 10 P4 Task acceptance criteria hold, including exact results for decimal aggregates after F1."
+          review_categories: "All 12 API and 6 Entity Group Review observations hold, as established in Log Entry 014 and rechecked here on the current source."
+    - id: "016"
+      skill: "my-interface-plan"
+      phase: "P5"
+      event: "plan"
+      outcome: "stopped"
+      started_at: "2026-10-13T01:40:54Z"
+      completed_at: "2026-10-13T01:42:31Z"
+      duration: "1:37"
+      report: "Interrupted by the Human while reading the Target and Presentation authorities, before any Plan content was written; no P5 Plan exists. Planning was requested again as Log Entry 017."
+    - id: "017"
+      skill: "my-interface-plan"
+      phase: "P5"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-13T01:42:31Z"
+      completed_at: "2026-10-13T01:44:29Z"
+      duration: "1:58"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Created the P5 Plan."
+      open_questions:
+        - "OQ-017-1"
+      blockers: []
+      report: "Requested phase 5 resolved to Target phase P5 (Presentation, enabled and ready). P4 has no open Blocker and its Review is satisfied. Log Entry 016, the interrupted first attempt, wrote nothing. No earlier P5 Plan existed; created the P5 Plan with 7 Groups and 12 Tasks covering project setup, the generated Entity metadata, API Access (API types and the Data Provider), the application shell (layout, Navigation, routes, Persian and English text, direction, and theme), the shared field inputs and record table, the Entity Pages (listing and viewing, add and edit forms, delete, enable, and disable), and documentation. Set aggregate Planning progress for P5 to completed. Total stored Tasks: 69. One Open Question was recorded."
+      data:
+        phase_selection:
+          requested: "5"
+          resolved: "P5"
+          reason: "The Target names its phases P1 to P5 and the Workflow selects them by number."
+        prior_phase: "P4 has no open Blocker; its Review is satisfied (Log Entries 014 and 015)."
+        changes:
+          added:
+            - {id: "P5-G1-T1", reason: "Required web application project with its API address setting."}
+            - {id: "P5-G2-T1", reason: "Required generated Entity metadata, read from Entity only at generation."}
+            - {id: "P5-G3-T1", reason: "Required API types from API's machine-readable description."}
+            - {id: "P5-G3-T2", reason: "Required Data Provider, the only part that calls API."}
+            - {id: "P5-G4-T1", reason: "Required layout, Navigation menu, and Entity Page routes (the Target's menu and navigation)."}
+            - {id: "P5-G4-T2", reason: "Required Persian and English text with direction, and the theme."}
+            - {id: "P5-G5-T1", reason: "Required shared field inputs following each Declaration."}
+            - {id: "P5-G5-T2", reason: "Required shared record table with server-side search, filter, and order."}
+            - {id: "P5-G6-T1", reason: "Required one page per Entity with list, view, search, filter, and order."}
+            - {id: "P5-G6-T2", reason: "Required add and edit forms on every page."}
+            - {id: "P5-G6-T3", reason: "Required delete, enable, and disable on every page."}
+            - {id: "P5-G7-T1", reason: "Required Presentation documentation."}
+          changed: []
+          removed: []
+          preserved: []
+          replaced: []
+        notes:
+          - "The Entity Pages are planned as three Tasks across all Entities (listing and viewing, forms, actions): every Entity is served by the same twelve Endpoints, and the Target defines no Entity-specific page behavior."
+          - "Charts in the client profile are not planned; the Target asks for no chart."
+          - "API answers with stored credential Fields (OQ-008-1); P5-G5 requires sensitive Fields never to be shown."
+        open_questions:
+          OQ-017-1:
+            question: "How should Entity Pages page through records, given that API's list Endpoint has a limit but no offset?"
+            context: "Presentation Preferences select pagination done on the server, but API, through Database's list Operation, offers no offset or page, so only the first page of a large list can be requested; Presentation may not invent an Endpoint or behavior API does not serve."
+            current_choice: "The Plan requires search, filter, and order on the server and shows exactly the records API returns; how pages are shown within what API serves is left to Develop, which reports the limitation."
+    - id: "018"
+      skill: "my-interface-plan"
+      phase: "P5"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-13T01:45:04Z"
+      completed_at: "2026-10-13T01:45:12Z"
+      duration: "8 seconds"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the existing P5 Plan; no change."
+      open_questions:
+        - "OQ-017-1"
+      blockers: []
+      report: "Requested phase 5 resolved to Target phase P5 (Presentation). The P5 Plan created by Log Entry 017 was compared with current Understanding: the Interface, Target, and Presentation authorities are unchanged since that Plan began (none modified, Interface tree matching its commit), and none of its 12 Tasks has been begun. Every Task was preserved unchanged; nothing was added, changed, removed, or replaced. Planning progress for P5 stays completed. OQ-017-1 (paging without an offset in API) remains open. Total stored Tasks: 69."
+      data:
+        phase_selection:
+          requested: "5"
+          resolved: "P5"
+        comparison:
+          plan_source: "017"
+          authorities_changed: false
+          tasks_begun: 0
+        changes:
+          added: []
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P5-G1-T1", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G2-T1", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G3-T1", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G3-T2", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G4-T1", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G4-T2", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G5-T1", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G5-T2", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G6-T1", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G6-T2", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G6-T3", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+            - {id: "P5-G7-T1", reason: "Still matches the unchanged Target and Presentation authorities; not begun."}
+          replaced: []
+    - id: "019"
+      skill: "my-interface-develop"
+      phase: "P5"
+      event: "develop"
+      outcome: "stopped"
+      started_at: "2026-10-13T01:49:01Z"
+      completed_at: "2026-10-13T02:05:42Z"
+      duration: "16:41"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "P5-G1-T1 and P5-G2-T1 done; P5-G3-T1 claimed and its result produced before the interruption."
+      decisions:
+        - "P5-G1-T1"
+        - "P5-G2-T1"
+      report: "Interrupted by the Human while P5-G3-T1 was being finished; Develop was requested again as Log Entry 020, which continues from the recorded Task state. P5-G1-T1 and P5-G2-T1 are done; P5-G3-T1 was claimed and its key-free API types were generated and checked, but not yet recorded."
+    - id: "020"
+      skill: "my-interface-develop"
+      phase: "P5"
+      event: "develop"
+      outcome: "stopped"
+      started_at: "2026-10-13T02:05:42Z"
+      completed_at: "2026-10-13T02:23:21Z"
+      duration: "17:39"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "P5-G3-T1, P5-G3-T2, and P5-G4-T1 done; P5-G4-T2 claimed with its work produced before the interruption."
+      decisions:
+        - "P5-G3-T1"
+        - "P5-G3-T2"
+        - "P5-G4-T1"
+      report: "Interrupted by the Human's new Develop request while P5-G4-T2's last check was running; Develop continues as Log Entry 021 from the recorded Task state. P5-G3-T1, P5-G3-T2, and P5-G4-T1 are done; P5-G4-T2 is claimed, its language, direction, and theme work produced and observed but not yet recorded."
+    - id: "021"
+      skill: "my-interface-develop"
+      phase: "P5"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-13T02:23:21Z"
+      completed_at: "2026-10-13T02:42:32Z"
+      duration: "19:11"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Finished P5 after Log Entries 019 and 020 were interrupted: P5-G4-T2 (claimed by 020), P5-G5-T1, P5-G5-T2, P5-G6-T1, P5-G6-T2, P5-G6-T3, and P5-G7-T1."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P5-G4-T2"
+        - "P5-G5-T1"
+        - "P5-G5-T2"
+        - "P5-G6-T1"
+        - "P5-G6-T2"
+        - "P5-G6-T3"
+        - "P5-G7-T1"
+      report: "All 12 P5 Tasks are done (Log Entries 019, 020, and 021 together; each Task was claimed before its work began). The Presentation web dashboard is at presentation/: React, Refine, and antd with strict TypeScript and Vite; generated Entity metadata, API types, language resources, and seven Entity Page units; one Data Provider as the only part calling API; a Persian and English shell with direction and theme; shared field inputs, record table, filter builder, and record view. tsc passes; the production build completes with no warning; every generated unit regenerates byte-identical. The dashboard was exercised by rendering the real App in jsdom through Vite against API on an isolated Database copy (a headless browser cannot start on this machine): navigation, every page, filtering, ordering, add, edit (keeping stored credentials), enable, disable, delete, and API errors. Two wiring defects found during the checks (form controls not connected to their Form.Item; the AND/OR choice stored under the condition list) were fixed. The real Database store was only read. P5 development progress set to completed. Conformance is for Review to establish."
+      data:
+        component: "presentation"
+        resolved_versions:
+          node: "22.22.1"
+          npm: "9.2.0"
+          react: "19.3.0"
+          "@refinedev/core": "5.0.12"
+          "@refinedev/antd": "6.0.3"
+          "@refinedev/react-router": "2.0.4"
+          react-router: "7.18.4"
+          antd: "5.29.3"
+          i18next: "26.4.4"
+          react-i18next: "17.0.16"
+          zod: "4.6.7"
+          typescript: "5.9.3"
+          vite: "8.3.4"
+          openapi-typescript: "7.13.0"
+        notes:
+          - "OQ-017-1 is realized within what API serves: the Data Provider asks list for the records up to the requested page under the same Filters and Orders, keeps the last page, and takes the total from count."
+          - "The Entity metadata, language resources (Entity and Field texts), and page units were produced by generators kept in the session scratchpad (gen_metadata.py, gen_locales.py, gen_pages.py); the API types are generated by the project's own generate:api script from the running API."
+          - "No browser could be started here (the cached headless Chromium lacks system libraries, which were not installed machine-wide); all interface checks rendered the real App in jsdom through Vite's module loader, with a scratch-only jsdom installation."
+          - "npm warns that @redocly/openapi-core, inside the development-only type generator, asks for npm 9.5 or newer; the machine's npm is 9.2.0."
+          - "API answers with stored credential Fields (OQ-008-1); Presentation never shows them and never fills a form with them."
+          - "presentation/.env holds API's Base URL with its URL Key and is excluded by the root ignore entry .env."
+          - "No Component other than Presentation was changed."
