@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { entityOf } from "../navigation/resources.config";
 import { FieldValue } from "./FieldValue";
-import { fieldLabelKey } from "./records";
+import { fieldLabel } from "./records";
 import { useEntityRelatedNames } from "./related";
 
 interface RecordViewProps {
@@ -19,7 +19,7 @@ export function RecordView({ resource, record }: RecordViewProps) {
   return (
     <Descriptions column={1} bordered>
       {entityOf(resource).fields.map((field) => (
-        <Descriptions.Item key={field.name} label={t(fieldLabelKey(resource, field))}>
+        <Descriptions.Item key={field.name} label={fieldLabel(t, resource, field)}>
           <FieldValue field={field} value={record?.[field.name]} related={names.get(field.name)} />
         </Descriptions.Item>
       ))}

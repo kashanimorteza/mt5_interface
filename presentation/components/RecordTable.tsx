@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { entityOf } from "../navigation/resources.config";
 import { FieldValue } from "./FieldValue";
 import { FilterBuilder } from "./FilterBuilder";
-import { fieldLabelKey } from "./records";
+import { fieldLabel } from "./records";
 import { useEntityRelatedNames } from "./related";
 
 interface RecordTableProps {
@@ -36,7 +36,7 @@ export function RecordTable({ resource, actions }: RecordTableProps) {
           <Table.Column<BaseRecord>
             key={field.name}
             dataIndex={field.name}
-            title={t(fieldLabelKey(resource, field))}
+            title={fieldLabel(t, resource, field)}
             sorter={{ multiple: entity.fields.indexOf(field) + 1 }}
             render={(value: unknown) => <FieldValue field={field} value={value} related={names.get(field.name)} />}
           />

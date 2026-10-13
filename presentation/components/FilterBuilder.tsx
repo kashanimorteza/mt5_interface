@@ -4,7 +4,7 @@ import type { Dayjs } from "dayjs";
 import { useTranslation } from "react-i18next";
 
 import type { EntityMeta, FieldMeta } from "../navigation/resources.config";
-import { fieldLabelKey, fromPicker } from "./records";
+import { fieldLabel, fromPicker } from "./records";
 
 type Operator = LogicalFilter["operator"];
 
@@ -79,7 +79,7 @@ export function FilterBuilder({ entity, onApply }: FilterBuilderProps) {
                     aria-label={t("filters.field")}
                     placeholder={t("filters.field")}
                     style={{ width: 220 }}
-                    options={entity.fields.map((f) => ({ value: f.name, label: t(fieldLabelKey(entity.resource, f)) }))}
+                    options={entity.fields.map((f) => ({ value: f.name, label: fieldLabel(t, entity.resource, f) }))}
                   />
                 </Form.Item>
                 <Form.Item noStyle shouldUpdate>

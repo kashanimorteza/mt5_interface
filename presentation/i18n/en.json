@@ -11,15 +11,6 @@
       "create": "User",
       "edit": "User",
       "show": "User"
-    },
-    "fields": {
-      "id": "id",
-      "name": "The user's display name.",
-      "username": "The username used to identify the user.",
-      "password": "The password credential used by the user.",
-      "api_key": "The API key assigned to the user.",
-      "is_active": "Indicates whether the user is active.",
-      "description": "Describes the user."
     }
   },
   "instance": {
@@ -29,17 +20,6 @@
       "create": "Instance",
       "edit": "Instance",
       "show": "Instance"
-    },
-    "fields": {
-      "id": "id",
-      "user_id": "Identifies the user who owns this instance.",
-      "name": "The instance's display name.",
-      "ip": "Identifies the technical network address used to reach MetaTrader 5 when required.",
-      "username": "Defines the technical username used to establish the Instance connection when required.",
-      "password": "Defines the technical password used to establish the Instance connection when required.",
-      "api_key": "Defines the technical API credential used to establish the Instance connection when required.",
-      "is_active": "Indicates whether the instance is active.",
-      "description": "Describes the instance."
     }
   },
   "currency": {
@@ -49,16 +29,6 @@
       "create": "Currency",
       "edit": "Currency",
       "show": "Currency"
-    },
-    "fields": {
-      "id": "id",
-      "user_id": "Identifies the user who owns this currency.",
-      "code": "The currency's standard three-letter code, such as `USD` or `EUR`.",
-      "symbol": "The currency's display symbol, such as `$`, `€`, or `£`.",
-      "country": "Identifies the country or region associated with the currency.",
-      "decimal_digits": "Defines the number of decimal digits normally used for monetary values in the currency.",
-      "is_active": "Indicates whether the currency is active.",
-      "description": "Describes the currency."
     }
   },
   "broker": {
@@ -68,13 +38,6 @@
       "create": "Broker",
       "edit": "Broker",
       "show": "Broker"
-    },
-    "fields": {
-      "id": "id",
-      "name": "The broker's display name.",
-      "user_id": "Identifies the user who owns the broker configuration.",
-      "is_active": "Indicates whether the broker is active.",
-      "description": "Describes the broker."
     }
   },
   "asset": {
@@ -84,16 +47,6 @@
       "create": "Asset",
       "edit": "Asset",
       "show": "Asset"
-    },
-    "fields": {
-      "id": "id",
-      "broker_id": "Identifies the broker that provides this asset.",
-      "symbol": "Identifies the tradable asset, such as `EUR/USD`, `XAU/USD`, or `USOil`.",
-      "category": "Identifies the asset category, such as `Currency`, `Commodity`, or `Cryptocurrency`.",
-      "point_size": "Stores the size of one point for the asset.",
-      "digits": "Stores the number of decimal digits used for the asset's price.",
-      "is_active": "Indicates whether the asset is active.",
-      "description": "Describes the asset."
     }
   },
   "account_group": {
@@ -103,13 +56,6 @@
       "create": "Account Group",
       "edit": "Account Group",
       "show": "Account Group"
-    },
-    "fields": {
-      "id": "id",
-      "user_id": "Identifies the user who owns the account group.",
-      "name": "The account group's display name.",
-      "is_active": "Indicates whether the account group is active.",
-      "description": "Describes the account group."
     }
   },
   "account": {
@@ -119,21 +65,6 @@
       "create": "Account",
       "edit": "Account",
       "show": "Account"
-    },
-    "fields": {
-      "id": "id",
-      "name": "The account's display name.",
-      "group_id": "Identifies the account group that contains the account.",
-      "broker_id": "Identifies the broker that owns the account.",
-      "instance_id": "Identifies the trading-platform instance used to connect this account.",
-      "base_currency_id": "Identifies the base currency used by the account.",
-      "username": "The username identifier used to access the trading account.",
-      "password": "The credential used to access the trading account.",
-      "leverage": "Defines the account's leverage multiplier.",
-      "balance": "Stores the account's current balance.",
-      "account_type": "Identifies the account model, such as `cfd` or `spread_betting`.",
-      "is_active": "Indicates whether the account is active.",
-      "description": "Describes the account."
     }
   },
   "app": {
@@ -232,6 +163,77 @@
       "endswiths": "ends with",
       "null": "is empty",
       "nnull": "is not empty"
+    }
+  },
+  "fields": {
+    "user": {
+      "id": "ID",
+      "name": "Name",
+      "username": "Username",
+      "password": "Password",
+      "api_key": "API Key",
+      "is_active": "Active",
+      "description": "Description"
+    },
+    "instance": {
+      "id": "ID",
+      "user_id": "User",
+      "name": "Name",
+      "ip": "IP",
+      "username": "Username",
+      "password": "Password",
+      "api_key": "API Key",
+      "is_active": "Active",
+      "description": "Description"
+    },
+    "currency": {
+      "id": "ID",
+      "user_id": "User",
+      "code": "Code",
+      "symbol": "Symbol",
+      "country": "Country",
+      "decimal_digits": "Decimal Digits",
+      "is_active": "Active",
+      "description": "Description"
+    },
+    "broker": {
+      "id": "ID",
+      "name": "Name",
+      "user_id": "User",
+      "is_active": "Active",
+      "description": "Description"
+    },
+    "asset": {
+      "id": "ID",
+      "broker_id": "Broker",
+      "symbol": "Symbol",
+      "category": "Category",
+      "point_size": "Point Size",
+      "digits": "Digits",
+      "is_active": "Active",
+      "description": "Description"
+    },
+    "account_group": {
+      "id": "ID",
+      "user_id": "User",
+      "name": "Name",
+      "is_active": "Active",
+      "description": "Description"
+    },
+    "account": {
+      "id": "ID",
+      "name": "Name",
+      "group_id": "Group",
+      "broker_id": "Broker",
+      "instance_id": "Instance",
+      "base_currency_id": "Base Currency",
+      "username": "Username",
+      "password": "Password",
+      "leverage": "Leverage",
+      "balance": "Balance",
+      "account_type": "Account Type",
+      "is_active": "Active",
+      "description": "Description"
     }
   }
 }

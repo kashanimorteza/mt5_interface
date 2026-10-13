@@ -1,11 +1,12 @@
 import type { BaseRecord } from "@refinedev/core";
 import dayjs, { type Dayjs } from "dayjs";
+import type { TFunction } from "i18next";
 
 import { entityOf, type FieldMeta } from "../navigation/resources.config";
 
-/** The translation key that labels a Field: its description in the chosen language. */
-export function fieldLabelKey(resource: string, field: FieldMeta): string {
-  return `${resource}.fields.${field.name}`;
+/** A Field's Field Label in the chosen language, kept under its exact Field name; the Field name when missing. */
+export function fieldLabel(t: TFunction, resource: string, field: FieldMeta): string {
+  return t(`fields.${resource}.${field.name}`, { defaultValue: field.name });
 }
 
 /** A record without its sensitive Fields, so a stored secret never reaches a form. */

@@ -6,7 +6,7 @@ import type { Dayjs } from "dayjs";
 import { useTranslation } from "react-i18next";
 
 import { entityOf, type FieldMeta } from "../navigation/resources.config";
-import { fieldLabelKey, fromPicker, toPicker } from "./records";
+import { fieldLabel, fromPicker, toPicker } from "./records";
 
 interface FieldRendererProps {
   readonly resource: string;
@@ -73,7 +73,7 @@ function Control({ field, disabled, ...bound }: { readonly field: FieldMeta; rea
 /** The input of one Field, chosen by its type and behaving as its Declaration states. */
 export function FieldRenderer({ resource, field, mode }: FieldRendererProps) {
   const { t } = useTranslation();
-  const label = t(fieldLabelKey(resource, field));
+  const label = fieldLabel(t, resource, field);
   const fixed = field.immutable || field.generated;
   const required = field.required && !(mode === "edit" && field.sensitive);
   const rules: Rule[] = required && !fixed ? [{ required: true, message: t("validation.required", { field: label }) }] : [];

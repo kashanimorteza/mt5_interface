@@ -26,7 +26,7 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 69
+  task_count: 76
   plans:
     P1:
       id: "P1"
@@ -1511,7 +1511,7 @@ content:
       target: "Presentation"
       does: "The Presentation Component exists as the web dashboard with a menu and navigation, giving every Entity one page through which its records are listed, viewed, searched, filtered, ordered, added, edited, enabled, disabled, and deleted, reaching the application only through API."
       constraints: []
-      task_count: 12
+      task_count: 19
       groups:
         P5-G1:
           id: "P5-G1"
@@ -1631,7 +1631,7 @@ content:
           area: "Layout, Navigation, routes, language, and theme"
           does: "A user opens the dashboard, chooses Persian or English, and reaches every Entity Page from its menu."
           constraints: []
-          task_count: 2
+          task_count: 5
           tasks:
             P5-G4-T1:
               id: "P5-G4-T1"
@@ -1677,6 +1677,63 @@ content:
                 - {at: "2026-10-13T02:23:37Z", by: "021", event: "decision", note: "Unset: Design Token values. Chosen: colorPrimary #1677ff and borderRadius 6 (antd's defaults) with fontFamily Vazirmatn, sans-serif. Why: the profile requires tokens and Vazirmatn but sets no colors."}
                 - {at: "2026-10-13T02:23:37Z", by: "021", event: "decision", note: "Unset: the dashboard title. Chosen: the Target's name, MT5 Interface, translated in Persian as رابط MT5. Why: the Target names the system; the title replaces Refine's default text."}
                 - {at: "2026-10-13T02:23:37Z", by: "021", event: "decision", note: "Unset: where the header, title, and theme live. Chosen: navigation/, beside the menu and routes. Why: they belong to the application shell that surrounds every page, and the Vite entry files only import them."}
+            P5-G4-T3:
+              id: "P5-G4-T3"
+              source_id: "023"
+              title: "Open the dashboard in English by default"
+              description: "Make English the language the dashboard opens in, keeping Persian available from the language switch."
+              reason: "The Target names English as the default language."
+              inputs:
+                - "The application shell"
+                - "The language resources"
+              skills: []
+              expected_result: "A dashboard that first appears in English, laid out left to right."
+              acceptance: "Opened without a chosen language, the dashboard shows every visible text in English, laid out left to right; choosing Persian still switches every text and the direction."
+              depends_on:
+                - "P5-G4-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T03:21:27Z", by: "025", event: "claimed", note: "Dependency P5-G4-T2 is done."}
+                - {at: "2026-10-13T03:24:02Z", by: "025", event: "done", note: "Changed i18n/index.ts so the dashboard opens in English (lng en, fallback en); Persian stays in the language switch. Observed by rendering the real App in jsdom against API on an isolated Database copy: it opens with i18n language en, document direction ltr, and the menu User, Instance, Currency, Broker, Asset, Account Group, Account; switching to Persian makes the document rtl and the form labels Persian (شناسه, نام, گروه حساب, کارگزار); tsc passes."}
+            P5-G4-T4:
+              id: "P5-G4-T4"
+              source_id: "023"
+              title: "Use each language's selected font"
+              description: "Show Persian text in the font the client profile selects for Persian and English text in the font it selects for English."
+              reason: "Each language must read in the typeface selected for it."
+              inputs:
+                - "The theme"
+                - "The chosen language"
+              skills: []
+              expected_result: "A dashboard whose font follows the chosen language."
+              acceptance: "With Persian chosen, the dashboard's text uses Persian's selected font; with English chosen, it uses English's selected font; switching the language switches the font without reloading the page."
+              depends_on:
+                - "P5-G4-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T03:21:27Z", by: "025", event: "claimed", note: "Dependency P5-G4-T2 is done."}
+                - {at: "2026-10-13T03:24:02Z", by: "025", event: "done", note: "navigation/theme.ts now takes the language: the fontFamily token is Vazirmatn only for Persian, and English keeps antd's default font; src/App.tsx passes the chosen language. Observed in jsdom: in English no generated style mentions Vazirmatn; after switching to Persian the styles use Vazirmatn; after switching back to English the newly generated styles mention it 0 times, without reloading; tsc passes."}
+                - {at: "2026-10-13T03:24:02Z", by: "025", event: "decision", note: "Unset: how English gets the component library's default font. Chosen: the fontFamily token is set only for Persian and left unset for English. Why: leaving the token unset keeps antd's own default font."}
+            P5-G4-T5:
+              id: "P5-G4-T5"
+              source_id: "023"
+              title: "Offer dark and light modes"
+              description: "Let the user switch the whole dashboard between a dark and a light appearance."
+              reason: "The Target requires dark and light modes."
+              inputs:
+                - "The theme"
+              skills: []
+              expected_result: "A dashboard whose every part follows the chosen mode."
+              acceptance: "Switching the mode turns the layout, menu, tables, and forms of every page dark or light together, and switching back restores the other mode."
+              depends_on:
+                - "P5-G4-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T03:21:27Z", by: "025", event: "claimed", note: "Dependency P5-G4-T2 is done."}
+                - {at: "2026-10-13T03:24:02Z", by: "025", event: "done", note: "The existing dark-mode switch (navigation/header.tsx with the darkAlgorithm or defaultAlgorithm of navigation/theme.ts) covers the whole dashboard; no change was needed. Observed in jsdom on the Account list and Add pages: switching to dark turns the layout from rgb(245, 245, 245) to rgb(0, 0, 0) and the menu and table from rgb(255, 255, 255) to rgb(20, 20, 20), the form inputs are rgb(20, 20, 20) in dark mode, and switching back restores the layout and inputs to light."}
         P5-G5:
           id: "P5-G5"
           title: "Shared record Components"
@@ -1684,7 +1741,7 @@ content:
           area: "Shared Components for fields and tables"
           does: "Any Entity Page can show its records in a table and enter them in a form, every column and field following its Entity's Declaration."
           constraints: []
-          task_count: 2
+          task_count: 4
           tasks:
             P5-G5-T1:
               id: "P5-G5-T1"
@@ -1704,12 +1761,13 @@ content:
                 - "P5-G3-T2"
                 - "P5-G4-T2"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-13T02:23:37Z", by: "021", event: "claimed", note: "Dependencies P5-G2-T1, P5-G3-T2, and P5-G4-T2 are done."}
                 - {at: "2026-10-13T02:34:03Z", by: "021", event: "done", note: "Wrote presentation/components/FieldRenderer.tsx (one Form.Item per Field: label from the Field's description in the chosen language, input by type: Input, InputNumber, InputNumber in string mode for decimals, Switch, DatePicker for datetime, date, and time, Input.Password for a sensitive Field, and a Select over the related Entity's records labeled by their label Field; immutable or generated Fields shown disabled; required Fields refused when empty, except a sensitive Field when editing; nullable empties sent as null; temporal values sent in API's text forms) and components/records.ts (label keys, temporal conversion, and withoutSensitive). gen_locales.py now also generates every Field label (English from the Declaration descriptions, Persian from its translation table), and the language resources gained value, validation, and filter texts. A first check passed only because the inputs were not connected: the inner control did not pass on the value and change handler Form.Item hands it; fixed by forwarding them. Observed by filling the Account form through its UI in jsdom against API on an isolated Database copy: id is disabled, the credential is a password input, each related Field lists the related records by name (Default), an empty submit is refused for exactly the 9 required Fields, and the filled form yields {name, group_id 1, broker_id 1, instance_id 1, base_currency_id 1, username, password, leverage 200, balance '1050.25', account_type}; tsc passes."}
                 - {at: "2026-10-13T02:34:03Z", by: "021", event: "decision", note: "Unset: how an edit form avoids showing a stored secret. Chosen: sensitive Fields are left out of a record before it fills a form (withoutSensitive), and an untouched sensitive input is not sent, so the Data Provider keeps the stored value. Why: a sensitive Field is entered without being shown."}
                 - {at: "2026-10-13T02:34:03Z", by: "021", event: "decision", note: "Unset: inputs for decimals and times. Chosen: InputNumber in string mode for decimals, keeping exact text, and DatePicker in time mode for time Fields. Why: the profile's FieldRenderer picks among Input, InputNumber, Select, DatePicker, Switch, and Upload."}
+                - {at: "2026-10-13T03:22:35Z", by: "025", event: "replaced", note: "Replaced by P5-G5-T3 (Log Entry 023): field inputs are now labeled by Field Labels instead of Field descriptions."}
             P5-G5-T2:
               id: "P5-G5-T2"
               source_id: "017"
@@ -1728,12 +1786,59 @@ content:
                 - "P5-G3-T2"
                 - "P5-G4-T2"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-13T02:23:37Z", by: "021", event: "claimed", note: "Dependencies P5-G2-T1, P5-G3-T2, and P5-G4-T2 are done."}
                 - {at: "2026-10-13T02:34:03Z", by: "021", event: "done", note: "Wrote presentation/components/RecordTable.tsx (Refine's antd useTable with server pagination, sorting, and filtering; one sortable column per Field in Declaration order labeled by its description; related Fields shown by the related record's label through one useMany per related Field), components/FieldValue.tsx (a sensitive value shown only as the hidden text, booleans as yes or no, empty values as a dash), and components/FilterBuilder.tsx (conditions of Field, operator, and value, with the operators API serves for the Field's type, combined with AND or OR). The same unconnected-input bug was fixed in the filter values, and the AND/OR choice was moved out of the condition list, where antd had stored it under the list's path. api/dataProvider.ts now converts filter values to their Field's type, because Refine restores filters from the address bar as text. Observed in jsdom against API on an isolated Database copy: Account shows 13 Persian-labeled columns with Default, FxPro, MetaTrader, and USD for its related Fields and the hidden text for its password; filters and orders restored from the address bar return EUR/USD and EUR/GBP (category Currency, symbol descending), XAU/USD and USOil (OR on digits 2 or symbol USOil), and EUR/GBP and EUR/USD (point_size < 0.01, descending); through the filter builder's UI, an OR of category Commodity and symbol starting EUR/U lists EUR/USD, XAU/USD, USOil, the AND lists none, and reset lists all four; tsc passes."}
                 - {at: "2026-10-13T02:34:03Z", by: "021", event: "decision", note: "Unset: how related names are fetched for a table. Chosen: one useMany per related Field over the ids on the current page. Why: the profile shows related records by name through useMany."}
                 - {at: "2026-10-13T02:34:03Z", by: "021", event: "decision", note: "Unset: how search relates to filtering. Chosen: one filter builder serves both, with AND or OR applying to all its conditions. Why: API combines one list of Filters with a single combination and cannot nest them."}
+                - {at: "2026-10-13T03:22:35Z", by: "025", event: "replaced", note: "Replaced by P5-G5-T4 (Log Entry 023): table columns, filters, and orders are now labeled by Field Labels instead of Field descriptions."}
+            P5-G5-T3:
+              id: "P5-G5-T3"
+              source_id: "023"
+              title: "Provide the shared field inputs labeled by their Field Labels"
+              description: "Provide the shared Component that renders one Field's input from its metadata by the Field's type, labeled by its Field Label and behaving as its Declaration states."
+              reason: "Forms must show the editable Field Labels while entering values exactly as each Declaration defines them."
+              inputs:
+                - "The Entity metadata"
+                - "The Data Provider"
+                - "The Field Labels"
+              skills: []
+              replaces: "P5-G5-T1"
+              expected_result: "One Component that renders any Field's input under its Field Label."
+              acceptance: "Each input is labeled by its Field Label in the chosen language, or by the Field name where that label is missing; its input matches the Field's type; immutable and generated Fields are visible but read-only; a sensitive Field accepts a value but never displays the stored one; a related Field offers the related Entity's records by name; an empty required Field is refused."
+              depends_on:
+                - "P5-G2-T1"
+                - "P5-G3-T2"
+                - "P5-G8-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T03:22:35Z", by: "025", event: "claimed", note: "Dependencies P5-G2-T1, P5-G3-T2, and P5-G8-T1 are done; P5-G5-T1, which it replaces, is marked replaced."}
+                - {at: "2026-10-13T03:24:02Z", by: "025", event: "done", note: "components/records.ts replaces fieldLabelKey with fieldLabel(t, resource, field), which reads the Field Label under fields.<entity>.<field> and falls back to the Field name; components/FieldRenderer.tsx and components/RecordView.tsx label Fields with it. The input behavior from the replaced P5-G5-T1 is unchanged. Observed in jsdom against API on an isolated Database copy: the Account Add form is labeled ID, Name, Group, Broker, Instance, Base Currency, Username, Password, Leverage, balance (its label removed for the check, so the Field name shows), Account Type, Active, Description; in Persian the same form shows the Persian Field Labels; in the record lifecycle run, id is disabled, related Fields are chosen by name, the User edit form leaves the password and API key empty and saving keeps both stored values; tsc passes."}
+            P5-G5-T4:
+              id: "P5-G5-T4"
+              source_id: "023"
+              title: "Provide the shared record table labeled by Field Labels"
+              description: "Provide the shared Component that shows an Entity's records in a table whose columns, filters, and orders come from its metadata and carry their Field Labels, with search, filtering, and ordering requested from API."
+              reason: "Tables and filters must show the editable Field Labels while searching, filtering, and ordering on the server."
+              inputs:
+                - "The Entity metadata"
+                - "The Data Provider"
+                - "The Field Labels"
+              skills: []
+              replaces: "P5-G5-T2"
+              expected_result: "One table Component, labeled by Field Labels, that lists any Entity's records with search, filter, and order on any Field."
+              acceptance: "Every column, filter choice, and order is labeled by its Field Label in the chosen language, or by the Field name where that label is missing, with one column per Field in Declaration order; a sensitive Field's value is never displayed and a related Field displays the related record's name; a filter or search on any Field, joined by AND or OR, and an order by any Field in either direction go to API, and the table lists exactly what API returns."
+              depends_on:
+                - "P5-G2-T1"
+                - "P5-G3-T2"
+                - "P5-G8-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T03:22:35Z", by: "025", event: "claimed", note: "Dependencies P5-G2-T1, P5-G3-T2, and P5-G8-T1 are done; P5-G5-T2, which it replaces, is marked replaced."}
+                - {at: "2026-10-13T03:24:02Z", by: "025", event: "done", note: "components/RecordTable.tsx labels each column and components/FilterBuilder.tsx each Field choice with fieldLabel; the table's server-side search, filtering, and ordering from the replaced P5-G5-T2 are unchanged. Observed in jsdom against API on an isolated Database copy: the Account table's columns and the filter builder's Field choices read ID, Name, Group, Broker, Instance, Base Currency, Username, Password, Leverage, balance (Field-name fallback), Account Type, Active, Description, with related Fields shown by name and the password hidden; the record lifecycle (add, edit, disable, enable, delete, and API's error on a duplicate) passes with the English labels; tsc passes."}
         P5-G6:
           id: "P5-G6"
           title: "Entity Pages"
@@ -1814,7 +1919,7 @@ content:
           area: "Component root documentation"
           does: "A user or developer can install, start, use, extend, and verify Presentation from its documentation alone."
           constraints: []
-          task_count: 1
+          task_count: 2
           tasks:
             P5-G7-T1:
               id: "P5-G7-T1"
@@ -1831,8 +1936,63 @@ content:
                 - "P5-G6-T2"
                 - "P5-G6-T3"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-13T02:40:16Z", by: "021", event: "claimed", note: "Dependencies P5-G6-T2 and P5-G6-T3 are done."}
                 - {at: "2026-10-13T02:42:03Z", by: "021", event: "done", note: "Wrote presentation/README.md with Overview (the Account page as the example), Setup (npm ci, writing .env with VITE_API_URL from ../api/config.yaml, starting API and the dashboard), Use (Navigation, Entity Pages, shared Components, and API Access, where a change to an Entity, a new page, or a new API call belongs, regenerating the API types, and paging without an offset), Verify, and Troubleshooting. Observed from the Presentation directory: npm ci installs from the lockfile; the Setup command writes a .env identical to the existing one; the Verify steps show the type check passing, api/dataProvider.ts as the only unit that sends requests, and one page unit per Entity; the README holds no URL Key or credential. Running the production build exposed a single 1.9 MB script and a chunk-size warning; vite.config.ts now splits dependencies into antd, refine, and vendor chunks of at most 400 kB, and the build completes with 32 script chunks and no warning (its dist output was removed). The generated metadata, language resources, routes, and seven page units regenerate byte-identical."}
                 - {at: "2026-10-13T02:42:03Z", by: "021", event: "decision", note: "Unset: how the production build stays within the chunk-size limit. Chosen: Rolldown code-splitting groups for antd (with its rc and @rc-component parts), Refine with TanStack Query, and the remaining dependencies, each capped at 400 kB. Why: the bundler's warning is fixable and Review accepts no fixable warning."}
+                - {at: "2026-10-13T03:24:09Z", by: "025", event: "replaced", note: "Replaced by P5-G7-T2 (Log Entry 023): the documentation must describe English as the default, the modes, and Field Labels."}
+            P5-G7-T2:
+              id: "P5-G7-T2"
+              source_id: "023"
+              title: "Document the Presentation Component as it now stands"
+              description: "Rewrite Presentation's root documentation with its required sections for the current dashboard, including its default language, its modes, and how a Field Label is changed."
+              reason: "The documentation must describe the dashboard after the language, appearance, and Field Label changes."
+              inputs:
+                - "The finished dashboard"
+              skills: []
+              replaces: "P5-G7-T1"
+              expected_result: "Root documentation that matches the current Presentation Component."
+              acceptance: "The documentation keeps its required sections in order, states that the dashboard opens in English and offers Persian and dark and light modes, explains where a Field Label is edited and that generating again keeps it, gives setup steps that start a dashboard reaching the running API, and holds no URL Key or real credential."
+              depends_on:
+                - "P5-G4-T3"
+                - "P5-G4-T4"
+                - "P5-G4-T5"
+                - "P5-G5-T3"
+                - "P5-G5-T4"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T03:24:09Z", by: "025", event: "claimed", note: "Dependencies P5-G4-T3, P5-G4-T4, P5-G4-T5, P5-G5-T3, and P5-G5-T4 are done; P5-G7-T1, which it replaces, is marked replaced."}
+                - {at: "2026-10-13T03:24:43Z", by: "025", event: "done", note: "Updated presentation/README.md: Overview now says the dashboard opens in English and switches to Persian (right to left, Vazirmatn) and between light and dark modes; Use explains Field Labels (fields.<entity>.<field> in i18n/en.json and i18n/fa.json, keyed by the exact Field name, edited there, the Field name sent to API unchanged, defaults added only for missing labels, edits kept, a Field name shown when its label is missing); Troubleshooting adds a raw Field name shown for a missing label. Observed: the sections keep their order (Overview, Setup, Use, Verify, Troubleshooting); fields.account.balance exists as the example; the README holds no URL Key; the Verify steps pass (type check, api/dataProvider.ts the only unit sending requests, one page unit per Entity); the setup steps were verified to start a dashboard reaching API in the earlier documentation run and are unchanged; the production build completes with no warning; the generated metadata, language resources, routes, and pages regenerate byte-identical."}
+        P5-G8:
+          id: "P5-G8"
+          title: "Field Labels"
+          description: "The editable text shown for every Field in each language, kept in the language resources under the exact Field name. Kept separate because the labels are generated once and then edited by hand, so they must outlive every later generation."
+          area: "Field Labels in the language resources"
+          does: "Every Field of every Entity has a Field Label in each language that the dashboard shows and a person can edit."
+          constraints: []
+          task_count: 1
+          tasks:
+            P5-G8-T1:
+              id: "P5-G8-T1"
+              source_id: "023"
+              title: "Provide a Field Label for every Field in every language"
+              description: "Generate, for each language, a Field Label for every Field of every Entity under its exact Field name, adding a readable default only where a label is missing."
+              reason: "Field names are technical; users need readable labels that can be edited without changing the Entity Component."
+              inputs:
+                - "The Entity metadata"
+                - "The language resources"
+              skills: []
+              expected_result: "Language resources holding a Field Label for every Field in both languages."
+              acceptance: "Each language holds exactly one label for every Field of every Entity under its exact Field name; a label missing before generation receives a readable default derived from its Field, such as Active for the activity Field; generating again leaves every existing label, including one edited by hand, unchanged."
+              depends_on:
+                - "P5-G2-T1"
+                - "P5-G4-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-13T03:21:27Z", by: "025", event: "claimed", note: "Dependencies P5-G2-T1 and P5-G4-T2 are done."}
+                - {at: "2026-10-13T03:22:35Z", by: "025", event: "done", note: "Rewrote the scratch generator gen_locales.py: it keeps generating each Entity's name and page titles, removes the description-based labels an earlier generation had placed under each Entity's own section, and writes Field Labels under fields.<entity>.<exact Field name> in i18n/en.json and i18n/fa.json, adding a readable default only where a label is missing (English from the Field name, such as is_active as Active, base_currency_id as Base Currency, api_key as API Key; Persian from a table of Field-name translations, falling back to the English default). Observed: both languages hold 55 Field Labels, one per Field of the seven Entities; on a copy where one English label was edited and another deleted, generating again kept the edited label and restored the deleted one with its default; generating the project's resources again leaves them byte-identical."}
+                - {at: "2026-10-13T03:22:35Z", by: "025", event: "decision", note: "Unset: the readable default for a Field Label. Chosen: in English, the Field name's words capitalized, without a leading is or a trailing id, with ID, API, and IP in capitals; in Persian, a short translation of the Field name. Why: the Preferences give is_active as Active as the example and ask for a readable default in every language."}
+                - {at: "2026-10-13T03:22:35Z", by: "025", event: "decision", note: "Unset: what happens to the description-based labels an earlier generation wrote. Chosen: they are removed as the Component's own obsolete output, since no part reads them any more. Why: generation removes its own obsolete output and keeps only the current Field Labels."}

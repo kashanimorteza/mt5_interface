@@ -32,7 +32,7 @@ export function App() {
 
   return (
     <BrowserRouter>
-      <ConfigProvider direction={direction} locale={language === "fa" ? faIR : enUS} theme={themeOf(dark)}>
+      <ConfigProvider direction={direction} locale={language === "fa" ? faIR : enUS} theme={themeOf(dark, language)}>
         <AntdApp>
           <Refine
             dataProvider={dataProvider}

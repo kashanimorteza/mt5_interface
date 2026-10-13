@@ -2,7 +2,7 @@
 
 ## Overview
 
-Presentation is the project's web dashboard: a menu with one entry for every Entity, and for every Entity one page where its records are listed, viewed, searched, filtered, ordered, added, edited, enabled, disabled, and deleted. It reaches the application only through API, shows every result and error as API returns it, and works in Persian (right to left) and English (left to right). For example, the Account page (`/account`) lists every account with its group, broker, instance, and base currency shown by name and its password never shown; its Add form offers each related Field as a choice of the related records.
+Presentation is the project's web dashboard: a menu with one entry for every Entity, and for every Entity one page where its records are listed, viewed, searched, filtered, ordered, added, edited, enabled, disabled, and deleted. It reaches the application only through API and shows every result and error as API returns it. It opens in English (left to right); the header switches to Persian (right to left, in the Vazirmatn font) and between light and dark modes. For example, the Account page (`/account`) lists every account with its group, broker, instance, and base currency shown by name and its password never shown; its Add form offers each related Field as a choice of the related records.
 
 ## Setup
 
@@ -34,7 +34,7 @@ Presentation has three parts, each in its own directory:
 - **Entity Pages** (`pages/`) holds one unit per Entity, such as `pages/account.tsx`, with that Entity's list, view, add, and edit pages. They are built from the shared Components in `components/`: the record table with its filter builder, the record view, and the Field inputs, which follow each Field's Declaration.
 - **API Access** (`api/`) is the only part that talks to API. Its Data Provider (`dataProvider.ts`) turns every page's request into the Entity Group Endpoint API's description gives for it, using the types generated from that description (`schema.d.ts`) and the address from `VITE_API_URL` (`address.ts`).
 
-Every visible text comes from `i18n/en.json` and `i18n/fa.json`; the Entity and Field labels in them come from the Entity Declarations.
+Every visible text comes from `i18n/en.json` and `i18n/fa.json`. Each Field is shown by its Field Label: the text under `fields.<entity>.<field>` in each of those files, keyed by the exact Field name, such as `fields.account.balance`. Edit a Field Label there to change what the dashboard shows; the Field name sent to API never changes. Generation adds a readable default only for a missing Field Label, such as `Active` for `is_active`, and keeps every label you edited. A Field without a label is shown by its Field name.
 
 A change to an Entity belongs in the Entity Component; Presentation's metadata, its language resources, and its pages are then generated again from it. A new API call belongs in the Data Provider, never in a page. After API's Endpoints change, regenerate the types with API running:
 
@@ -63,4 +63,5 @@ The type check passes; the only unit that sends requests is `api/dataProvider.ts
 - **A notification shows `ExecutionError` with `UNIQUE constraint failed`**: a record with the same unique value already exists. Change that value and save again.
 - **A notification shows `ExecutionError` with `FOREIGN KEY constraint failed` when deleting**: other records still refer to this one. Delete or change those records first.
 - **A filter is refused as one that cannot be sent to API**: only the operators API serves are offered; text matching is case-sensitive.
+- **A form field or column shows a raw Field name, such as `base_currency_id`**: its Field Label is missing in the chosen language. Add it under `fields.<entity>.<field>` in `i18n/en.json` or `i18n/fa.json`.
 - **An edit leaves a password unchanged**: a password or key is never shown; leave its input empty to keep the stored value, or type a new one to replace it.

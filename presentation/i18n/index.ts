@@ -9,7 +9,7 @@ export type Language = (typeof languages)[number];
 
 void i18n.use(initReactI18next).init({
   resources: { en: { translation: en }, fa: { translation: fa } },
-  lng: "fa",
+  lng: "en",
   fallbackLng: "en",
   interpolation: { escapeValue: false },
 });

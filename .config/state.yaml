@@ -31,9 +31,9 @@ content:
   active:
     mode: "development"
     phase: "P5"
-    mode_reason: "Develop executed every P5 Task."
+    mode_reason: "Develop executed the new P5 Tasks."
     set_by: "my-interface-develop"
-    set_at: "2026-10-13T02:23:21Z"
+    set_at: "2026-10-13T03:21:20Z"
   phases:
     P1:
       id: "P1"
@@ -869,4 +869,128 @@ content:
           - "npm warns that @redocly/openapi-core, inside the development-only type generator, asks for npm 9.5 or newer; the machine's npm is 9.2.0."
           - "API answers with stored credential Fields (OQ-008-1); Presentation never shows them and never fills a form with them."
           - "presentation/.env holds API's Base URL with its URL Key and is excluded by the root ignore entry .env."
+          - "No Component other than Presentation was changed."
+    - id: "022"
+      skill: "my-interface-plan"
+      phase: "P5"
+      event: "plan"
+      outcome: "stopped"
+      started_at: "2026-10-13T03:07:05Z"
+      completed_at: "2026-10-13T03:17:52Z"
+      duration: "10:47"
+      report: "Interrupted by the Human's new planning request while comparing the changed authorities; nothing was written to the Plan. It had found the Human's commits f9f8d0b, 394c0d0, and f972c35 changing the Target's Presentation section and the Presentation Definition and Preferences, and only wording in the Database, Entity, and Entity Service authorities. Planning continues as Log Entry 023."
+    - id: "023"
+      skill: "my-interface-plan"
+      phase: "P5"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-13T03:17:52Z"
+      completed_at: "2026-10-13T03:18:46Z"
+      duration: "0:54"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the P5 Plan with the Human's changes to the Target and the Presentation authorities."
+      open_questions: []
+      blockers: []
+      report: "Requested phase 5 resolved to Target phase P5 (Presentation). The Human's commits f9f8d0b, 394c0d0, and f972c35 changed the authorities since the P5 Plan was made: the Target now requires English and Persian with English as the default, and dark and light modes; the Presentation Definition and Preferences add editable Field Labels (shown text per language keyed by the exact Field name, defaults generated only where missing, never overwritten), English as the default language, and a font per language. Changes to the Database, Entity, and Entity Service authorities are wording only (the Entity Component naming) and require no work in P1 to P3. Reconciliation added P5-G4-T3 (English by default), P5-G4-T4 (font per language), P5-G4-T5 (dark and light modes), and the new Group P5-G8 with P5-G8-T1 (Field Labels), and created P5-G5-T3, P5-G5-T4, and P5-G7-T2 to replace the completed P5-G5-T1, P5-G5-T2, and P5-G7-T1, whose results no longer satisfy the authorities; nine Tasks were preserved and nothing was removed. P5 now holds 19 Tasks in 8 Groups; total stored Tasks: 76. Planning progress for P5 stays completed; the 7 new Tasks are for Develop."
+      data:
+        phase_selection:
+          requested: "5"
+          resolved: "P5"
+        authority_changes:
+          commits: ["f9f8d0b", "394c0d0", "f972c35"]
+          target: "Presentation requirements: English and Persian with English as the default; dark and light modes."
+          presentation_definition: "Field Label term; every form field, table column, filter, and order is labeled by its Field Label; generation adds a readable default for a missing Field Label and never overwrites an edited one."
+          presentation_preferences: "English as the default language; Vazirmatn for Persian and the component library's default font for English; Field Labels in the language resources keyed by the exact Field name."
+          other_components: "Database, Entity, and Entity Service: wording only (the Entity Component); no requirement changed."
+        changes:
+          added:
+            - {id: "P5-G4-T3", reason: "The Target and Preferences now name English as the default language; P5-G4-T2's result does not set one."}
+            - {id: "P5-G4-T4", reason: "The Preferences now select a font per language."}
+            - {id: "P5-G4-T5", reason: "The Target now requires dark and light modes, which no Task's acceptance covers."}
+            - {id: "P5-G8-T1", reason: "The Definition and Preferences introduce Field Labels that generation must provide without overwriting edits."}
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P5-G1-T1", reason: "Its acceptance still holds under the changed authorities."}
+            - {id: "P5-G2-T1", reason: "Its acceptance still holds under the changed authorities."}
+            - {id: "P5-G3-T1", reason: "Its acceptance still holds under the changed authorities."}
+            - {id: "P5-G3-T2", reason: "Its acceptance still holds under the changed authorities."}
+            - {id: "P5-G4-T1", reason: "Its acceptance still holds under the changed authorities."}
+            - {id: "P5-G4-T2", reason: "Its acceptance still holds under the changed authorities."}
+            - {id: "P5-G6-T1", reason: "Its acceptance still holds under the changed authorities."}
+            - {id: "P5-G6-T2", reason: "Its acceptance still holds under the changed authorities."}
+            - {id: "P5-G6-T3", reason: "Its acceptance still holds under the changed authorities."}
+          replaced:
+            - {id: "P5-G5-T3", replaces: "P5-G5-T1", reason: "Field inputs must now be labeled by Field Labels instead of Field descriptions."}
+            - {id: "P5-G5-T4", replaces: "P5-G5-T2", reason: "Table columns, filters, and orders must now be labeled by Field Labels instead of Field descriptions."}
+            - {id: "P5-G7-T2", replaces: "P5-G7-T1", reason: "The documentation must describe English as the default, the modes, and Field Labels."}
+    - id: "024"
+      skill: "my-interface-plan"
+      phase: "P5"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-13T03:19:26Z"
+      completed_at: "2026-10-13T03:19:45Z"
+      duration: "19 seconds"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the existing P5 Plan; no change."
+      open_questions: []
+      blockers: []
+      report: "Requested phase 5 resolved to Target phase P5 (Presentation). The P5 Plan as reconciled by Log Entry 023 was compared with current Understanding: the Interface tree matches commit f972c35 and no Target, Implementation, or Foundation file changed since that run began. All 19 Tasks were preserved unchanged (12 done, 7 todo, including the three that replace P5-G5-T1, P5-G5-T2, and P5-G7-T1); nothing was added, changed, removed, or replaced. Planning progress for P5 stays completed. Total stored Tasks: 76."
+      data:
+        phase_selection:
+          requested: "5"
+          resolved: "P5"
+        comparison:
+          plan_source: "023"
+          authorities_changed: false
+        changes:
+          added: []
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P5-G1-T1", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G2-T1", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G3-T1", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G3-T2", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G4-T1", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G4-T2", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G4-T3", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G4-T4", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G4-T5", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G5-T1", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G5-T2", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G5-T3", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G5-T4", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G6-T1", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G6-T2", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G6-T3", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G7-T1", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G7-T2", reason: "Unchanged authorities since Log Entry 023."}
+            - {id: "P5-G8-T1", reason: "Unchanged authorities since Log Entry 023."}
+          replaced: []
+    - id: "025"
+      skill: "my-interface-develop"
+      phase: "P5"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-13T03:21:20Z"
+      completed_at: "2026-10-13T03:25:09Z"
+      duration: "3:49"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Executed the 7 P5 Tasks added by Log Entry 023 and marked the 3 Tasks they replace."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P5-G4-T4"
+        - "P5-G8-T1"
+      report: "Executed the 7 new P5 Tasks: P5-G4-T3 (English by default), P5-G4-T4 (Vazirmatn for Persian only), P5-G4-T5 (dark and light modes, already provided by the existing switch), P5-G8-T1 (Field Labels under fields.<entity>.<field> in both languages, defaults only where missing, edits kept), P5-G5-T3 and P5-G5-T4 (field inputs, record view, table columns, and filter choices labeled by Field Labels with the Field name as fallback), and P5-G7-T2 (documentation); P5-G5-T1, P5-G5-T2, and P5-G7-T1 were marked replaced before their replacements were claimed. P5 now has 16 done and 3 replaced Tasks. tsc passes; the build completes with no warning; every generated unit regenerates byte-identical. Observed by rendering the real App in jsdom against API on an isolated Database copy: English and ltr on opening, Persian and rtl with Vazirmatn after switching, dark mode across layout, menu, table, and form, Field Labels everywhere with the Field-name fallback, and the full record lifecycle in English. P5 development progress set to completed. Conformance is for Review to establish."
+      data:
+        component: "presentation"
+        notes:
+          - "Field Labels are generated by the scratch generator gen_locales.py, which never overwrites an existing label; the earlier description-based labels it had generated were removed as obsolete."
+          - "The real Database store (database/db/application.db) was modified at 2026-10-13T02:54:16Z, between Develop runs and outside this work; read-only it still holds exactly the 17 Initial Data records. Every check in this run used an isolated copy."
           - "No Component other than Presentation was changed."
