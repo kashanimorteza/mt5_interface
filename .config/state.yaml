@@ -29,11 +29,11 @@ content_map:
 # <!--------------------------------------------------------------------------------- Content -->
 content:
   active:
-    mode: "development"
-    phase: "P5"
-    mode_reason: "Develop executed the new P5 Display Tasks."
-    set_by: "my-interface-develop"
-    set_at: "2026-10-13T04:20:29Z"
+    mode: "planning"
+    phase: "P6"
+    mode_reason: "Plan stopped on Blocker B-030-1 for P6."
+    set_by: "my-interface-plan"
+    set_at: "2026-10-14T08:31:00Z"
   phases:
     P1:
       id: "P1"
@@ -1186,3 +1186,71 @@ content:
           - "That nothing is published or installed outside the project (P5-G1-T1) was observed only as far as npm ci installing into the project directory."
           - "All runtime checks ran in jsdom, as headless Chromium lacks a system library here; jsdom needed the Document global added for column-header clicks, a harness gap only."
           - "Every check used an isolated Database copy; the real Database store was not touched."
+    - id: "030"
+      skill: "my-interface-plan"
+      phase: "P6"
+      event: "plan"
+      outcome: "blocked"
+      started_at: "2026-10-14T08:29:44Z"
+      completed_at: "2026-10-14T08:31:00Z"
+      duration: "1:16"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Established Understanding for P6 and stopped before storing a Plan."
+      open_questions:
+        - "OQ-030-1"
+      blockers:
+        - "B-030-1"
+      report: "Requested phase 6 resolved to Target phase P6 (MT5, target Logic and API, enabled and ready). P5 has no open Blocker and its Review is satisfied. Planning is blocked: the Target now defines the MT5 Service and the MT5 Group, but Logic Preferences list only Entity Service, API Preferences list only Entity Group, and neither an MT5 Service nor an MT5 Group Definition and Preferences exist. Logic's and API's mandatory Interface contracts publish and serve only listed Services and Groups, each governed by its own Definition and Preferences, so the phase's work has no owning contract and cannot be realized conformantly. No P6 Plan was stored and no Task was created; Plan Config is unchanged (Total stored Tasks: 82). Aggregate Planning progress for P6 set to blocked. One Blocker and one Open Question were recorded. This Entry was created after read-only orientation, so started_at and duration understate the run."
+      data:
+        phase_selection:
+          requested: "6"
+          resolved: "P6"
+          reason: "The Target names its phases P1 to P6 and the Workflow selects them by number."
+        prior_phase: "P5 has no open Blocker; its Review is satisfied."
+        changes:
+          added: []
+          changed: []
+          removed: []
+          preserved: []
+          replaced: []
+        blockers:
+          B-030-1:
+            condition: "Ownership of the MT5 Service and MT5 Group is unresolved, and the Target's P6 outcome conflicts with the Logic and API Interface contracts as currently configured."
+            evidence:
+              - "Target Logic defines the MT5 Service (every function of the official MetaTrader5 package, organized in the package's groups, one separately importable class per group); Target API defines the MT5 Group exposing every MT5 Service function as an Endpoint; P6 is enabled and ready."
+              - "Logic Preferences list only the entity Service; Logic Definition requires its Interface to publish exactly the listed Services and nothing else, with each Service's name and Interface location taken from that Service's own Preferences, and every Service governed by its own Definition and Preferences."
+              - "API Preferences list only the entity Group; API Definition requires every Group to have its own Definition and Preferences resolved through a Group Reference, registers only listed Groups, and stops generation on a missing Reference."
+              - "No MT5 Service or MT5 Group Definition or Preferences exists in the Implementation Module."
+            required_human_action: "Author the MT5 Service Definition and Preferences and list the Service in Logic Preferences; author the MT5 Group Definition and Preferences and add its Group Reference to API Preferences; then run /my-interface-plan 6 again."
+            scope: "P6 only; P1 to P5 are unaffected."
+        open_questions:
+          OQ-030-1:
+            question: "On which platform should the MT5 Service and the API serving the MT5 Group run?"
+            context: "The Target states that the MetaTrader 5 Python package runs only on Windows and needs the MetaTrader 5 terminal running on the same machine. Logic and API select the VPS platform, whose Platform Preferences give Linux as the operating system. OQ-003-2 (Python 3.14 floor) also bears on whether the package installs."
+            current_choice: "Not decided by Planning; to be reconsidered when B-030-1 is cleared and P6 is planned."
+        notes:
+          - "Earlier P3 and P4 Plans left the MT5 Service and Group unplanned because the Target then reserved them and the Preferences listed only Entity; the Target has since defined them, and the Preferences condition still holds."
+          - "No Implementation, Target, or Interface source was changed."
+    - id: "031"
+      skill: "my-interface-develop"
+      phase: "P6"
+      event: "develop"
+      outcome: "cancelled"
+      started_at: "2026-10-14T08:33:06Z"
+      completed_at: "2026-10-14T08:33:17Z"
+      duration: "11 seconds"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Read the Develop authorities and confirmed P6 has no Plan; interrupted by the Human before completing."
+      open_questions: []
+      blockers:
+        - "B-030-1"
+      report: "Cancelled by the Human before completion. Requested phase 6 resolved to P6. Before the interruption, Develop had observed that no P6 Plan exists (Planning is blocked by B-030-1), so no Task was eligible; no Task was claimed, no implementation work was changed, and P6 Development progress was left at not started."
+    - id: "032"
+      skill: "my-interface-plan"
+      phase: "P6"
+      event: "plan"
+      outcome: "in progress"
+      started_at: "2026-10-14T08:33:42Z"
+      report: "Planning P6 started."
