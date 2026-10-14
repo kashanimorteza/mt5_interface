@@ -121,7 +121,7 @@ Defines the project's implementation phases. Phases are executed step by step in
 - **Target:** Logic
 - **Status:** Enabled
 - **Readiness:** Ready
-- **Goal:** Implement the Logic Layer as a reusable library through its services: the Entity Service now, and the MT5 Service once it is defined.
+- **Goal:** Implement the Logic Layer as a reusable library with its Entity Service.
 
 <!-------------------------- P4 -->
 ### P4 — API
@@ -129,7 +129,7 @@ Defines the project's implementation phases. Phases are executed step by step in
 - **Target:** API
 - **Status:** Enabled
 - **Readiness:** Ready
-- **Goal:** Implement the API Layer as a separate executable over the Logic library, organized into its groups: the Entity Group now, and the MT5 Group once it is defined.
+- **Goal:** Implement the API Layer as a separate executable over the Logic library with its Entity Group.
 
 <!-------------------------- P5 -->
 ### P5 — Presentation
@@ -138,3 +138,11 @@ Defines the project's implementation phases. Phases are executed step by step in
 - **Status:** Enabled
 - **Readiness:** Ready
 - **Goal:** Implement the Presentation Component as a dashboard with a menu and navigation, in which the records of every defined entity can be listed, searched, filtered, added, edited, enabled, disabled, and deleted.
+
+<!-------------------------- P6 -->
+### P6 — MT5
+
+- **Target:** Logic and API
+- **Status:** Enabled
+- **Readiness:** Ready
+- **Goal:** Implement the MT5 Service in the Logic Layer and the MT5 Group in the API Layer.

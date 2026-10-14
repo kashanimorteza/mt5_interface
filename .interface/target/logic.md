@@ -21,6 +21,7 @@ Data Entry for every defined Entity. Its operations are defined by the Database 
 <!-------------------------- MT5 -->
 ### MT5
 
-Connects the Target to MetaTrader 5 through the applicable MetaTrader 5 libraries and packages.
+Implements every function of the official MetaTrader 5 Python package (MetaTrader5), so the Target can work with MetaTrader 5 through this service.
 
-Reserved; not yet defined.
+- The functions are organized in the same groups as the package; each group is a separate class that can be imported on its own.
+- The exact functions and groups are taken from the package's official documentation when the service is implemented.
