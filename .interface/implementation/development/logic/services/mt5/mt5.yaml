@@ -1,0 +1,78 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/logic/services/mt5/mt5.yaml"
+  path_note: "The Preferences layer of MT5 Service inside the Logic Component."
+  purpose: "Name, directory, the entities of architecture with the Interface contract, naming patterns, the Package, and documentation, and the language profile for MT5 Service."
+  standard: "Agent Project Interface"
+  version: "1.0"
+  updated: "2026-10-14"
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Operations read it without writing resolved MT5 Service choices back into it."
+  changed_by: "The human, directly."
+  precedence: "Explicit Target meaning and every applicable MT5 Service and Logic Principle take precedence over this file."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order."
+  selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
+  version_resolution: "Resolve latest-compatible to a concrete compatible stable version of the Package when it is added."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - settings
+  - architecture
+  - development
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  settings: "The Logic owner, the MT5 Role, and the configurable Service name and directory."
+  architecture: "The entities of the Architecture tree — Interface with its contract version, Function Groups with their naming pattern, and Documentation with its file, location, and format."
+  development: "Development capabilities, the Package, and the selected language with its realization profile."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- settings -->
+  settings:
+    component:
+      role: logic
+    service:
+      role: mt5
+      name: MT5
+      directory: mt5
+
+  # <!-------------------------------------------- architecture -->
+  architecture:
+    entities:
+      interface:
+        contract_version: '1.0'
+      function_groups:
+        naming:
+          group_file: <group>
+          group_class: <Group>
+      documentation:
+        file: README.md
+        location: the MT5 Service directory
+        format: markdown
+
+  # <!-------------------------------------------- development -->
+  development:
+    capabilities:
+      testing: false
+      error_handling: false
+      logging: false
+    package:
+      name: MetaTrader5
+      import: "import MetaTrader5 as mt5"
+      version: latest-compatible
+      documentation: "https://www.mql5.com/en/docs/python_metatrader5"
+    language:
+      selected: "python"
+      options:
+        python:
+          identifier_case: "snake_case"
+          interface_file: "The Interface is the interface file at the MT5 Service directory (logic/services/mt5/interface.py); every __init__.py stays empty and publishes nothing."
+          group: "One file per Function Group directly in the MT5 Service directory, holding one class with one explicitly written method per Function."

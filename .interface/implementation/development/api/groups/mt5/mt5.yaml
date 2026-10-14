@@ -1,0 +1,51 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/api/groups/mt5/mt5.yaml"
+  path_note: "The Preferences layer of MT5 Group inside the API Component."
+  purpose: "Role, name, directory, the Adapter naming pattern, and documentation for MT5 Group."
+  standard: "Agent Project Interface"
+  version: "1.0"
+  updated: "2026-10-14"
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Operations read it without writing resolved MT5 Group choices back into it."
+  changed_by: "The human, directly."
+  precedence: "Explicit Target meaning and every applicable MT5 Group Principle take precedence over this file."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order."
+  selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
+  version_resolution: "This file declares no versioned technology."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - settings
+  - architecture
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  settings: "MT5 Group's role, configurable name, and directory."
+  architecture: "The entities of the Architecture tree — Adapters with their naming pattern, and Documentation with its file, location, and format."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- settings -->
+  settings:
+    group:
+      role: mt5
+      name: MT5
+      directory: mt5
+
+  # <!-------------------------------------------- architecture -->
+  architecture:
+    entities:
+      adapters:
+        naming: <group>
+      documentation:
+        file: README.md
+        location: the MT5 Group directory
+        format: markdown

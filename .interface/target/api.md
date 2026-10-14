@@ -22,4 +22,4 @@ Exposes the Entity Service.
 <!-------------------------- MT5 -->
 ### MT5
 
-Exposes every function of the MT5 Service as an Endpoint, organized in the same groups, so external programs can call any MetaTrader 5 function through the REST API.
+Exposes every function of the MT5 Service, so external programs can work with MetaTrader 5 through the REST API.

@@ -67,10 +67,10 @@ content:
     launches:
       VPS:
         presentation:
-          operating_system: "Linux"
+          operating_system: "Windows Server"
         api:
-          operating_system: "Linux"
-          web_server: "Nginx"
+          operating_system: "Windows Server"
+          web_server: null
           runtime_binding:
             host: "0.0.0.0"
             port: 8000
@@ -82,7 +82,7 @@ content:
             infrastructure_rate_limiting:
               enabled: false
         database:
-          operating_system: "Linux"
+          operating_system: "Windows Server"
 
   # <!-------------------------------------------- settings -->
   settings:

@@ -52,6 +52,9 @@ content:
         entity:
           definition: services/entity/entity.md
           preferences: services/entity/entity.yaml
+        mt5:
+          definition: services/mt5/mt5.md
+          preferences: services/mt5/mt5.yaml
       documentation:
         file: README.md
         location: the Component root

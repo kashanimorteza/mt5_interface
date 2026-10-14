@@ -38,6 +38,7 @@ MT5 Interface supports multiple users. Each User owns a separate set of data —
 <!-------------------------- Constraints -->
 ### Constraints
 
+- The Target is deployed on a Windows server.
 - The MetaTrader 5 Python package runs only on Windows and requires the MetaTrader 5 terminal to be installed and running on the same machine.
 
 <br><br>

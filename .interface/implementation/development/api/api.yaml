@@ -53,6 +53,9 @@ content:
           entity:
             definition: groups/entity/entity.md
             preferences: groups/entity/entity.yaml
+          mt5:
+            definition: groups/mt5/mt5.md
+            preferences: groups/mt5/mt5.yaml
       endpoints:
         method_by_verb:
           GET:

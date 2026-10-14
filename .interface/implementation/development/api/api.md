@@ -76,7 +76,8 @@ The single composition and execution point of API.
 
 ```text
 Groups
-└── Entity Group
+├── Entity Group
+└── MT5 Group
 ```
 
 The container of every Group's executable realization. Every Group is served at `<base_url>/<group segment>`, where the Base URL is `<transport_protocol>://<host>:<port>[/<key>]` from the runtime Configuration. API's Interface contract is these needs, with `contract_version` in API Preferences:
@@ -106,6 +107,13 @@ Entity Service as HTTP.
 
 → [Definition of Entity Group](groups/entity/entity.md)<br>
 → [Preferences of Entity Group](groups/entity/entity.yaml)
+
+#### MT5 Group
+
+One Adapter for every Function Group of MT5 Service, and one Endpoint for every Function.
+
+→ [Definition of MT5 Group](groups/mt5/mt5.md)<br>
+→ [Preferences of MT5 Group](groups/mt5/mt5.yaml)
 
 <!-------------------------- Endpoints -->
 ### Endpoints

@@ -73,7 +73,8 @@ For a Logic with Entity Service, Interface publishes `Entity`, the identical Int
 
 ```text
 Services
-└── Entity Service
+├── Entity Service
+└── MT5 Service
 ```
 
 Every Service listed in Logic Preferences has its own directory and Interface, and is governed by its own Definition and Preferences.
@@ -84,6 +85,13 @@ One Child Service for every Entity.
 
 → [Definition of Entity Service](services/entity/entity.md)
 → [Preferences of Entity Service](services/entity/entity.yaml)
+
+#### MT5 Service
+
+Every Function of the official MetaTrader 5 Python package, in its own Function Groups.
+
+→ [Definition of MT5 Service](services/mt5/mt5.md)
+→ [Preferences of MT5 Service](services/mt5/mt5.yaml)
 
 <!-------------------------- Documentation -->
 ### Documentation
