@@ -8,7 +8,7 @@ import yaml
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from logic.interface import Entity
+from logic.interface import MT5, Entity
 
 from api import endpoints
 from api.groups.entity import (
@@ -20,6 +20,7 @@ from api.groups.entity import (
     instance,
     user,
 )
+from api.groups.mt5 import constants, python_integration
 
 CONFIGURATION: dict[str, Any] = yaml.safe_load(
     (Path(__file__).resolve().parents[1] / "config.yaml").read_text(encoding="utf-8")
@@ -36,6 +37,10 @@ GROUPS = {
         account_group.router,
         account.router,
     ],
+    "mt5": [
+        python_integration.router,
+        constants.router,
+    ],
 }
 """Every Group's segment and its Adapter routers."""
 
@@ -43,6 +48,10 @@ TAG_GROUPS = [
     {
         "name": "Entity",
         "tags": [tag for router in GROUPS["entity"] for tag in router.tags],
+    },
+    {
+        "name": "MT5",
+        "tags": [tag for router in GROUPS["mt5"] for tag in router.tags],
     },
 ]
 """The interactive documentation's sections: one per Group, holding one per Adapter."""
@@ -73,6 +82,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_exception_handler(Entity.database_error.DatabaseError, endpoints.problem)
+app.add_exception_handler(MT5.MT5Error, endpoints.problem)
 app.add_exception_handler(RequestValidationError, endpoints.problem)
 app.add_exception_handler(Exception, endpoints.problem)
 for segment, routers in GROUPS.items():

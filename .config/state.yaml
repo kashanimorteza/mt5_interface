@@ -29,11 +29,11 @@ content_map:
 # <!--------------------------------------------------------------------------------- Content -->
 content:
   active:
-    mode: "planning"
+    mode: "reviewing"
     phase: "P6"
-    mode_reason: "Plan stopped on Blocker B-030-1 for P6."
-    set_by: "my-interface-plan"
-    set_at: "2026-10-14T08:31:00Z"
+    mode_reason: "Review of P6 is not satisfied: Blocker B-037-1 (no real MetaTrader5 package on this host)."
+    set_by: "my-interface-review"
+    set_at: "2026-10-14T11:14:44Z"
   phases:
     P1:
       id: "P1"
@@ -65,6 +65,12 @@ content:
       development: "completed"
       review: "satisfied"
       completed_at: "2026-10-13T04:34:15Z"
+    P6:
+      id: "P6"
+      planning: "completed"
+      development: "completed"
+      review: "not satisfied"
+      completed_at: null
   log:
     - id: "001"
       skill: "my-interface-configure"
@@ -1254,3 +1260,213 @@ content:
       outcome: "in progress"
       started_at: "2026-10-14T08:33:42Z"
       report: "Planning P6 started."
+    - id: "033"
+      skill: "my-interface-plan"
+      phase: "P6"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-14T09:24:28Z"
+      completed_at: "2026-10-14T09:29:03Z"
+      duration: "4:35"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Established Understanding for P6, verified B-030-1 resolved, and stored the P6 Plan."
+      open_questions:
+        - "OQ-033-1"
+        - "OQ-033-2"
+        - "OQ-033-3"
+        - "OQ-033-4"
+      blockers: []
+      report: "Requested phase 6 resolved to Target phase P6 (MT5, target Logic and API, enabled and ready). P5 has no open Blocker and its Review is satisfied. Blocker B-030-1 is resolved: the Human has authored the MT5 Service and MT5 Group Definitions and Preferences, listed MT5 Service in Logic Preferences, and added the MT5 Group Reference to API Preferences. OQ-030-1 is answered by the Target constraint that the Target is deployed on a Windows server and by Platform Preferences selecting Windows Server. P6 had no Plan, so a new Plan was created: 9 Groups and 18 Tasks (MT5 Service foundation, Function Groups, Constants and MT5 Service Interface, Logic Interface, Logic documentation, API environment, MT5 Group Adapters, serving MT5 Group, API documentation), with one phase constraint keeping Entity Service and Entity Group unchanged. Plan Config Total stored Tasks: 82 to 100. P6 aggregate Planning progress set to completed. Four Open Questions were recorded; none blocks Develop from starting. This Entry was created after read-only orientation, so started_at and duration understate the run."
+      data:
+        phase_selection:
+          requested: "6"
+          resolved: "P6"
+          reason: "The Target names its phases P1 to P6 and the Workflow selects them by number."
+        prior_phase: "P5 has no open Blocker; its Review is satisfied."
+        blocker_resolution:
+          B-030-1:
+            state: "resolved"
+            evidence:
+              - "Logic Preferences list the mt5 Service with its Definition and Preferences; the MT5 Service Definition and Preferences exist and declare name MT5, directory mt5, Interface contract 1.0, and the MetaTrader5 Package."
+              - "API Preferences list the mt5 Group Reference with its Definition and Preferences; the MT5 Group Definition and Preferences exist and declare role mt5 and name MT5."
+              - "Logic's Interface contract (1.1) and API's Interface contract (1.4) let a change in the Service or Group list flow through without a version change."
+              - "The Connection api_to_logic already exists; MT5 Service needs no Database or Entity Connection."
+          OQ-030-1:
+            state: "answered"
+            evidence: "The Target now states the Target is deployed on a Windows server, and Platform Preferences give Windows Server for the API, Presentation, and Database launch requirements."
+        changes:
+          added:
+            - {id: "P6", reason: "P6 had no Plan; created from the current Target phase and the MT5 Service and MT5 Group authorities."}
+            - {id: "P6-G1-T1..T4", reason: "MT5 Service foundation: the Package within Logic, MT5 Error, Plain Data conversion, and one Terminal Process per Terminal, each required by every Function Group."}
+            - {id: "P6-G2-T1..T2", reason: "Every Function Group as its own class mirroring every Function, then the Plain Data and MT5 Error result contract across every method."}
+            - {id: "P6-G3-T1..T2", reason: "The Constants group read from the Package, and the MT5 Service Interface publishing Function Groups, Constants, and MT5 Error only."}
+            - {id: "P6-G4-T1", reason: "Logic Interface must publish exactly every listed Service, now including MT5."}
+            - {id: "P6-G5-T1..T2", reason: "MT5 Service documentation, and Logic's root documentation, which currently presents MT5 Service as not yet published."}
+            - {id: "P6-G6-T1", reason: "API's environment must resolve the Logic library that now declares the Package."}
+            - {id: "P6-G7-T1..T2", reason: "One Adapter per Function Group with one Endpoint per Function, and the Constants Adapter."}
+            - {id: "P6-G8-T1..T2", reason: "Bootstrap must register MT5 Group beneath its segment, and the interactive documentation must show it by Group and Adapter."}
+            - {id: "P6-G9-T1..T2", reason: "MT5 Group documentation, and API's root documentation, which currently presents MT5 Group as reserved."}
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P1 to P5", reason: "Every Task is done and its phase is satisfied; P6 adds new work beside them and replaces none, since Entity Service and Entity Group stay as they are."}
+          replaced: []
+        open_questions:
+          OQ-033-1:
+            question: "Where are P6 Development and Review carried out, given the Package installs and runs only on Windows next to a running MetaTrader 5 terminal?"
+            context: "The current working environment is Linux on aarch64. The Package publishes Windows builds only, and several acceptance criteria (Constants read from the Package, results and failures of real Functions, Terminal Processes) need the Package or a terminal. OQ-003-2 (Python 3.14 floor) also bears on whether a Package build exists for the project's Python."
+            current_choice: "The Plan is stored unchanged; Develop works within its own authority and records a Blocker for any Task whose result cannot be produced or observed here."
+          OQ-033-2:
+            question: "Should the Target's Scope line, which says the MT5 Service's actions are not yet defined, be updated?"
+            context: "The Target's Logic definition and the P6 goal now define the MT5 Service as every Function of the official MetaTrader 5 Python package, and the MT5 Service Definition governs it."
+            current_choice: "Planning follows the Logic definition, the P6 goal, and the MT5 Service Definition."
+          OQ-033-3:
+            question: "How should Terminal Processes behave when API runs several worker processes?"
+            context: "API Preferences default runtime workers to 2. MT5 Service keeps one Terminal Process per Terminal, started by opening that Terminal, and raises MT5 Error for a call to a Terminal with no running process; each API worker loads Logic separately, so without coordination a later request served by another worker would not find the Terminal, or two workers could each start one."
+            current_choice: "P6-G8-T1's acceptance requires that a Terminal opened through one request is the one every later request naming it uses, however API distributes requests; Develop resolves how, within its authority, and records a Blocker if that needs a change to a Human-owned Preference."
+          OQ-033-4:
+            question: "Should Presentation's generated API types be regenerated after P6?"
+            context: "Presentation is a direct consumer of API (presentation_to_api) and generates its API types from API's served description, which P6 extends with the MT5 Group Endpoints. P6 targets Logic and API only, so that consumer review is outside this phase."
+            current_choice: "Not planned in P6; the Human decides whether a later phase or a P5 replan covers it."
+        notes:
+          - "Entry 032 (my-interface-plan, P6, started 2026-10-14T08:33:42Z) is still recorded as in progress with no completion; it stored no Plan, and this Entry did not change it."
+          - "Entry 030 reported P6 Planning progress set to blocked, but State held no P6 record; this Entry created the P6 record with Planning completed and the other fields at their initial values."
+          - "No Implementation, Target, or Interface source was changed."
+    - id: "034"
+      skill: "my-interface-develop"
+      phase: "P6"
+      event: "develop"
+      outcome: "interrupted"
+      started_at: "2026-10-14T09:30:32Z"
+      completed_at: "2026-10-14T10:48:56Z"
+      duration: "78:24"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Developed 14 of the 18 P6 Tasks; interrupted by the Human during P6-G5-T2."
+        - name: "fastapi"
+          report: "Guided the MT5 Group Adapters, the shared error rule, and Bootstrap."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P6-G1-T1"
+        - "P6-G1-T3"
+        - "P6-G1-T4"
+        - "P6-G2-T1"
+        - "P6-G2-T2"
+        - "P6-G3-T1"
+        - "P6-G5-T1"
+        - "P6-G7-T1"
+      report: "Interrupted by the Human while P6-G5-T2 was claimed. Before the interruption, Develop completed P6-G1-T1 to T4, P6-G2-T1 and T2, P6-G3-T1 and T2, P6-G4-T1, P6-G5-T1, P6-G6-T1, P6-G7-T1 and T2, and P6-G8-T1 and T2, each with Task Log evidence. The Human confirmed in this run that MT5 Service has one Function Group, because the Package Documentation lists its 32 Functions in one table. P6-G5-T2 had one edit applied to Logic's root documentation (its Overview) and stays claimed; P6-G9-T1 and P6-G9-T2 are todo. Develop Entry 035 continues the phase. Every Package-dependent behaviour was observed with scratch stand-in Packages on this Linux aarch64 host, never with the real Package or a MetaTrader 5 terminal."
+    - id: "035"
+      skill: "my-interface-develop"
+      phase: "P6"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-14T10:48:56Z"
+      completed_at: "2026-10-14T10:53:49Z"
+      duration: "4:53"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Completed the last three P6 Tasks after interrupted Entry 034 and set P6 Development progress to completed."
+      open_questions:
+        - "OQ-035-1"
+      blockers: []
+      decisions:
+        - "P6-G5-T2"
+        - "P6-G9-T1"
+      report: "Continued P6 after Entry 034 was interrupted. P6-G5-T2 was claimed again and completed, keeping 034's Overview edit; P6-G9-T1 and P6-G9-T2 were completed; P6-G5-T1's MT5 Service README got a recorded correction because ruff format --check, run by Logic's Verify section, also checks Markdown code blocks. All 18 P6 Tasks are done (14 by Entry 034, 3 by this Entry, plus the correction), and P6 Development progress is set to completed; Review has not run, so completed_at stays null. The Logic and API quality checks pass, and the running API with its 2 workers serves Entity Group and MT5 Group as documented. The real MetaTrader5 package installs only on Windows; on this Linux aarch64 host every Package-dependent behaviour was observed with scratch stand-in Packages, and opening a Terminal answers MT5Error -10003, so Review needs a Windows machine with the package and a terminal to observe real Package behaviour (OQ-033-1). One Open Question was recorded. Cache directories created by the checks were removed; scratch generators and stand-ins stay outside the project."
+      data:
+        tasks:
+          completed_by_034: ["P6-G1-T1", "P6-G1-T2", "P6-G1-T3", "P6-G1-T4", "P6-G2-T1", "P6-G2-T2", "P6-G3-T1", "P6-G3-T2", "P6-G4-T1", "P6-G5-T1", "P6-G6-T1", "P6-G7-T1", "P6-G7-T2", "P6-G8-T1", "P6-G8-T2"]
+          completed_by_035: ["P6-G5-T2", "P6-G9-T1", "P6-G9-T2"]
+          corrected_by_035: ["P6-G5-T1"]
+        human_confirmation: "During Entry 034 the Human chose one Function Group, because the Package Documentation lists all 32 Functions in one table with no groups; it is named Python Integration after the documentation section."
+        open_questions:
+          OQ-035-1:
+            question: "Should the Logic Principle 'Logic is a reusable library' (it starts no process) be read as 'starts no server process', now that MT5 Service starts one Terminal Process per opened Terminal?"
+            context: "The MT5 Service Definition requires a separate operating-system process per Terminal, and Logic's Authority keeps each Service's own Principles authoritative, so Develop followed the MT5 Service Principle. Logic's root README now says Logic runs no server and that MT5 Service runs the package in one Terminal Process per Terminal."
+            current_choice: "MT5 Service starts Terminal Processes as its Definition requires; Logic runs no server and owns no transport."
+        earlier_open_questions:
+          OQ-033-1: "Still open: no real Package or MetaTrader 5 terminal was available; Review on Windows is needed to observe the real Package."
+          OQ-033-3: "Addressed by P6-G1-T4's realization: a Terminal Process is reached by address and the process tree's authkey, and with API's 2 workers both workers' requests reached the same Terminal Process one after another."
+          OQ-033-4: "Still open: Presentation's generated API types do not include MT5 Group's Endpoints; P6 did not change Presentation."
+        observations:
+          - "The stored Database now holds 2 Users, so the stated User count of 1 in Logic's root README was stale; Develop changed no stored data and switched that example to the Currency count."
+          - "The interface boundary guard blocks interpreters from opening .interface/ paths, so API Preferences' Endpoint rules were read with the Read tool and transcribed to a scratch input for the MT5 Adapter generator."
+          - "Scratch generators (Function spec from the downloaded documentation, Function Group, Constants from the locked wheel's source, MT5 Adapters, and the two MT5 READMEs) live outside the project; the Package Documentation pages were downloaded on 2026-10-14."
+          - "Every API run used the live Database store only for read-only Entity counts and lookups."
+    - id: "036"
+      skill: "my-interface-develop"
+      phase: "P6"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-14T10:54:53Z"
+      completed_at: "2026-10-14T10:55:40Z"
+      duration: "47 seconds"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Found no eligible P6 Task and changed no implementation work."
+      open_questions: []
+      blockers: []
+      decisions: []
+      report: "Requested phase 6 resolved to P6. All 18 P6 Tasks are done; none is blocked, claimed, or replaces another, so no Task was eligible and no implementation work was changed. The Interface sources are unchanged since Entry 035 (same commit, no working-tree change under .interface/). P6 Development progress stays completed; Review has not run."
+    - id: "037"
+      skill: "my-interface-review"
+      phase: "P6"
+      event: "review"
+      outcome: "not satisfied"
+      started_at: "2026-10-14T10:55:28Z"
+      completed_at: "2026-10-14T11:14:44Z"
+      duration: "19:16"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P6 against its Plan and the Logic, MT5 Service, API, and MT5 Group Review categories."
+        - name: "fastapi"
+          report: "Guided the reading of MT5 Group's Adapters and API's served description."
+      open_questions: []
+      blockers:
+        - "B-037-1"
+      report: "First review of P6 (MT5, Logic and API), judged against the current P6 Plan (18 done Tasks) and the Review categories of Logic (5 observations), MT5 Service (9), API (12, with the Group contract), and MT5 Group (6). Two Findings. F1 was raised and resolved: a Terminal Process outlived the API worker that started it, because uvicorn re-raises SIGTERM after its graceful shutdown, so a restarted API answered opening that Terminal with AuthenticationError; each Terminal Process now ends as soon as the process that started it ends, and the recheck shows no process or address left after API stops, a restarted API opening and calling the Terminal, and a killed caller taking its Terminal Process with it. F2, missing evidence, stays open as Blocker B-037-1: nothing in the record observes the real MetaTrader5 package or Windows, because this Linux aarch64 host cannot install it, so P6-G2-T2's acceptance, MT5 Service's Plain Data and MT5 Error observation with real results, and the Windows path of P6-G1-T1, P6-G1-T4, and P6-G8-T1 are not established. Everything observable here holds: locks, locked installs, builds, ruff format, ruff check, and ty check in Logic and API; zero-diff regeneration of every generated unit; Entity Group and Entity Service unchanged against HEAD; all 32 methods matching the documentation's syntax blocks; all 32 Handlers only calling their Function; the 223 Constants matching the package source; and the running API with 2 workers serving 117 Endpoints as documented. Outcome: not satisfied. P6 review progress set to not satisfied."
+      data:
+        findings:
+          F1:
+            state: "resolved"
+            baseline: "P6-G2-T1 acceptance: opening a Terminal starts its Terminal Process. P6-G1-T4 acceptance: a call for a Terminal with no running process, other than opening it, raises MT5 Error. MT5 Service Review observation: every call runs in the Terminal Process of its Terminal."
+            expected: "Once the API that started a Terminal Process stops, a newly started API can open that Terminal (starting its own Terminal Process) and calls for it run there or raise MT5Error."
+            observed: "A Terminal Process outlives the API worker that started it: after API was stopped normally, process 53347 (started by worker 53334) kept running with the Terminal's address, reparented to init. A newly started API then answered both opening and calling that Terminal with 500 application/problem+json type AuthenticationError (digest sent was rejected), because the new process tree holds a different authkey; no Terminal Process was started and no MT5Error was raised. Cause: uvicorn re-raises the captured SIGTERM after its graceful shutdown (uvicorn/server.py capture_signals), so the worker dies by the default handler and multiprocessing never terminates its daemon children."
+            location: "logic/services/mt5/terminal.py (_serve and _start: a Terminal Process ends only through shutdown or its caller's normal interpreter exit); observable through POST <base_url>/mt5/python_integration/initialize after an API restart."
+            resolution: "logic/services/mt5/terminal.py: _serve starts a daemon thread running _end_with, which waits on multiprocessing.parent_process().sentinel and, when the process that started the Terminal Process ends, removes its Unix socket address (off Windows) and exits the Terminal Process. API's environment was refreshed with uv sync --locked --reinstall-package logic. The -10004 causes in the MT5 Service, Logic, and API documentation now include the opening process having ended. Recheck: open a Terminal through API and stop API: no Terminal Process and no address remain; a newly started API opens and calls the same Terminal (200, its own Terminal Process); a caller killed with SIGKILL takes its Terminal Process and address with it and the Terminal reopens; the Terminal Process, Function Group, result, served-API, worker, and documentation checks give the same results as before; ruff format, ruff check, and ty check pass. The orphaned Terminal Processes 52654 and 53347, their resource tracker, and two stale socket files left by this Review's runs were removed."
+          F2:
+            state: "open"
+            blocker: "B-037-1"
+            kind: "missing evidence"
+            baseline: "P6-G2-T2 acceptance (results equal the Package's, failures equal its last-error report); MT5 Service Review observation: every result is Plain Data with the Package's field names and values, and every Package failure raises MT5 Error with last_error; P6-G1-T1 acceptance as it holds on the deployment platform; P6-G1-T4 and P6-G8-T1 acceptance on Windows, where Terminal Processes use named pipes."
+            expected: "Observable results from the real MetaTrader5 package and a MetaTrader 5 terminal on Windows."
+            observed: "The record shows no observation of the real package: this Linux aarch64 host cannot install it (PyPI publishes win_amd64 wheels only), every Package-dependent check in the Task Logs and in this Review used scratch stand-in packages, and the Windows named-pipe path of the Terminal Process layer has never run. This states what the record does not show, not that the conditions are unmet."
+            location: "P6-G1-T1, P6-G1-T4, P6-G2-T2, P6-G8-T1 Task Logs; this host (Linux aarch64)."
+        blockers:
+          B-037-1:
+            condition: "The real MetaTrader5 package and a MetaTrader 5 terminal cannot be observed on this host, so Review cannot establish the Package-dependent P6 conditions (F2)."
+            evidence:
+              - "uname: Linux aarch64; PyPI lists metatrader5 5.0.6231 only as win_amd64 wheels; Logic declares it with the marker sys_platform == 'win32', so it is not installed here."
+              - "Opening a Terminal through the running API on this host answers 500 MT5Error -10003: The MetaTrader5 package cannot be loaded."
+            required_human_action: "Run /my-interface-review 6 on the Windows Server deployment machine with uv sync done in logic/ and api/, a MetaTrader 5 terminal installed, and a demo account available, so Review can observe real results, failures, and the named-pipe Terminal Processes."
+            scope: "P6 only; P1 to P5 are unaffected."
+        checks:
+          technical: "Logic and API: uv lock --check, uv sync --locked, ruff format --check (21 and 18 files), ruff check, ty check, and uv build all pass; the built wheels contain every MT5 unit; the locks record metatrader5 5.0.6231 and numpy 2.5.4 cp314 win_amd64 wheels under the win32 marker."
+          inputs: "Logic Preferences' two Services and API Preferences' two Group References resolve to existing Definitions and Preferences; names and directories are unique (Entity/entity, MT5/mt5); the Package's cp314 wheel matches requires-python >=3.14; Platform Preferences select Windows Server, where the Package runs."
+          regeneration: "From unchanged authorities the Function spec, PythonIntegration, Constants, both MT5 Adapters, and both MT5 READMEs regenerate byte-identical."
+          phase_constraint: "Entity Group's 84 described Endpoints with their schemas and Entity Service's Interface and method signatures have the same digests at HEAD and now; no Entity Service or Entity Group unit differs from HEAD."
+          logic: "Logic Interface publishes exactly Entity and MT5, each the identical Service Interface; no Service imports Logic Interface; only Entity Service imports Database; only MT5 Service's terminal unit imports the Package; importing starts no process and changes no Database file."
+          mt5_service: "32 static methods equal the documentation's 32 Functions in name and order, and every parameter list equals the union of each Function's syntax blocks, with terminal first; with stand-in packages, parameters reach the Package unchanged in one Terminal Process per Terminal, calls for one Terminal run one after another and different Terminals at the same time, Package-shaped results become Plain Data, every documented failure value raises MT5Error with that Terminal's last_error, and the Package never loads in the caller; the 223 Constants equal the package's own source, whose compiled core defines no further Constant names; the Interface publishes PythonIntegration, Constants, and MT5Error only and opens no connection when loaded."
+          api: "The running API (2 workers) serves 117 Endpoints, 84 Entity and 33 MT5, all beneath the URL Key and a Group segment, none of its own, every Method-and-Path combination unique; all MT5 Endpoints are POST /<Function> with Body Parameters, and the Constants Endpoint GET /get, per the verb table; MT5Error answers 500 application/problem+json with type MT5Error; Swagger UI and ReDoc answer, sectioned Entity and MT5 by Adapter; config.yaml holds every Structure value with derived url and documentation and a non-empty key; Bootstrap reads only config.yaml."
+          mt5_group: "One Adapter for the one Function Group with 32 Endpoints plus the Constants Adapter returning 223 Constants; every Endpoint keeps its Function's parameter names, requirements, and defaults; all 32 Handlers only call their own Function through Logic Interface with every parameter; no class, loop, or generated route; no Package import."
+          workers: "In a burst of slow calls both API workers held requests and every call answered 200, one after another, from one Terminal Process."
+          documentation: "MT5 Service, Logic, MT5 Group, and API documentation keep their sections in order with resolving links; every example that needs no MetaTrader 5 terminal runs and prints as stated (the 33 MT5 Group Endpoint examples answered 200 with a stand-in); no URL Key or real credential appears."
+        observations:
+          - "MT5 Service's first Review observation says its Interface publishes one class per Function Group 'and nothing else', while its Interface contract also publishes Constants and MT5 Error; Review judged against the contract, which names all three."
+          - "A process outside API's process tree (another authkey) that reaches a Terminal's address receives AuthenticationError rather than MT5Error; neither the Plan nor a Review observation covers such callers."
+          - "When one caller process shuts down a Terminal another caller process started, the starter keeps a finished process object until its next start; nothing observable follows from it."
+          - "The generators that make regeneration reproducible, the downloaded Package Documentation, and the stand-in packages live outside the project in the session's scratch space, as in earlier phases."
+          - "Every API run used the live Database store only for read-only Entity counts and lookups."

@@ -12,6 +12,7 @@ from fastapi import Body, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
+from logic.interface import MT5
 from logic.interface import Entity as source
 from pydantic import BaseModel, ValidationError
 
@@ -43,7 +44,7 @@ def problem(request: Request, error: Exception) -> JSONResponse:
         )
         if isinstance(error, RequestValidationError)
         else str(error)
-        if isinstance(error, source.database_error.DatabaseError)
+        if isinstance(error, (source.database_error.DatabaseError, MT5.MT5Error))
         else "The request could not be completed."
     )
     return JSONResponse(
