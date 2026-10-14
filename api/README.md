@@ -67,7 +67,7 @@ curl -s "$BASE/mt5/constants/get" | python3 -c "import json, sys; print(json.loa
 # 16385
 ```
 
-Every MT5 Group Function Endpoint names its MetaTrader 5 terminal in `terminal`; open it once with `initialize` before calling other Functions for it, and close it with `shutdown`. A Terminal opened through one request is used by every later request naming it, whichever worker serves the request.
+MT5 Group has one Adapter for every MT5 Service Function Group, such as `connection`, `symbols`, and `market_data`, and one for the Constants. Every MT5 Group Function Endpoint names its MetaTrader 5 terminal in `terminal`; open it once with `/mt5/connection/initialize` before calling other Functions for it, and close it with `/mt5/connection/shutdown`. A Terminal opened through one request is used by every later request naming it, whichever Adapter and worker serve the request. Every date and time is a Timestamp, whole seconds since 1970-01-01 00:00:00 UTC.
 
 The interactive documentation lists every Endpoint, one section per Adapter gathered under its Group, at the `documentation` addresses in `config.yaml`.
 
@@ -105,8 +105,8 @@ print("verified")
 - **Every request answers `404`**: the request is missing the URL Key or the Group segment. Build requests from `url` in `config.yaml`, then add `/entity/<adapter>/<endpoint>`.
 - **`500` with `type` `ExecutionError` and `no such table`**: Database's default Instance has not been prepared. Run `uv run python scripts/prepare.py` in `../database`.
 - **`500` with `type` `ConfigurationError` saying `config.yaml` is missing**: Database was installed as a copy. Run `uv sync` in this directory so the Logic library brings Database from `../database` again.
-- **`422` with `type` `RequestValidationError`**: the request Body is not JSON of the stated shape, for example a Parameter that is not nested under its own name.
+- **`422` with `type` `RequestValidationError`**: the request Body is not JSON of the stated shape, for example a Parameter that is not nested under its own name, or an MT5 Group date sent as text instead of a Timestamp.
 - **`500` with `type` `MT5Error` and detail `-10003: The MetaTrader5 package cannot be loaded`**: API runs where the `MetaTrader5` package is not installed, which is always the case off Windows. Run API on Windows and `uv sync` there.
-- **`500` with `type` `MT5Error` and detail `-10004: This Terminal has no running Terminal Process`**: the Terminal named in `terminal` is not open, its opening failed, it was shut down, or the API worker that opened it has stopped (also when API restarts). Call `/mt5/python_integration/initialize` with it first.
+- **`500` with `type` `MT5Error` and detail `-10004: This Terminal has no running Terminal Process`**: the Terminal named in `terminal` is not open, its opening failed, it was shut down, or the API worker that opened it has stopped (also when API restarts). Call `/mt5/connection/initialize` with it first.
 - **`500` with `type` `MT5Error` and another code**: the MetaTrader 5 package reported a failure; the detail holds its `last_error` code and message.
 - **API does not start because the port is in use**: another process listens on the configured `port`. Stop it, or change `port` in `config.yaml` together with `url` and `documentation`.

@@ -1470,3 +1470,151 @@ content:
           - "When one caller process shuts down a Terminal another caller process started, the starter keeps a finished process object until its next start; nothing observable follows from it."
           - "The generators that make regeneration reproducible, the downloaded Package Documentation, and the stand-in packages live outside the project in the session's scratch space, as in earlier phases."
           - "Every API run used the live Database store only for read-only Entity counts and lookups."
+    - id: "038"
+      skill: "my-interface-plan"
+      phase: "P6"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-14T11:40:57Z"
+      completed_at: "2026-10-14T11:47:25Z"
+      duration: "6:28"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the P6 Plan against the MT5 Service Definition changed after Review 037."
+      open_questions:
+        - "OQ-038-1"
+      blockers: []
+      report: "Requested phase 6 resolved to Target phase P6 (MT5, target Logic and API, enabled and ready). P1 to P5 have no open Blocker and are satisfied. P6's own Blocker B-037-1 (Review cannot observe the real Package off Windows) stays open; it gates Review, not Planning. Since the P6 Plan was stored (Entry 033), the only Interface change is the MT5 Service Definition: it now names seven Function Groups with the Functions each lists, instead of taking groups from the Package Documentation (Develop realized one group), and adds the JSON Principle (only JSON parameters and results, every date and time a Timestamp, conversion inside MT5 Service, a non-JSON parameter refused with MT5 Error); Plain Data now means a valid JSON value. Target, Logic, API, MT5 Group, and every Preferences file are unchanged. Reconciliation: 7 done Tasks preserved, 11 done Tasks replaced by new Tasks carrying replaces, 2 Tasks added for the JSON Principle; no Task was removed or rewritten, and no Task status was changed. Plan and Group context updated: the Plan outcome and one new phase constraint, and the context of Groups P6-G1 and P6-G2. P6 now holds 31 Tasks (13 todo); Plan Config Total stored Tasks: 100 to 113. P6 aggregate Planning progress stays completed. One Open Question was recorded. This Entry was created after read-only orientation, so started_at and duration understate the run."
+      data:
+        phase_selection:
+          requested: "6"
+          resolved: "P6"
+          reason: "The Target names its phases P1 to P6 and the Workflow selects them by number."
+        prior_phase: "P5 has no open Blocker; its Review is satisfied."
+        understanding_change:
+          source: "MT5 Service Definition (Human commit ba808f3, after Review Entry 037)"
+          changes:
+            - "Function Groups are now the seven groups the Definition names, each Function in the class of the group that lists it; the Package Documentation stays the source of Functions and parameters only."
+            - "New JSON Principle and Review observation: every method takes only JSON values and returns only a JSON value, every date and time is a Timestamp, a parameter the Package needs in another form is converted inside MT5 Service, and a non-JSON parameter is refused with MT5 Error."
+            - "Plain Data now means a valid JSON value."
+          unchanged: "Target, Logic Definition and Preferences, MT5 Service Preferences (contract_version 1.0), API Definition and Preferences, MT5 Group Definition and Preferences, Platform Preferences."
+        changes:
+          added:
+            - {id: "P6-G1-T5", reason: "The JSON Principle needs one shared conversion of JSON parameter values, Timestamps included, into the forms the Package takes, refusing a non-JSON value with MT5 Error; nothing realizes it."}
+            - {id: "P6-G2-T5", reason: "Every method must take only JSON parameters through that conversion."}
+          changed:
+            - {id: "P6", reason: "Outcome now says MT5 Service offers its Functions in the Function Groups it names and takes and returns only JSON values; added the phase constraint that nothing MT5 Service or MT5 Group publishes, serves, or documents still presents the single Function Group realized earlier, a scope boundary introduced by this replanning."}
+            - {id: "P6-G1", reason: "Description, area, and outcome now include the JSON parameter conversion."}
+            - {id: "P6-G2", reason: "Description now takes the Function Groups from MT5 Service rather than the Package Documentation; outcome now states JSON parameters and results."}
+            - {id: "P6-G1, P6-G2, P6-G3, P6-G5, P6-G6, P6-G7, P6-G8, P6-G9 task_count", reason: "Recalculated for the added Tasks."}
+          removed: []
+          preserved:
+            - {id: "P6-G1-T1", reason: "The Package dependency is unchanged."}
+            - {id: "P6-G1-T2", reason: "MT5 Error is unchanged."}
+            - {id: "P6-G1-T3", reason: "The result conversion already yields dictionaries, lists, strings, numbers, booleans, and null; the stricter valid-JSON and Timestamp result requirement is carried per method by P6-G2-T4."}
+            - {id: "P6-G1-T4", reason: "Terminal Processes are unchanged."}
+            - {id: "P6-G3-T1", reason: "Constants are unchanged."}
+            - {id: "P6-G4-T1", reason: "Logic Interface publishes MT5 Service's own Interface object, whatever it holds."}
+            - {id: "P6-G7-T2", reason: "The Constants Adapter is unchanged; uniqueness of every Adapter segment is re-established by P6-G8-T3."}
+            - {id: "P1 to P5", reason: "Unaffected; their phases are satisfied."}
+          replaced:
+            - {id: "P6-G2-T3", replaces: "P6-G2-T1", reason: "Classes must correspond to the seven named Function Groups, not the one group realized from the Package Documentation."}
+            - {id: "P6-G2-T4", replaces: "P6-G2-T2", reason: "The result and failure contract must hold on the methods of the named groups, and every result must be a valid JSON value with Timestamps."}
+            - {id: "P6-G3-T3", replaces: "P6-G3-T2", reason: "The MT5 Service Interface must publish the named Function Groups instead of the earlier one."}
+            - {id: "P6-G5-T3", replaces: "P6-G5-T1", reason: "MT5 Service documentation describes one Function Group and no JSON parameters or Timestamps."}
+            - {id: "P6-G5-T4", replaces: "P6-G5-T2", reason: "Logic's root documentation presents the earlier Function Group."}
+            - {id: "P6-G6-T2", replaces: "P6-G6-T1", reason: "API's environment holds the Logic library as last resolved; it must reach the regrouped MT5 Service."}
+            - {id: "P6-G7-T3", replaces: "P6-G7-T1", reason: "MT5 Group needs one Adapter per named Function Group instead of the one Adapter realized."}
+            - {id: "P6-G8-T3", replaces: "P6-G8-T1", reason: "Bootstrap registers the earlier Adapter; it must register the current Adapters, keeping the Terminal continuity condition."}
+            - {id: "P6-G8-T4", replaces: "P6-G8-T2", reason: "The interactive documentation is sectioned by the earlier Adapter."}
+            - {id: "P6-G9-T3", replaces: "P6-G9-T1", reason: "MT5 Group documentation describes the earlier Adapter's Endpoints."}
+            - {id: "P6-G9-T4", replaces: "P6-G9-T2", reason: "API's root documentation presents the earlier Adapter."}
+        open_questions:
+          OQ-038-1:
+            question: "Should MT5 Service's contract_version (1.0) be raised for the change from one Function Group class to the seven named ones?"
+            context: "The MT5 Service Interface contract says changing its structure requires raising contract_version and a consumer review. The contract's items (Function Groups, Constants, MT5 Error, nothing else) are unchanged, but the published classes change. contract_version lives in Human-owned MT5 Service Preferences; MT5 Group, the one consumer, is replanned in this phase."
+            current_choice: "Planned under contract_version 1.0, treating the change as a change in the named group set within an unchanged contract structure; the Human decides whether to raise it."
+        earlier_open_questions:
+          OQ-033-1: "Superseded in practice by open Blocker B-037-1; the new Package-dependent acceptance (JSON parameters, Timestamps) also needs a Windows host with the Package and a terminal to be observed."
+          OQ-033-2: "Still open: the Target's Scope line still says MT5 Service's actions are not yet defined."
+          OQ-033-4: "Still open: Presentation's generated API types will not include the regrouped MT5 Group Endpoints; P6 targets Logic and API only."
+          OQ-035-1: "Still open; unaffected by this replan."
+        notes:
+          - "Replaced Tasks keep status done until Develop marks them replaced; P6 Development progress and completed_at are Develop's and were not changed."
+          - "The method-mirroring Principle passes parameters unchanged, while the JSON Principle converts a parameter's form inside MT5 Service; both hold when conversion changes only form, never meaning, which is how P6-G1-T5 and P6-G2-T5 state it."
+          - "Entry 032 (my-interface-plan, P6) is still recorded as in progress with no completion; this Entry did not change it."
+          - "No Implementation, Target, or Interface source was changed."
+    - id: "039"
+      skill: "my-interface-plan"
+      phase: "P6"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-14T11:48:22Z"
+      completed_at: "2026-10-14T11:48:42Z"
+      duration: "20 seconds"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the P6 Plan against unchanged Understanding; no change was needed."
+      open_questions: []
+      blockers: []
+      report: "Requested phase 6 resolved to Target phase P6 (MT5, target Logic and API, enabled and ready). P1 to P5 have no open Blocker. The Interface sources are unchanged since Entry 038 (HEAD ba808f3, no working-tree change under .interface/), and the P6 Plan is byte-identical to the result Entry 038 stored, with 18 done and 13 todo Tasks and no Develop progress since. Reconciling against current Understanding required no addition, change, removal, or replacement. Plan Config is unchanged (Total stored Tasks: 113; P6: 31). P6 aggregate Planning progress stays completed. Blocker B-037-1 and Open Questions OQ-038-1, OQ-033-2, OQ-033-4, and OQ-035-1 remain open."
+      data:
+        phase_selection:
+          requested: "6"
+          resolved: "P6"
+          reason: "The Target names its phases P1 to P6 and the Workflow selects them by number."
+        prior_phase: "P5 has no open Blocker; its Review is satisfied."
+        changes:
+          added: []
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P6 (all 31 Tasks, Plan and Group context)", reason: "Understanding is unchanged since Entry 038, which reconciled the Plan with the current MT5 Service Definition."}
+          replaced: []
+        notes:
+          - "Understanding was established from the Interface sources read in this session, which are verified unchanged since they were read."
+          - "No Implementation, Target, or Interface source was changed."
+    - id: "040"
+      skill: "my-interface-develop"
+      phase: "P6"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-14T11:49:56Z"
+      completed_at: "2026-10-14T12:07:43Z"
+      duration: "17:47"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Developed the 13 todo P6 Tasks of Plan Entry 038 and marked the 11 Tasks they replace as replaced."
+        - name: "fastapi"
+          report: "Guided the regenerated MT5 Group Adapters, Bootstrap registration, and the served-description checks."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P6-G1-T5"
+        - "P6-G2-T4"
+      report: "Requested phase 6 resolved to P6. Developed all 13 todo Tasks in dependency order, each claimed first with Task Log evidence: P6-G1-T5, P6-G2-T3, P6-G2-T4, P6-G2-T5, P6-G3-T3, P6-G5-T3, P6-G5-T4, P6-G6-T2, P6-G7-T3, P6-G8-T3, P6-G8-T4, P6-G9-T3, and P6-G9-T4; before each replacing Task ran, the Task it replaces (P6-G2-T1, P6-G2-T2, P6-G3-T2, P6-G5-T1, P6-G5-T2, P6-G6-T1, P6-G7-T1, P6-G8-T1, P6-G8-T2, P6-G9-T1, P6-G9-T2) was marked replaced. P6 now has 20 done and 11 replaced Tasks, none todo, claimed, or blocked. MT5 Service publishes the seven named Function Groups (Connection, Symbols, MarketBook, MarketData, Orders, Positions, History; 32 methods), takes only JSON parameters with date_from and date_to as Timestamps (MT5Error -2 otherwise), and returns only valid JSON values; the single Python Integration class and Adapter were removed. MT5 Group serves one Adapter per Function Group plus Constants (33 Endpoints), registered by Bootstrap and sectioned in the interactive documentation; MT5 Service, Logic, MT5 Group, and API documentation were updated. Logic and API pass uv lock --check, uv sync --locked, ruff format --check, ruff check, and ty check. Every Package-dependent behaviour was observed with scratch stand-in Packages on this Linux aarch64 host, never with the real Package or a MetaTrader 5 terminal, so Blocker B-037-1 still holds for Review. P6 Development progress stays completed; completed_at stays null because Review is not satisfied. The deletion of logic/logic/services/mt5/python_integration.py is staged in the git index (removed with git rm); nothing was committed."
+      data:
+        tasks:
+          developed: ["P6-G1-T5", "P6-G2-T3", "P6-G2-T4", "P6-G2-T5", "P6-G3-T3", "P6-G5-T3", "P6-G5-T4", "P6-G6-T2", "P6-G7-T3", "P6-G8-T3", "P6-G8-T4", "P6-G9-T3", "P6-G9-T4"]
+          marked_replaced: ["P6-G2-T1", "P6-G2-T2", "P6-G3-T2", "P6-G5-T1", "P6-G5-T2", "P6-G6-T1", "P6-G7-T1", "P6-G8-T1", "P6-G8-T2", "P6-G9-T1", "P6-G9-T2"]
+        earlier_open_questions:
+          OQ-038-1: "Still open: MT5 Service's published classes changed under contract_version 1.0, as planned."
+          OQ-033-4: "Still open: Presentation's generated API types do not include MT5 Group's Endpoints; P6 did not change Presentation."
+        observations:
+          - "The Package Documentation sets every date_from and date_to as 'the datetime object or a number of seconds elapsed since 1970.01.01', so a Timestamp reaches the Package unchanged; no parameter needed another form."
+          - "Scratch generators (Function Groups from the documentation spec and the Definition's group table transcribed through the Read tool, MT5 Group Adapters, both MT5 READMEs) and stand-in Packages live outside the project; the generators of the earlier session were reused from its scratch space."
+          - "Every API run used the live Database store only for read-only Entity reads; no Database file changed."
+          - "Cache directories created by the checks were removed; every API run was stopped with no Terminal Process or socket left."
+    - id: "041"
+      skill: "my-interface-review"
+      phase: "P6"
+      event: "review"
+      outcome: "interrupted"
+      started_at: "2026-10-14T12:13:34Z"
+      completed_at: "2026-10-14T12:13:57Z"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Read the Review authorities; interrupted by the Human before any Source was examined."
+      open_questions: []
+      blockers: []
+      report: "Interrupted by the Human after reading the Review Definition and Preferences, before Source Understanding was established. No Finding was raised, no implementation or evidence was changed, and P6 Review progress was left at not satisfied. Blocker B-037-1 still applies to any Review on this Linux host."

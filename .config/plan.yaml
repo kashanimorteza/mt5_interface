@@ -26,7 +26,7 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 100
+  task_count: 113
   plans:
     P1:
       id: "P1"
@@ -2122,19 +2122,20 @@ content:
       title: "MT5"
       order: 6
       target: "Logic and API"
-      does: "The Logic library holds MT5 Service, which offers every Function of the MetaTrader 5 Package in its own Function Group classes, its Constants, and MT5 Error, runs every call in its Terminal's own process, and is published through Logic Interface; and the running API serves MT5 Group beneath its own segment, with one Adapter per Function Group and one for the Constants, reached only through Logic Interface."
+      does: "The Logic library holds MT5 Service, which offers every Function of the MetaTrader 5 Package in the classes of the Function Groups it names, its Constants, and MT5 Error, takes and returns only JSON values, runs every call in its Terminal's own process, and is published through Logic Interface; and the running API serves MT5 Group beneath its own segment, with one Adapter per Function Group and one for the Constants, reached only through Logic Interface."
       constraints:
         - "Entity Service and Entity Group keep offering and serving exactly what they offered and served before this phase."
-      task_count: 18
+        - "Nothing MT5 Service or MT5 Group publishes, serves, or documents still presents the single Function Group realized before MT5 Service named its Function Groups."
+      task_count: 31
       groups:
         P6-G1:
           id: "P6-G1"
           title: "MT5 Service foundation"
-          description: "The parts of MT5 Service in Logic that every Function Group relies on: the Package within the Logic library, the one error a Package failure becomes, the conversion of Package results into Plain Data, and the separate process in which each Terminal runs. Grouped because each is shared by every Function Group and none exposes a Function by itself."
-          area: "MT5 Service: Package access, MT5 Error, Plain Data, and Terminal Processes"
-          does: "MT5 Service can run any Package Function for a named Terminal in that Terminal's own process, turn its result into Plain Data, and report a Package failure as MT5 Error."
+          description: "The parts of MT5 Service in Logic that every Function Group relies on: the Package within the Logic library, the one error a Package failure becomes, the conversion of Package results into Plain Data and of JSON parameter values into the forms the Package takes, and the separate process in which each Terminal runs. Grouped because each is shared by every Function Group and none exposes a Function by itself."
+          area: "MT5 Service: Package access, MT5 Error, Plain Data, JSON parameters, and Terminal Processes"
+          does: "MT5 Service can run any Package Function for a named Terminal in that Terminal's own process from JSON parameter values, turn its result into Plain Data, and report a Package failure as MT5 Error."
           constraints: []
-          task_count: 4
+          task_count: 5
           tasks:
             P6-G1-T1:
               id: "P6-G1-T1"
@@ -2214,14 +2215,35 @@ content:
                 - {at: "2026-10-14T09:58:28Z", by: "034", event: "decision", note: "Unset: what happens to a newly started process when the opening Function fails. Chosen: it ends, so the Terminal has no running process and later calls raise MT5Error. Why: a Terminal that failed to open must not keep a process; a re-opening that fails on an already open Terminal keeps it."}
                 - {at: "2026-10-14T09:58:28Z", by: "034", event: "decision", note: "Unset: the MT5Error code when no Package call could report one (no running process, startup timeout, Package not loadable, process ended mid-call). Chosen: the Package's own last_error codes RES_E_INTERNAL_FAIL_CONNECT -10004, RES_E_INTERNAL_FAIL_TIMEOUT -10005, RES_E_INTERNAL_FAIL_INIT -10003, and RES_E_INTERNAL_FAIL_RECEIVE -10002. Why: callers then read every MT5 Service failure in the Package's own code space."}
                 - {at: "2026-10-14T09:58:28Z", by: "034", event: "decision", note: "Unset: the process start method and lifetime. Chosen: spawn, daemon processes. Why: spawn is the only method on Windows and keeps the caller's state out of the Terminal Process; a daemon process ends with the caller process that started it instead of blocking its exit."}
+            P6-G1-T5:
+              id: "P6-G1-T5"
+              source_id: "038"
+              title: "Convert JSON parameter values into the forms the Package takes"
+              description: "Provide the conversion every Function Group applies to its parameters: it accepts only JSON values, turns a Timestamp into the date-and-time form a Function needs when the Package does not take the Timestamp itself, turns any other JSON value the Package needs in another form into that form, and refuses a value that is not a JSON value with MT5 Error."
+              reason: "MT5 Service takes only JSON values, every date and time as a Timestamp, so that API and every other caller pass requests through without converting anything themselves; no conversion of parameters exists yet."
+              inputs:
+                - "The parameter forms the Package Documentation describes"
+                - "MT5 Error"
+              skills: []
+              expected_result: "One parameter conversion every Function Group uses before a call reaches the Package."
+              acceptance: "For each parameter form the Package Documentation describes, a JSON value given for it reaches the Package in a form the Package accepts and with the same meaning, a Timestamp standing for the same instant; JSON values the Package already takes pass unchanged; a value that is not a JSON value is refused with MT5 Error before anything reaches the Package."
+              depends_on:
+                - "P6-G1-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T11:52:03Z", by: "040", event: "claimed", note: "Dependency P6-G1-T2 is done; claimed by Develop."}
+                - {at: "2026-10-14T11:52:46Z", by: "040", event: "done", note: "Added the JSON Parameters section to logic/services/mt5/terminal.py: given(**values) and named(**values) take each parameter by name and return it as the Package takes it; every value must be a JSON value (None, bool, int, finite float, str, list, or dict with str keys, recursively), and date_from and date_to must be a Timestamp (int, or a whole-number float returned as int); anything else raises MT5Error(-2, '<name> is not a JSON value' or '<name> is not a Timestamp: ...') before any call is sent. open and call now refuse a terminal that is not a str with MT5Error -2. Package Documentation (pages downloaded 2026-10-14): every date_from and date_to of copy_rates_from, copy_rates_range, copy_ticks_from, copy_ticks_range, history_orders_total, history_orders_get, history_deals_total, and history_deals_get is 'Set by the datetime object or as a number of seconds elapsed since 1970.01.01', so a Timestamp reaches the Package unchanged and no other parameter needs another form. Observed in logic/.venv: JSON values, a request dict included, pass unchanged; 1700000000.0 reaches the Package as 1700000000; 11 non-JSON or non-Timestamp parameter values (datetime, 1.5, a string or bool Timestamp, Decimal, tuple, non-str key, NaN, inf, bytes, a tuple group) and 3 non-str terminals are refused with MT5Error code -2."}
+                - {at: "2026-10-14T11:52:46Z", by: "040", event: "decision", note: "Unset: the code of the MT5 Error raised when a parameter is refused before any Package call. Chosen: -2, the Package's own last_error code for invalid parameters (RES_E_INVALID_PARAMS), with a message naming the parameter and never its value. Why: MT5 Error carries the Package's codes, as the Terminal Process layer already does with -10002 to -10005 where no Package call can report one."}
+                - {at: "2026-10-14T11:52:46Z", by: "040", event: "decision", note: "Unset: how the parameters taken as a date and time are recognized. Chosen: by name, date_from and date_to, the only parameters the Package Documentation sets by a date and time; a whole-number float is returned as int, other numbers and non-numbers are refused. Why: a Timestamp is a whole number of seconds; conversion changes only form."}
         P6-G2:
           id: "P6-G2"
           title: "Function Groups"
-          description: "One class for every Function Group of the Package Documentation, each holding one method for every Function of that group. Grouped because together they make MT5 Service a complete representation of the Package."
+          description: "One class for every Function Group MT5 Service names, each holding one method for every Function that group lists. Grouped because together they make MT5 Service a complete representation of the Package."
           area: "MT5 Service Function Groups"
-          does: "Every Function of the Package can be called through the class of its Function Group for a named Terminal, returning Plain Data or raising MT5 Error."
+          does: "Every Function of the Package can be called through the class of its Function Group for a named Terminal with JSON parameter values, returning a JSON result or raising MT5 Error."
           constraints: []
-          task_count: 2
+          task_count: 5
           tasks:
             P6-G2-T1:
               id: "P6-G2-T1"
@@ -2238,7 +2260,7 @@ content:
               depends_on:
                 - "P6-G1-T4"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T09:58:28Z", by: "034", event: "claimed", note: "Dependency P6-G1-T4 is done."}
                 - {at: "2026-10-14T10:01:25Z", by: "034", event: "done", note: "Generated logic/services/mt5/python_integration.py with the scratch generators gen_spec.py (reads the 32 Function pages of https://www.mql5.com/en/docs/python_metatrader5, downloaded on 2026-10-14: names and order from its navigation, parameters, whether each is required and named, and return values) and gen_group.py (writes the class): class PythonIntegration with 32 explicitly written static methods in documentation order, each taking terminal and then its Function's parameters, passing unnamed parameters by position and named ones by name to terminal.open (initialize) or terminal.call (every other Function). ruff format, ruff check, and ty check pass. Observed: the methods equal the documented Functions in names and order; every signature is terminal followed by the Function's parameters with their names, order, and requirements, and portable keeps its documented False; with a scratch echo stand-in Package, 11 Functions covering every parameter form (positional, named, a left-out optional, datetime, request dictionary) received exactly the arguments given, all in one Terminal Process other than the caller's; after shutdown a call raised MT5Error -10004; the stand-in never entered the caller's process; regenerating gives byte-identical output; no __getattr__, loop, or dispatcher produces a method."}
@@ -2247,6 +2269,7 @@ content:
                 - {at: "2026-10-14T10:01:25Z", by: "034", event: "decision", note: "Unset: the name of copy_ticks_from's second parameter, listed as from in its parameter list and date_from in its syntax block. Chosen: date_from. Why: the syntax block is the documented call form and from is a Python keyword that no parameter can have; the Package takes it by position."}
                 - {at: "2026-10-14T10:01:25Z", by: "034", event: "decision", note: "Unset: the requirement of history_orders_get's and history_deals_get's date_from and date_to, documented as required while their ticket and position call options leave them out. Chosen: optional, sent by position only when given. Why: every documented call option must stay callable."}
                 - {at: "2026-10-14T10:01:25Z", by: "034", event: "decision", note: "Unset: parameter kinds and annotations. Chosen: unnamed parameters positional-or-keyword, named ones keyword-only, symbols_get's group positional-or-keyword because its documentation says both work; annotations from the documented types (datetime or seconds as dt.datetime | int, a request as dict[str, Any]); methods are static. Why: the documentation states each parameter's form; a caller needs no instance."}
+                - {at: "2026-10-14T11:52:58Z", by: "040", event: "replaced", note: "Replaced by P6-G2-T3 (Plan Entry 038): MT5 Service now names its own Function Groups, so the one Python Integration class no longer matches."}
             P6-G2-T2:
               id: "P6-G2-T2"
               source_id: "033"
@@ -2265,11 +2288,78 @@ content:
                 - "P6-G1-T2"
                 - "P6-G1-T3"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:01:25Z", by: "034", event: "claimed", note: "Dependencies P6-G2-T1, P6-G1-T2, and P6-G1-T3 are done."}
                 - {at: "2026-10-14T10:04:29Z", by: "034", event: "done", note: "Every PythonIntegration method passes its Function's documented failure value to the Terminal Process layer: False for initialize, login, symbol_select, market_book_add, and market_book_release; None for every other Function; none for shutdown, whose documented result is None, and last_error. Observed with a scratch stand-in Package returning Package-shaped results (named tuples, a nested order request, tuples of named tuples, rate and tick numpy arrays, numpy scalars, version and last-error tuples) on one Terminal and each Function's failure value on another: all 30 Functions with a result returned only dict, list, str, int, float, bool, or None with the Package's field names and values, and JSON-encoded unchanged; all 29 Functions that can fail raised MT5Error with that Terminal's last_error code and message; the other Terminal kept answering; shutdown returned None without MT5Error; no Package object was returned."}
                 - {at: "2026-10-14T10:04:29Z", by: "034", event: "decision", note: "Unset: the failure value of orders_total, positions_total, symbols_total, history_orders_total, and history_deals_total, documented only as returning an integer, and of order_check and order_send, which name last_error without a value. Chosen: None. Why: None is the Package's failure value wherever it documents one apart from False, and is never a valid integer or result structure."}
+                - {at: "2026-10-14T11:54:31Z", by: "040", event: "replaced", note: "Replaced by P6-G2-T4 (Plan Entry 038): the result and failure contract must hold on the methods of the named Function Groups, and every result must be a valid JSON value with Timestamps."}
+            P6-G2-T3:
+              id: "P6-G2-T3"
+              source_id: "038"
+              title: "Provide a class with a method for every Function of every named Function Group"
+              description: "Provide one class in its own unit for every Function Group MT5 Service names, holding one explicitly written method for every Function that group lists, which takes the Function's parameters plus the Terminal it works with and runs the Function in that Terminal's Terminal Process."
+              reason: "MT5 Service now names its Function Groups itself instead of taking them from the Package Documentation, so the one class realized earlier no longer matches; callers take only the group they need."
+              inputs:
+                - "The Function Groups MT5 Service names, with the Functions each lists"
+                - "The Functions and parameters of the Package Documentation, read when the Task is carried out"
+                - "The Terminal Process layer"
+              skills: []
+              replaces: "P6-G2-T1"
+              expected_result: "One importable class per named Function Group, with one method per Function it lists."
+              acceptance: "The classes correspond one-to-one to the Function Groups MT5 Service names, each importable on its own; every Function of the Package Documentation has exactly one method, with its exact name, in the class of the group that lists it and in no other; each method takes exactly the Function's parameters with the same names, order, and defaults, plus only the Terminal parameter; opening a Terminal starts its Terminal Process, shutting it down ends it, and every other call runs in the Terminal Process of the Terminal it names; no method is produced by a generic or dynamic mechanism."
+              depends_on:
+                - "P6-G1-T4"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T11:52:59Z", by: "040", event: "claimed", note: "Marked P6-G2-T1 replaced; dependency P6-G1-T4 is done; claimed by Develop."}
+                - {at: "2026-10-14T11:58:51Z", by: "040", event: "done", note: "Generated seven Function Group units in logic/services/mt5 (connection, symbols, market_book, market_data, orders, positions, history), each one class (Connection, Symbols, MarketBook, MarketData, Orders, Positions, History) with one explicitly written static method per Function the MT5 Service Definition lists under it (7, 5, 3, 5, 6, 2, 4 = 32), from the Function spec read from the Package Documentation (pages downloaded 2026-10-14) and the Definition's group table transcribed through the Read tool; the generator stops and writes nothing when a documented Function is in no group, a listed Function is undocumented, or one is listed twice. Removed the obsolete python_integration unit (its deletion is staged in the git index because it was removed with git rm). ruff format and ruff check pass. Observed in logic/.venv: each unit defines exactly its one class; every documented Function has one method in the class of the group listing it and in no other; each method's parameter names, order, and defaults equal the earlier documented signatures, plus terminal first. With the echo stand-in Package: opening a Terminal through Connection.initialize starts its Terminal Process, 11 Functions across the groups ran there with their parameters unchanged in one process that is not the caller's, Connection.shutdown ended it and a later call raised MT5Error -10004; the Package never loaded in the caller."}
+            P6-G2-T4:
+              id: "P6-G2-T4"
+              source_id: "038"
+              title: "Return JSON results and raise MT5 Error from every method"
+              description: "Make every method of every named Function Group return its Function's result as Plain Data, with every date and time in it a Timestamp, and raise MT5 Error, with the code and message of the Package's last-error report, whenever the Package returns its failure value."
+              reason: "The methods now live in the named Function Group classes, and every result must be a valid JSON value so callers send it on without converting anything."
+              inputs:
+                - "Every named Function Group class"
+                - "The Plain Data conversion"
+                - "MT5 Error"
+              skills: []
+              replaces: "P6-G2-T2"
+              expected_result: "Every method answers with a JSON result or raises MT5 Error."
+              acceptance: "For every Function, a successful call returns a valid JSON value whose field names and values equal the Package's result, every date and time in it a Timestamp; a call for which the Package returns its failure value raises MT5 Error whose code and message equal the Package's last-error report for that Terminal; no method returns a Package failure value, a Package object, or a value that is not JSON."
+              depends_on:
+                - "P6-G2-T3"
+                - "P6-G1-T2"
+                - "P6-G1-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T11:54:31Z", by: "040", event: "claimed", note: "Marked P6-G2-T2 replaced; dependencies P6-G1-T2 and P6-G1-T3 are done and P6-G2-T3's classes exist (its structure observed); claimed by Develop."}
+                - {at: "2026-10-14T11:58:51Z", by: "040", event: "done", note: "Every method returns through the Terminal Process layer, which converts results with plain() and raises MT5Error from last_error on the Function's failure value. plain() in logic/services/mt5/terminal.py now also refuses what has no JSON form: a non-finite float (ValueError) and a non-str mapping key (TypeError); Timestamps stay as the Package's whole seconds. Observed with the shaped stand-in Package (scratch numpy 2.5.4): 30 Functions return dict/list/str/int/float/bool/None results with the Package's field names and values that encode with json.dumps(allow_nan=False), including rate time 1700000000 and tick time_msc 1700000000123; 29 failure values raise MT5Error with that Terminal's last_error (-4, 'Terminal: Not found (<function>)'); shutdown returns None; the other Terminal is unaffected. Directly: a named tuple and a structured array with int64/float64/float32 columns convert with int time fields; NaN, inf, numpy NaN, a NaN inside an array of records, -inf in a nested dict, and an int key are refused."}
+                - {at: "2026-10-14T11:58:51Z", by: "040", event: "decision", note: "Unset: what happens to a Package result holding a non-finite number or a non-str key, which have no valid JSON form. Chosen: plain() raises ValueError or TypeError naming the problem, reaching the caller unchanged like any other Package-side exception. Why: conversion may change only form, never a value, so such a result must fail explicitly instead of being coerced, as P6-G1-T3 already decided for unknown result forms."}
+                - {at: "2026-10-14T11:58:51Z", by: "040", event: "decision", note: "Unset: whether time_msc and the other *_msc fields are converted to Timestamps. Chosen: kept as the Package gives them (whole milliseconds), with time, time_setup, time_done, time_update, and time_expiration already whole seconds. Why: the Package itself returns every date and time in seconds and adds the millisecond count as a separate field; dividing it would change its value."}
+            P6-G2-T5:
+              id: "P6-G2-T5"
+              source_id: "038"
+              title: "Take only JSON parameters in every method"
+              description: "Make every method of every named Function Group pass each of its Function's parameters through the parameter conversion before the call reaches the Package."
+              reason: "A caller, including API, must be able to send any parameter as JSON without converting it, and must learn of a value that is not JSON through MT5 Error rather than a failure inside the Package."
+              inputs:
+                - "Every named Function Group class"
+                - "The parameter conversion"
+              skills: []
+              expected_result: "Every method accepts JSON parameter values and refuses any other value."
+              acceptance: "For every Function, a call whose parameters are JSON values, a date and time given as a Timestamp, reaches the Package with every parameter's meaning unchanged; a call with a parameter that is not a JSON value raises MT5 Error and runs no Package Function; no method requires a caller to send a date-and-time object or an array type."
+              depends_on:
+                - "P6-G2-T3"
+                - "P6-G1-T5"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T11:58:51Z", by: "040", event: "claimed", note: "Dependencies P6-G2-T3 and P6-G1-T5 are done; claimed by Develop."}
+                - {at: "2026-10-14T11:59:22Z", by: "040", event: "done", note: "Every method of the seven Function Group units passes its unnamed parameters through terminal_processes.given(name=value, ...) and its named ones through terminal_processes.named(...), which apply the P6-G1-T5 conversion in the caller's process before the request is sent; date_from and date_to are declared int (a Timestamp) in all 8 methods that take them, instead of datetime | int. Observed in logic/.venv with the echo stand-in Package: copy_rates_range, copy_ticks_from (Timestamp given as 1790812800.0, received as int 1790812800), history_orders_total, and order_check received their JSON parameters with the same values and types in a Terminal Process other than the caller; 9 calls with a datetime, a non-whole Timestamp, a string Timestamp, a Decimal volume, a tuple inside a request, bytes for symbol and group, a Decimal ticket, and a bytes terminal raised MT5Error -2; the Package never loaded in the caller and no Terminal Process remained."}
         P6-G3:
           id: "P6-G3"
           title: "Constants and MT5 Service Interface"
@@ -2277,7 +2367,7 @@ content:
           area: "MT5 Service Constants and Interface"
           does: "A caller can import any Function Group, every Constant, and MT5 Error from MT5 Service Interface alone, without a connection being opened."
           constraints: []
-          task_count: 2
+          task_count: 3
           tasks:
             P6-G3-T1:
               id: "P6-G3-T1"
@@ -2316,10 +2406,34 @@ content:
                 - "P6-G2-T2"
                 - "P6-G3-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:05:45Z", by: "034", event: "claimed", note: "Dependencies P6-G2-T2 and P6-G3-T1 are done."}
                 - {at: "2026-10-14T10:06:07Z", by: "034", event: "done", note: "Wrote logic/services/mt5/interface.py: imports Constants, PythonIntegration, and MT5Error from their units and __all__ ['Constants', 'MT5Error', 'PythonIntegration'], nothing else; logic/services/mt5/__init__.py stays empty and no other MT5 Service unit declares __all__. ruff format, ruff check, and ty check pass. Observed in Logic's own environment (no Package installed): exactly those three names are published, each the identical object of its unit; the Package is not loaded and not reachable through the Interface; loading it starts no Terminal Process; PythonIntegration imports on its own; a call for a Terminal with no process raises MT5Error -10004, caught through the Interface."}
+                - {at: "2026-10-14T11:59:22Z", by: "040", event: "replaced", note: "Replaced by P6-G3-T3 (Plan Entry 038): the MT5 Service Interface must publish the named Function Groups instead of the earlier one."}
+            P6-G3-T3:
+              id: "P6-G3-T3"
+              source_id: "038"
+              title: "Publish the MT5 Service Interface with the named Function Groups"
+              description: "Publish, as the only publishing part of MT5 Service, one entry for every named Function Group class, the Constants group, and MT5 Error, and nothing else."
+              reason: "The Interface published earlier carries the one earlier class; callers must import exactly the Function Groups MT5 Service now names."
+              inputs:
+                - "Every named Function Group class"
+                - "The Constants group"
+                - "MT5 Error"
+              skills: []
+              replaces: "P6-G3-T2"
+              expected_result: "An MT5 Service Interface holding exactly the named Function Groups, the Constants, and MT5 Error."
+              acceptance: "A caller imports exactly one class per Function Group MT5 Service names, the Constants group, and MT5 Error from the Interface, and nothing else is published; the Package object is not reachable through it; loading the Interface opens no connection to MetaTrader 5 and starts no Terminal Process."
+              depends_on:
+                - "P6-G2-T4"
+                - "P6-G2-T5"
+                - "P6-G3-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T11:59:22Z", by: "040", event: "claimed", note: "Marked P6-G3-T2 replaced; dependencies P6-G2-T4, P6-G2-T5, and P6-G3-T1 are done; claimed by Develop."}
+                - {at: "2026-10-14T11:59:43Z", by: "040", event: "done", note: "Rewrote logic/services/mt5/interface.py to import and publish Connection, Constants, History, MarketBook, MarketData, MT5Error, Orders, Positions, and Symbols (in __all__), and nothing else. ruff format --check, ruff check, and ty check pass in logic/. Observed in logic/.venv: the Interface's public names equal exactly those nine; PythonIntegration and the Package are not reachable; Logic Interface's MT5 is the identical MT5 Service Interface module; loading it left MetaTrader5 out of sys.modules and started no Terminal Process."}
         P6-G4:
           id: "P6-G4"
           title: "Logic Interface"
@@ -2354,7 +2468,7 @@ content:
           area: "MT5 Service and Logic documentation"
           does: "A consumer can understand, set up, use, and verify MT5 Service and the Logic library that publishes it from their documentation alone."
           constraints: []
-          task_count: 2
+          task_count: 4
           tasks:
             P6-G5-T1:
               id: "P6-G5-T1"
@@ -2370,12 +2484,13 @@ content:
               depends_on:
                 - "P6-G3-T2"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:07:09Z", by: "034", event: "claimed", note: "Dependency P6-G3-T2 is done."}
                 - {at: "2026-10-14T10:08:29Z", by: "034", event: "done", note: "Wrote logic/services/mt5/README.md (the MT5 Service directory) with the scratch generator gen_mt5_readme.py, which reads the published Interface for the Function table and Constant counts: Overview with one example, Interface (PythonIntegration with all 32 Functions, their parameters, and actions, one example per Function, how results keep field names; Constants with all 223 by family and how to read them; MT5Error with its codes), Use, and Verify (a Windows check against the installed package). Observed: the four sections are in order; the table lists exactly the 32 methods and the example block calls every one; all 37 PythonIntegration calls in the examples bind to their method's signature and every Constants name used exists; the two blocks that run on this host print exactly what the text states (16385, 1, 223; -10004 for a Terminal with no process); credentials appear only as placeholders (<password>, login 12345678). Examples that need Windows, the package, and a running terminal were not run here."}
                 - {at: "2026-10-14T10:08:29Z", by: "034", event: "decision", note: "Unset: how the README shows examples that need a running MetaTrader 5 terminal. Chosen: one block with a placeholder Terminal path and request, each Function's line commented with the form of its result rather than a live value. Why: results depend on the account and market; only their shape is stable."}
                 - {at: "2026-10-14T10:51:06Z", by: "035", event: "corrected", note: "Correction by Develop Entry 035: ruff format --check, which Logic's Verify section runs, also checks Python blocks in Markdown and found over-long example lines in logic/services/mt5/README.md. Regenerated it with gen_mt5_readme.py using short names set once at the top of the example block (T, START, END, BUY, PASSWORD, SERVER), the MT5Error example printing code and message on separate lines, and the Windows Verify check split into shorter lines. Observed again: ruff format --check passes for all 21 files; sections in order; 32 Functions in the table, each with an example; all 37 calls bind to their signatures; the runnable blocks print exactly as stated (16385, 1, 223; -10004 and its message); credentials only as placeholders."}
+                - {at: "2026-10-14T11:59:59Z", by: "040", event: "replaced", note: "Replaced by P6-G5-T3 (Plan Entry 038): MT5 Service documentation describes one Function Group and no JSON parameters or Timestamps."}
             P6-G5-T2:
               id: "P6-G5-T2"
               source_id: "033"
@@ -2392,12 +2507,53 @@ content:
                 - "P6-G4-T1"
                 - "P6-G5-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:16:31Z", by: "034", event: "claimed", note: "Dependencies P6-G4-T1 and P6-G5-T1 are done."}
                 - {at: "2026-10-14T10:49:21Z", by: "035", event: "claimed", note: "Claimed again by Develop Entry 035: Entry 034 was interrupted while holding the claim, after rewriting only the Overview of logic/README.md, which is kept. Dependencies P6-G4-T1 and P6-G5-T1 are done."}
                 - {at: "2026-10-14T10:51:06Z", by: "035", event: "done", note: "Updated logic/README.md: the Overview says Logic runs no server and that MT5 Service runs the package in one Terminal Process per opened Terminal, never in the consumer's process, and its example also reads an MT5 Constant; Interface lists MT5 beside Entity; Services links MT5 Service's README, Definition, and Preferences in place of the note that it was reserved; Setup states what MT5 Service needs next to it (Windows, the MetaTrader5 package, an installed terminal) and that Logic installs without the package elsewhere; Use adds an MT5 Service example; Verify checks both published Services; Troubleshooting adds MT5Error -10003 and -10004 and the spawn guard. Observed: the seven sections in order; all 6 links resolve; MT5 is no longer presented as unpublished; the 3 Python examples that need no MetaTrader 5 terminal run through Logic Interface and print exactly as stated, the one needing a terminal was not run; the Verify steps (uv sync --locked, ruff format --check over 21 files, ruff check, ty check) pass."}
                 - {at: "2026-10-14T10:51:06Z", by: "035", event: "decision", note: "Unset: the Overview's Entity example, whose stated User count of 1 no longer matched the stored data (2 Users). Chosen: the Currency count, 8, which comes from the initial data. Why: the example must run as shown; the stored Users were not changed by Develop."}
+                - {at: "2026-10-14T12:01:18Z", by: "040", event: "replaced", note: "Replaced by P6-G5-T4 (Plan Entry 038): Logic's root documentation presents the earlier Function Group."}
+            P6-G5-T3:
+              id: "P6-G5-T3"
+              source_id: "038"
+              title: "Document MT5 Service with its named Function Groups"
+              description: "Bring MT5 Service's documentation, with its required sections, in line with the current Interface: every named Function Group with its Functions, each with one example, how to read the Constants, how a caller imports a Function Group and calls a Function for a Terminal with JSON values and Timestamps, and how to verify MT5 Service against the Package Documentation."
+              reason: "The documentation written earlier describes one Function Group and says nothing about JSON parameters or Timestamps, so it no longer describes the Interface callers use."
+              inputs:
+                - "The MT5 Service Interface"
+              skills: []
+              replaces: "P6-G5-T1"
+              expected_result: "MT5 Service documentation that describes its current Interface completely and accurately."
+              acceptance: "The documentation covers every named Function Group and every Function under the group that lists it, each with an example, and how to read the Constants; its examples are consistent with the published Interface; and it contains no real login, password, server, or other credential."
+              depends_on:
+                - "P6-G3-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T11:59:59Z", by: "040", event: "claimed", note: "Marked P6-G5-T1 replaced; dependency P6-G3-T3 is done; claimed by Develop."}
+                - {at: "2026-10-14T12:01:18Z", by: "040", event: "done", note: "Regenerated logic/services/mt5/README.md from the published Interface with a scratch generator followed by ruff format (regenerating gives the identical file). Sections Overview, Interface, Use, Verify in order; Interface names the nine published names under contract 1.0, one table per Function Group (Connection, Symbols, MarketBook, MarketData, Orders, Positions, History) listing its Functions with their signatures, a section on JSON parameters and results (Timestamps for date_from and date_to, whole-number floats taken as int, MT5Error -2 for a non-JSON value, Timestamps and *_msc fields in results), one example per Function on its group with START and END as Timestamps, Constants, and MT5Error with code -2 added. Observed in logic/.venv: every table matches its class method for method; all 32 Functions have an example and all 37 group calls bind to their method's signature; every Constants attribute exists; the Constants block prints 16385, 1, 223 and the MT5Error block prints -10004 and its message as stated; no PythonIntegration, Python Integration, or datetime.datetime remains; only placeholder credentials (login 12345678, '<password>', '<server>') appear; ruff format --check passes for logic/."}
+            P6-G5-T4:
+              id: "P6-G5-T4"
+              source_id: "038"
+              title: "Bring Logic's root documentation up to date with the named Function Groups"
+              description: "Update every part of Logic's root documentation that presents MT5 Service, its examples included, so that it reflects the Function Groups Logic Interface now publishes through MT5 Service."
+              reason: "Logic's root documentation still presents the one earlier class."
+              inputs:
+                - "The Logic Interface with the current MT5 Service"
+                - "The MT5 Service documentation"
+              skills: []
+              replaces: "P6-G5-T2"
+              expected_result: "Root documentation that describes the current Logic library, including MT5 Service, completely and accurately."
+              acceptance: "The documentation lists every name Logic Interface publishes, links each Service's documentation, Definition, and Preferences without copying its contract, states what MT5 Service needs to run, and its examples run as shown through Logic Interface where they do not need a running MetaTrader 5 terminal."
+              depends_on:
+                - "P6-G3-T3"
+                - "P6-G5-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T12:01:18Z", by: "040", event: "claimed", note: "Marked P6-G5-T2 replaced; dependencies P6-G3-T3 and P6-G5-T3 are done; claimed by Develop."}
+                - {at: "2026-10-14T12:01:53Z", by: "040", event: "done", note: "Updated logic/README.md where it presents MT5 Service: the Interface table's MT5 row names the seven Function Groups, Constants, and MT5Error; the Use example calls Connection.initialize, Symbols.symbol_info_tick, MarketData.copy_rates_from with a Timestamp, and Connection.shutdown, and says parameters and results are JSON values with Timestamps; Troubleshooting points -10004 at MT5.Connection.initialize and adds MT5Error -2 for a non-JSON or non-Timestamp parameter. Observed in logic/.venv: sections in order; all 6 relative links resolve; the table lists exactly Logic Interface's names (Entity, MT5); the 4 MT5 calls bind to their methods; the Overview, Entity Use, and Verify blocks run through Logic Interface and print 8 and 16385, $, and verified as stated (read-only Database reads; no Database file changed); no PythonIntegration remains; ruff format --check passes."}
         P6-G6:
           id: "P6-G6"
           title: "API environment"
@@ -2405,7 +2561,7 @@ content:
           area: "API packaging and environment"
           does: "The API Component's environment resolves the current Logic library, including MT5 Service and the Package."
           constraints: []
-          task_count: 1
+          task_count: 2
           tasks:
             P6-G6-T1:
               id: "P6-G6-T1"
@@ -2422,10 +2578,32 @@ content:
               depends_on:
                 - "P6-G4-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:07:09Z", by: "034", event: "claimed", note: "Dependency P6-G4-T1 is done."}
                 - {at: "2026-10-14T10:09:11Z", by: "034", event: "done", note: "Ran uv lock and uv sync --locked in api/: api/uv.lock now also records metatrader5 5.0.6231 and numpy 2.5.4 under the win32 marker, through logic's own dependency (67 packages resolved); api/pyproject.toml is unchanged. Observed in API's environment on this host: Logic Interface imports and publishes Entity and MT5, MT5 publishes Constants, MT5Error, and PythonIntegration, no Package is loaded and no process starts, Entity Service answers (Currency count 8), and api.bootstrap imports with its 84 Entity Group operations described."}
+                - {at: "2026-10-14T12:01:53Z", by: "040", event: "replaced", note: "Replaced by P6-G6-T2 (Plan Entry 038): API's environment must reach the regrouped MT5 Service."}
+            P6-G6-T2:
+              id: "P6-G6-T2"
+              source_id: "038"
+              title: "Resolve the API environment against the regrouped Logic library"
+              description: "Bring the API Component's isolated environment in line with the Logic library whose MT5 Service now publishes the named Function Groups, so that API reaches the current MT5 Service rather than the one resolved earlier."
+              reason: "API's environment holds the Logic library as it was when last resolved, and MT5 Group reaches the current Function Groups only through Logic Interface within that environment."
+              inputs:
+                - "The Logic library with the current MT5 Service Interface"
+              skills:
+                - "fastapi"
+              replaces: "P6-G6-T1"
+              expected_result: "An API environment in which Logic Interface publishes MT5 Service with its named Function Groups."
+              acceptance: "The API package installs from the repository into its isolated environment; Logic Interface imports there and its MT5 Service publishes exactly the named Function Groups, the Constants, and MT5 Error; every dependency, including the Package, resolves to a recorded concrete version."
+              depends_on:
+                - "P6-G3-T3"
+                - "P6-G4-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T12:01:53Z", by: "040", event: "claimed", note: "Marked P6-G6-T1 replaced; dependencies P6-G3-T3 and P6-G4-T1 are done; claimed by Develop."}
+                - {at: "2026-10-14T12:02:05Z", by: "040", event: "done", note: "In api/: uv lock --check passes (67 packages, lock unchanged, since Logic's declared dependencies did not change); uv sync --locked --reinstall-package logic replaced the Logic copy installed earlier with the current one (logic==0.1.0 from ../logic). Observed in api/.venv: Logic Interface imports and its MT5 is the MT5 Service Interface publishing exactly Connection, Constants, History, MarketBook, MarketData, MT5Error, Orders, Positions, and Symbols; uv.lock records metatrader5 5.0.6231 and numpy 2.5.4 from PyPI under the win32 marker; no tracked API file changed."}
         P6-G7:
           id: "P6-G7"
           title: "MT5 Group Adapters"
@@ -2433,7 +2611,7 @@ content:
           area: "MT5 Group: Adapters and their Endpoints"
           does: "Every Function Group has one Adapter in which every Function has one Endpoint that calls it through Logic Interface and returns its result and errors unchanged, and the Constants are served by one Endpoint."
           constraints: []
-          task_count: 2
+          task_count: 3
           tasks:
             P6-G7-T1:
               id: "P6-G7-T1"
@@ -2451,12 +2629,13 @@ content:
               depends_on:
                 - "P6-G6-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:09:11Z", by: "034", event: "claimed", note: "Dependency P6-G6-T1 is done."}
                 - {at: "2026-10-14T10:13:58Z", by: "034", event: "done", note: "Generated api/groups/mt5/python_integration.py (and an empty api/groups/mt5/__init__.py) with the scratch generator gen_mt5_adapters.py, which reads PythonIntegration's method signatures from MT5 Service's source and applies API Preferences' verb table, default Method, and placement rule (transcribed to a scratch file, since interpreters may not open .interface/): one APIRouter with prefix /python_integration and tag 'MT5 · python_integration' and 32 explicitly written route functions, each calling MT5.PythonIntegration.<Function> through Logic Interface. No leading verb is in the verb table, so every Endpoint is POST /<Function> with its Parameters in Body. Also changed api/endpoints.py so MT5Error is answered with its own message, like Database errors. ruff format, ruff check, and ty check pass for the API package. Observed in a scratch app holding only the MT5 Adapters: exactly one Endpoint per Function in documentation order; every Endpoint's Body holds terminal and the Function's parameters with their names, requirements, and defaults (portable false); with the echo stand-in, 8 Endpoints covering ISO datetimes, epoch seconds, a request object, named filters, and a left-out optional reached the Function with exactly those values and returned the result unchanged; MT5Error -10004 and a Package failure were answered 500 application/problem+json with type MT5Error and detail '<code>: <message>'; missing required Parameters answered 422; the units hold no class, loop, or generated route and import only datetime, typing, fastapi, logic.interface, and api; regeneration is byte-identical."}
                 - {at: "2026-10-14T10:13:58Z", by: "034", event: "decision", note: "Unset: the Adapter segment and section tag. Chosen: the Function Group's unit name, python_integration, by MT5 Group's <group> pattern, and the tag 'MT5 · python_integration'. Why: matches Entity Group's segment and tag forms."}
                 - {at: "2026-10-14T10:13:58Z", by: "034", event: "decision", note: "Unset: the Problem Details detail of an MT5Error. Chosen: the error's own text, '<code>: <message>', instead of the fixed text used for unexpected errors. Why: it is the source's reported failure, which the Handler returns unchanged, and carries no connection value."}
+                - {at: "2026-10-14T12:02:06Z", by: "040", event: "replaced", note: "Replaced by P6-G7-T3 (Plan Entry 038): MT5 Group needs one Adapter per named Function Group instead of the one Adapter realized."}
             P6-G7-T2:
               id: "P6-G7-T2"
               source_id: "033"
@@ -2476,6 +2655,27 @@ content:
               log:
                 - {at: "2026-10-14T10:09:11Z", by: "034", event: "claimed", note: "Dependency P6-G6-T1 is done."}
                 - {at: "2026-10-14T10:13:58Z", by: "034", event: "done", note: "Generated api/groups/mt5/constants.py with gen_mt5_adapters.py: an APIRouter with prefix /constants and tag 'MT5 · constants' holding one route function, GET /get (the verb get maps to GET), returning MT5.Constants.get() through Logic Interface. Observed in the scratch app: the Adapter has exactly that one Endpoint; it answers 200 with a JSON object equal to MT5 Service's 223 Constants by name and value; it takes no Terminal and needs no running Terminal; its segment differs from python_integration."}
+            P6-G7-T3:
+              id: "P6-G7-T3"
+              source_id: "038"
+              title: "Provide an Adapter for every named Function Group with an Endpoint for every Function"
+              description: "Provide one Adapter per Function Group MT5 Service now names, holding one explicitly written Endpoint for every Function of that group, whose Parameters, including the Terminal parameter, are exactly the Function's and whose Handler calls the Function through Logic Interface and returns its result."
+              reason: "MT5 Group must have one Adapter for every Function Group of MT5 Service, which now names its own Function Groups."
+              inputs:
+                - "MT5 Service's named Function Groups and Functions through Logic Interface"
+                - "API's common Endpoint rules: error mapping and Parameter conversion"
+              skills:
+                - "fastapi"
+              replaces: "P6-G7-T1"
+              expected_result: "One Adapter per named Function Group serving one Endpoint per Function."
+              acceptance: "Each named Function Group has exactly one Adapter named by the Adapter pattern, and each Adapter has exactly one Endpoint per Function of its group; each Endpoint's Method follows the verb table, or the default Method when its verb is unlisted or a Parameter cannot travel in Query, and its Path is the Function's name; its Parameters keep the Function's names, requirements, and defaults, plus the Terminal parameter, in their required places, and accept the JSON values the Function takes; a request reaches the Function with those values and returns its result unchanged; an MT5 Error reaches the client as Problem Details with its class name as type and the status the error table sets; every Adapter is written out in its own unit with no shared base, generic handler, loop, or dynamic mechanism."
+              depends_on:
+                - "P6-G6-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T12:02:06Z", by: "040", event: "claimed", note: "Marked P6-G7-T1 replaced; dependency P6-G6-T2 is done; claimed by Develop."}
+                - {at: "2026-10-14T12:02:59Z", by: "040", event: "done", note: "Removed the obsolete python_integration Adapter and regenerated MT5 Group's Adapters with the scratch Adapter generator (Endpoint rules transcribed from API Preferences) followed by ruff format: one unit per Function Group read from MT5 Service Interface (connection 7, symbols 5, market_book 3, market_data 5, orders 6, positions 2, history 4 Endpoints) plus the Constants Adapter, which regenerated byte-identical. ruff check and ruff format --check pass in api/. Observed in a scratch FastAPI app with API's endpoints rules: each Adapter serves exactly its group's Functions in order, all POST /<Function> (no leading verb is in the verb table) with every Parameter in Body keeping its name, requirement, and default plus terminal; date_from and date_to are integer Timestamps (a date sent as text answers 422 RequestValidationError); every Handler only returns MT5.<Group>.<Function> called with every Parameter; no class, loop, or generated route, no Package import; the 8 Adapter segments and 33 Method-and-Path combinations are unique. With the echo stand-in: 10 Endpoints across all 7 Adapters passed their JSON values to the Function unchanged and returned its result unchanged. An MT5Error answers 500 application/problem+json with type MT5Error (-10004 for an unopened Terminal; a stand-in Package failure value likewise). No Terminal Process or socket remained."}
         P6-G8:
           id: "P6-G8"
           title: "Serving MT5 Group"
@@ -2483,7 +2683,7 @@ content:
           area: "Bootstrap and the running API"
           does: "One running API serves MT5 Group beneath its own segment of the Base URL, with interactive documentation of every MT5 Group Endpoint."
           constraints: []
-          task_count: 2
+          task_count: 4
           tasks:
             P6-G8-T1:
               id: "P6-G8-T1"
@@ -2502,10 +2702,11 @@ content:
                 - "P6-G7-T1"
                 - "P6-G7-T2"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:13:58Z", by: "034", event: "claimed", note: "Dependencies P6-G7-T1 and P6-G7-T2 are done."}
                 - {at: "2026-10-14T10:16:03Z", by: "034", event: "done", note: "Changed api/bootstrap.py: imports the MT5 Group Adapters, adds the mt5 segment with the python_integration and constants routers to GROUPS after entity, and registers endpoints.problem for MT5.MT5Error beside the Database error handler. ruff format, ruff check, and ty check pass. Observed after starting API with its api entry point and runtime Configuration (2 workers on the configured host and port) with a scratch stand-in Package on the path: the served description has 117 operations, 84 Entity Group and 33 MT5 Group, all beneath the Base URL with its URL Key and a Group segment, none of API's own, every Method-and-Path combination unique; the Constants Endpoint answers 200 and the same path without the key 404; after one opening request, 60 concurrent calls all answered 200 from one Terminal Process with their own values; in a burst of 12 slow calls both worker processes held requests, all answered 200, and they ran one after another in the one Terminal Process; after shutdown a call answered 500 application/problem+json MT5Error -10004; Entity Group still answered (Currency count 8, read only). API was then stopped; no process or socket file remained. The URL Key is not recorded."}
+                - {at: "2026-10-14T12:02:59Z", by: "040", event: "replaced", note: "Replaced by P6-G8-T3 (Plan Entry 038): Bootstrap registers the earlier Adapter; it must register the current Adapters."}
             P6-G8-T2:
               id: "P6-G8-T2"
               source_id: "033"
@@ -2521,10 +2722,53 @@ content:
               depends_on:
                 - "P6-G8-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:16:03Z", by: "034", event: "claimed", note: "Dependency P6-G8-T1 is done."}
                 - {at: "2026-10-14T10:16:31Z", by: "034", event: "done", note: "Changed api/bootstrap.py: TAG_GROUPS now also holds an MT5 entry gathering the tags of MT5 Group's Adapter routers, so the x-tagGroups extension shows MT5 as its own section. ruff format, ruff check, and ty check pass. Observed after starting API with its entry point (scratch stand-in Package on the path): the Swagger UI and ReDoc addresses from the runtime Configuration answer 200 text/html; the description's sections are Entity with its 7 Adapter sections and MT5 with 'MT5 · python_integration' and 'MT5 · constants'; it lists the 117 Endpoints of the two Groups and nothing else, each in exactly one Adapter section, and all 33 MT5 Group Endpoints in their own Adapter's section. API was then stopped."}
+                - {at: "2026-10-14T12:04:07Z", by: "040", event: "replaced", note: "Replaced by P6-G8-T4 (Plan Entry 038): the interactive documentation is sectioned by the earlier Adapter."}
+            P6-G8-T3:
+              id: "P6-G8-T3"
+              source_id: "038"
+              title: "Register MT5 Group with its current Adapters beneath its segment"
+              description: "Make Bootstrap register MT5 Group with every one of its current Adapters, those of the named Function Groups and the Constants Adapter, beneath the segment of its configured name after the Base URL, beside Entity Group."
+              reason: "The running API registers the earlier Function Group's Adapter, so the named Function Groups' Adapters are not served until registered."
+              inputs:
+                - "The runtime Configuration"
+                - "Every current MT5 Group Adapter"
+              skills:
+                - "fastapi"
+              replaces: "P6-G8-T1"
+              expected_result: "A running API serving Entity Group and MT5 Group with its current Adapters, each Group beneath its own segment."
+              acceptance: "Started from its entry point with its runtime Configuration, API serves every Endpoint of every current MT5 Group Adapter at the Base URL, including its URL Key, followed by the MT5 Group segment and the Adapter segment; exactly the listed Groups are registered and API serves no Endpoint of its own; every Group segment, Adapter segment, and Method-and-Path combination is unique across API; a Terminal opened through one request is the one used by every later request naming it, whichever Adapter the request reaches and however the running API distributes its requests, until a request shuts it down; Bootstrap reads only the runtime Configuration at runtime."
+              depends_on:
+                - "P6-G7-T3"
+                - "P6-G7-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T12:02:59Z", by: "040", event: "claimed", note: "Marked P6-G8-T1 replaced; dependencies P6-G7-T3 and P6-G7-T2 are done; claimed by Develop."}
+                - {at: "2026-10-14T12:04:07Z", by: "040", event: "done", note: "Bootstrap (api/bootstrap.py) now imports and registers MT5 Group's current Adapters (connection, symbols, market_book, market_data, orders, positions, history, constants) under the mt5 segment beside Entity Group, and no longer the python_integration Adapter; it still reads only config.yaml. ruff format --check, ruff check, and ty check pass in api/. Observed with API started from its entry point (2 workers) and the echo stand-in Package: the served description has 117 operations, 84 Entity Group and 33 MT5 Group, every one beneath the URL Key and a Group segment, none outside a Group, all Method-and-Path combinations unique; MT5 Adapter segments served are connection, constants, history, market_book, market_data, orders, positions, symbols, with no earlier Function Group; the Constants Endpoint answers 200 and 404 without the key; a Terminal opened through the connection Adapter answered 60 concurrent symbols Adapter calls from one Terminal Process, each reaching its Function with its value; after shutdown a call answers 500 application/problem+json MT5Error -10004; Entity Group's currency count still answers 8. With the slow stand-in: 12 calls of 0.4 s through the connection Adapter answered 200 one after another from one Terminal Process while both API workers (two worker pids) held requests. The API was stopped each time with no Terminal Process or socket left."}
+            P6-G8-T4:
+              id: "P6-G8-T4"
+              source_id: "038"
+              title: "Document MT5 Group's current Adapters in the interactive documentation"
+              description: "Make the interactive documentation of the running API show MT5 Group as its own section, holding one section per current MT5 Group Adapter with all of that Adapter's Endpoints."
+              reason: "The interactive documentation is sectioned by the earlier Function Group's Adapter, which MT5 Group no longer has."
+              inputs:
+                - "The running API with MT5 Group's current Adapters registered"
+              skills:
+                - "fastapi"
+              replaces: "P6-G8-T2"
+              expected_result: "Interactive documentation listing every MT5 Group Endpoint, sectioned by Group and current Adapter."
+              acceptance: "The documentation addresses in the runtime Configuration answer; the served description lists every Endpoint of Entity Group and MT5 Group and nothing else; every MT5 Group Endpoint sits in the section of its Adapter, one section per current Adapter, and those Adapter sections are gathered under the MT5 Group section."
+              depends_on:
+                - "P6-G8-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T12:04:08Z", by: "040", event: "claimed", note: "Marked P6-G8-T2 replaced; dependency P6-G8-T3 is done; claimed by Develop."}
+                - {at: "2026-10-14T12:05:51Z", by: "040", event: "done", note: "No separate source change: Bootstrap builds the MT5 section of x-tagGroups and each Adapter's tag from the registered Adapter routers, so the registration done for P6-G8-T3 gives the documentation its sections; each Adapter's router carries the tag 'MT5 · <segment>'. Observed with the running API (2 workers, echo stand-in): both documentation addresses in config.yaml's documentation (swagger, redoc) answer 200; the served description lists 117 operations, Entity Group's and MT5 Group's only, each with one tag; the x-tagGroups sections are Entity and MT5, and MT5 holds exactly the 8 Adapter sections connection (7), symbols (5), market_book (3), market_data (5), orders (6), positions (2), history (4), constants (1), every MT5 Endpoint in the section of its Adapter; no section for an earlier Function Group."}
         P6-G9:
           id: "P6-G9"
           title: "API documentation"
@@ -2532,7 +2776,7 @@ content:
           area: "MT5 Group and API documentation"
           does: "A client can reach every MT5 Group Endpoint and verify what is served from the documentation alone."
           constraints: []
-          task_count: 2
+          task_count: 4
           tasks:
             P6-G9-T1:
               id: "P6-G9-T1"
@@ -2549,11 +2793,12 @@ content:
               depends_on:
                 - "P6-G8-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:51:06Z", by: "035", event: "claimed", note: "Dependency P6-G8-T1 is done."}
                 - {at: "2026-10-14T10:52:36Z", by: "035", event: "done", note: "Wrote api/groups/mt5/README.md (the MT5 Group directory) with the scratch generator gen_group_readme.py, which reads the Endpoint list, Methods, Paths, Parameters, requirements, and defaults from API's own served description: Overview with one request example; Endpoints with a table and one curl example for each of the 32 python_integration Endpoints and the Constants Endpoint, plus how results and dates travel; Use with the MT5Error Problem Details answer; Verify comparing the served Paths with MT5 Service's Functions through Logic Interface. Observed against API started with its entry point (scratch echo stand-in Package on the path): the four sections are in order; the Overview example prints true; all 33 Endpoint examples, each sent after opening the Terminal, answered 200; the Use example prints exactly the stated Problem Details; the Verify block prints True; examples read BASE from config.yaml and the README holds no URL Key and only placeholder credentials. API was then stopped; no process or socket file remained."}
                 - {at: "2026-10-14T10:52:36Z", by: "035", event: "decision", note: "Unset: how the examples write a Windows terminal path inside JSON. Chosen: TERMINAL holds the path with JSON-escaped backslashes and is spliced into each body. Why: an unescaped backslash makes the request body invalid JSON."}
+                - {at: "2026-10-14T12:05:52Z", by: "040", event: "replaced", note: "Replaced by P6-G9-T3 (Plan Entry 038): MT5 Group documentation describes the earlier Adapter's Endpoints."}
             P6-G9-T2:
               id: "P6-G9-T2"
               source_id: "033"
@@ -2570,7 +2815,49 @@ content:
                 - "P6-G8-T2"
                 - "P6-G9-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-14T10:52:36Z", by: "035", event: "claimed", note: "Dependencies P6-G8-T2 and P6-G9-T1 are done."}
                 - {at: "2026-10-14T10:53:31Z", by: "035", event: "done", note: "Updated api/README.md: the Overview names both served Groups; Groups lists MT5 beneath mt5 with a link to its documentation in place of the note that it was reserved; Setup states that MT5 Group's Endpoints work only on Windows next to an installed terminal and that API still installs and serves elsewhere; Use links the MT5 Group documentation, adds a Constants example, and explains terminal, opening, and shutdown, including that an opened Terminal serves every worker; Verify expects the entity and mt5 segments and both documentation sections; Troubleshooting adds MT5Error -10003, -10004, and other package codes. Observed against API started with its entry point on this host with no stand-in Package: the seven sections in order; all 4 links resolve; MT5 is no longer presented as reserved; the Overview and Use examples print exactly as stated; the Verify block prints verified; opening a Terminal answers 500 MT5Error -10003 as Troubleshooting states; the README holds no URL Key; the Verify steps (uv sync --locked, ruff format --check over 18 files, ruff check, ty check) pass. API was then stopped."}
+                - {at: "2026-10-14T12:07:00Z", by: "040", event: "replaced", note: "Replaced by P6-G9-T4 (Plan Entry 038): API's root documentation presents the earlier Adapter."}
+            P6-G9-T3:
+              id: "P6-G9-T3"
+              source_id: "038"
+              title: "Document MT5 Group with its current Adapters"
+              description: "Bring MT5 Group's documentation, with its required sections, in line with the served Endpoints: every named Function Group's Endpoints with Method, Path, and Parameters, each with one example, how a client calls an Endpoint for a Terminal, and how to verify that every Function has its Endpoint."
+              reason: "The documentation written earlier describes the Endpoints of the earlier Function Group's Adapter."
+              inputs:
+                - "The running API and its current MT5 Group Endpoints"
+              skills:
+                - "fastapi"
+              replaces: "P6-G9-T1"
+              expected_result: "MT5 Group documentation that describes its current Endpoints completely and accurately."
+              acceptance: "The documentation lists every MT5 Group Endpoint under its Adapter, including the Constants Endpoint, with Method, Path, and Parameters, each with a request example; its examples agree with the served description; and it contains no real credential or URL Key."
+              depends_on:
+                - "P6-G8-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T12:05:52Z", by: "040", event: "claimed", note: "Marked P6-G9-T1 replaced; dependency P6-G8-T3 is done; claimed by Develop."}
+                - {at: "2026-10-14T12:07:00Z", by: "040", event: "done", note: "Regenerated api/groups/mt5/README.md from API's served description with a scratch generator (regenerating gives the identical file): Overview with its request example on the connection Adapter; Endpoints stating once that every Function Endpoint is POST with Body Parameters and that date_from and date_to are Timestamps, then one section per Adapter in registration order (connection, symbols, market_book, market_data, orders, positions, history, each named from its Function Group, and constants) with Method, Path, and Parameters and one curl example per Endpoint using Timestamps; results paragraph stating dates are Timestamps, *_msc fields are millisecond counts, and a date sent as text answers 422; Use with the -10004 example on the connection Adapter; Verify over all seven Function Groups. Observed against the running API (2 workers, echo stand-in): sections Overview, Endpoints, Use, Verify; the 33 table rows equal the served MT5 Endpoints with their Parameters in order; the Overview example prints true; all 33 Endpoint examples answered 200; the Use example prints its stated Problem Details; the Verify script prints True and True as stated; no URL Key, real credential, python_integration, or ISO date appears."}
+            P6-G9-T4:
+              id: "P6-G9-T4"
+              source_id: "038"
+              title: "Bring API's root documentation up to date with MT5 Group's current Adapters"
+              description: "Update every part of API's root documentation that presents MT5 Group, its examples included, so that it reflects the Adapters of the named Function Groups."
+              reason: "API's root documentation still presents the earlier Function Group's Adapter."
+              inputs:
+                - "The running API with MT5 Group's current Adapters registered"
+                - "The MT5 Group documentation"
+              skills: []
+              replaces: "P6-G9-T2"
+              expected_result: "Root documentation that describes the current API Component, including MT5 Group, completely and accurately."
+              acceptance: "The documentation lists every Group beneath its segment with a link to its documentation without copying its Endpoints, its examples answer as shown against the running API, and it shows no real URL Key."
+              depends_on:
+                - "P6-G8-T4"
+                - "P6-G9-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-14T12:07:00Z", by: "040", event: "claimed", note: "Marked P6-G9-T2 replaced; dependencies P6-G8-T4 and P6-G9-T3 are done; claimed by Develop."}
+                - {at: "2026-10-14T12:07:33Z", by: "040", event: "done", note: "Updated api/README.md where it presents MT5 Group: the Use section now says MT5 Group has one Adapter per MT5 Service Function Group (such as connection, symbols, market_data) and one for the Constants, opens and closes a Terminal through /mt5/connection/initialize and /mt5/connection/shutdown, keeps a Terminal across Adapters and workers, and gives every date and time as a Timestamp; Troubleshooting points -10004 at /mt5/connection/initialize and adds a date sent as text to the 422 entry. Observed against the running API (2 workers, echo stand-in): the Overview example answers the stated currency 1 object, the Use examples print 2 and 16385, the Verify block prints verified; the Groups table links each Group's documentation without copying its Endpoints and all 4 relative links resolve; no python_integration or URL Key appears; no Database file changed. API stopped afterwards with no Terminal Process or socket left."}

@@ -1,6 +1,7 @@
-"""Terminal: MT5 Error, Plain Data, and the Terminal Process in which the Package runs for each Terminal."""
+"""Terminal: MT5 Error, Plain Data, JSON parameters, and the Terminal Process in which the Package runs for each Terminal."""
 
 import hashlib
+import math
 import multiprocessing
 import multiprocessing.connection
 import os
@@ -29,17 +30,35 @@ class MT5Error(Exception):
 
 # --- Plain Data -------------------------------------------------------------------------
 
-_PLAIN = (type(None), bool, int, float, str)
+_PLAIN = (type(None), bool, int, str)
+
+
+def _finite(value: float) -> float:
+    if not math.isfinite(value):
+        raise ValueError(
+            f"A Package result holds the number {value!r}, which has no JSON form"
+        )
+    return value
+
+
+def _name(name: Any) -> str:
+    if type(name) is not str:
+        raise TypeError(
+            f"A Package result holds a {type(name).__name__} key, which has no JSON form"
+        )
+    return name
 
 
 def plain(value: Any) -> Any:
-    """Return a Package result as Plain Data, changing only its form, never its values or field names."""
+    """Return a Package result as Plain Data, a valid JSON value, changing only its form, never its values or field names."""
     if type(value) in _PLAIN:
         return value
+    if type(value) is float:
+        return _finite(value)
     if hasattr(value, "_asdict"):
-        return {name: plain(item) for name, item in value._asdict().items()}
+        return {_name(name): plain(item) for name, item in value._asdict().items()}
     if isinstance(value, dict):
-        return {name: plain(item) for name, item in value.items()}
+        return {_name(name): plain(item) for name, item in value.items()}
     dtype = getattr(value, "dtype", None)
     if dtype is not None and hasattr(value, "tolist"):
         listed = value.tolist()
@@ -59,12 +78,74 @@ def plain(value: Any) -> Any:
     if isinstance(value, int):
         return int(value)
     if isinstance(value, float):
-        return float(value)
+        return _finite(float(value))
     if isinstance(value, str):
         return str(value)
     raise TypeError(
         f"A Package result of type {type(value).__name__} has no Plain Data form"
     )
+
+
+# --- JSON Parameters --------------------------------------------------------------------
+
+# The Package's own last_error code for invalid parameters, used when a value is refused before any call.
+_INVALID_PARAMS = -2
+
+_TIMESTAMPS = frozenset({"date_from", "date_to"})
+"""The parameters the Package Documentation sets by a date and time; the Package takes each as a Timestamp."""
+
+
+def _json(value: Any) -> bool:
+    if value is None or type(value) in (bool, int, str):
+        return True
+    if type(value) is float:
+        return math.isfinite(value)
+    if type(value) is list:
+        return all(_json(item) for item in value)
+    if type(value) is dict:
+        return all(type(name) is str and _json(item) for name, item in value.items())
+    return False
+
+
+def _parameter(name: str, value: Any) -> Any:
+    """One parameter in the form the Package takes, or MT5 Error when it is not a JSON value."""
+    if name in _TIMESTAMPS:
+        if type(value) is int:
+            return value
+        if type(value) is float and value.is_integer():
+            return int(value)
+        raise MT5Error(
+            _INVALID_PARAMS,
+            f"{name} is not a Timestamp: a whole number of seconds since 1970-01-01 00:00:00 UTC",
+        )
+    if not _json(value):
+        raise MT5Error(_INVALID_PARAMS, f"{name} is not a JSON value")
+    return value
+
+
+def given(**values: Any) -> tuple:
+    """The unnamed parameters a caller supplied, in order up to the first one left out, as the Package takes them."""
+    taken = []
+    for name, value in values.items():
+        if value is None:
+            break
+        taken.append(_parameter(name, value))
+    return tuple(taken)
+
+
+def named(**values: Any) -> dict[str, Any]:
+    """The named parameters a caller supplied, as the Package takes them."""
+    return {
+        name: _parameter(name, value)
+        for name, value in values.items()
+        if value is not None
+    }
+
+
+def _terminal(terminal: Any) -> str:
+    if type(terminal) is not str:
+        raise MT5Error(_INVALID_PARAMS, "terminal is not a JSON string")
+    return terminal
 
 
 # --- Terminal Processes -----------------------------------------------------------------
@@ -242,6 +323,7 @@ def _answer(terminal: str, reply: tuple) -> Any:
 
 def open(terminal: str, args: tuple, kwargs: dict, failures: tuple) -> Any:
     """Open a Terminal: start its Terminal Process when it has none, then run the opening Function in it."""
+    terminal = _terminal(terminal)
     message = ("initialize", args, kwargs, failures)
     with _OPENING_LOCK:
         lock = _OPENING.setdefault(terminal, threading.Lock())
@@ -264,6 +346,7 @@ def call(
     terminal: str, function: str, args: tuple, kwargs: dict, failures: tuple
 ) -> Any:
     """Run one Function in the Terminal Process of its Terminal and return its result as Plain Data."""
+    terminal = _terminal(terminal)
     try:
         reply = _request(terminal, (function, args, kwargs, failures))
     except _Absent:

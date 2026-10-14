@@ -20,7 +20,16 @@ from api.groups.entity import (
     instance,
     user,
 )
-from api.groups.mt5 import constants, python_integration
+from api.groups.mt5 import (
+    connection,
+    constants,
+    history,
+    market_book,
+    market_data,
+    orders,
+    positions,
+    symbols,
+)
 
 CONFIGURATION: dict[str, Any] = yaml.safe_load(
     (Path(__file__).resolve().parents[1] / "config.yaml").read_text(encoding="utf-8")
@@ -38,7 +47,13 @@ GROUPS = {
         account.router,
     ],
     "mt5": [
-        python_integration.router,
+        connection.router,
+        symbols.router,
+        market_book.router,
+        market_data.router,
+        orders.router,
+        positions.router,
+        history.router,
         constants.router,
     ],
 }
