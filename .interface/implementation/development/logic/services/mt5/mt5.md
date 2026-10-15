@@ -23,7 +23,7 @@ MT5 Service is the Logic Service that implements every function of the official 
 
 ### Overview
 
-MT5 Service implements every function of the `MetaTrader5` package. Its functions are organized in the same groups as the package, and each group is a separate class that a caller can import on its own.
+MT5 Service implements every function of the `MetaTrader5` package. Its functions are organized in the Function Groups this Definition names, and each group is a separate class that a caller can import on its own.
 
 ### Purpose
 
@@ -39,13 +39,14 @@ A caller imports one Function Group from MT5 Service Interface and calls a funct
 ## Terms
 
 - **Package** — the official MetaTrader 5 Python package, `MetaTrader5`, published by MetaQuotes.
-- **Package Documentation** — the official documentation of the Package, the only source for its functions and their groups.
+- **Package Documentation** — the official documentation of the Package, the only source for its Functions and their parameters.
 - **Function** — one function the Package offers.
-- **Function Group** — one group of Functions as the Package Documentation organizes them, realized as one class.
+- **Function Group** — one of the groups of Functions this Definition names, realized as one class.
 - **Terminal** — one installed MetaTrader 5 terminal, identified by the path of its terminal file, the same path the Package's `initialize` takes.
 - **Terminal Process** — the separate operating-system process in which MT5 Service runs the Package for one Terminal.
 - **Constants** — every named constant the Package defines, such as `TIMEFRAME_H1` or `ORDER_TYPE_BUY`, with its value.
-- **Plain Data** — a result made only of dictionaries, lists, strings, numbers, booleans, and null, so it can be sent as JSON unchanged.
+- **Plain Data** — a valid JSON value: made only of objects, arrays, strings, numbers, booleans, and null, so it is sent as JSON unchanged.
+- **Timestamp** — a date and time as a whole number of seconds since 1970-01-01 00:00:00 UTC, the form the Package itself returns and accepts.
 - **MT5 Error** — the one error MT5 Service raises when the Package reports a failure, carrying the code and message the Package's `last_error` gives.
 - **Interface contract** — the versioned public contract of MT5 Service Interface, stated in its Architecture section, with its version in MT5 Service Preferences.
 
@@ -70,7 +71,7 @@ Every entity below is declared in `architecture` in MT5 Service Preferences, whi
 
 The gateway callers import from, in its own `interface` file, the only file of MT5 Service that publishes. Its Interface contract, with `contract_version` in MT5 Service Preferences:
 
-1. **Function Groups** — exactly one class for every Function Group of the Package Documentation, each under its own name, each importable on its own.
+1. **Function Groups** — exactly one class for every Function Group this Definition names, each under its own name, each importable on its own.
 2. **Constants** — one group holding every Constant of the Package by its name and value.
 3. **MT5 Error** — the one error every method raises on a Package failure, so a caller can catch it.
 4. **Nothing else** — the Package itself and anything beyond the Function Groups, Constants, and MT5 Error are never published; loading the Interface opens no connection to MetaTrader 5.
@@ -84,7 +85,19 @@ Function Groups
 └── one class per Function Group
 ```
 
-One unit and one class for every Function Group, each holding one method for every Function of that group, named exactly like the Function. The Function Groups and their Functions are read from the Package Documentation when MT5 Service is implemented, never listed from memory.
+One unit and one class for every Function Group, each holding one method for every Function of that group, named exactly like the Function. The Package Documentation lists its Functions in one section, so the Function Groups are fixed here; the Functions and their parameters are read from the Package Documentation, never listed from memory.
+
+| Function Group | Functions |
+|---|---|
+| `Connection` | `initialize`, `login`, `shutdown`, `version`, `last_error`, `account_info`, `terminal_info` |
+| `Symbols` | `symbols_total`, `symbols_get`, `symbol_info`, `symbol_info_tick`, `symbol_select` |
+| `MarketBook` | `market_book_add`, `market_book_get`, `market_book_release` |
+| `MarketData` | `copy_rates_from`, `copy_rates_from_pos`, `copy_rates_range`, `copy_ticks_from`, `copy_ticks_range` |
+| `Orders` | `orders_total`, `orders_get`, `order_calc_margin`, `order_calc_profit`, `order_check`, `order_send` |
+| `Positions` | `positions_total`, `positions_get` |
+| `History` | `history_orders_total`, `history_orders_get`, `history_deals_total`, `history_deals_get` |
+
+A Function of the Package Documentation that no Function Group above lists stops generation and is reported, so it is placed in a group by a change to this Definition, never by guess.
 
 <!-------------------------- Terminal Processes -->
 ### Terminal Processes
@@ -177,9 +190,9 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Every Function of the Package is implemented
 
-**Rule:** MT5 Service has exactly one Function Group for every group of the Package Documentation and exactly one method for every Function of that group, named exactly like the Function.
+**Rule:** MT5 Service has exactly one class for every Function Group this Definition names, and every Function of the Package Documentation has exactly one method, named exactly like the Function, in the class of the group that lists it.
 **Why:** Whatever the Package can do, the application can do through MT5 Service.
-**Boundary:** No Function is skipped, renamed, or invented; the groups and Functions come only from the Package Documentation.
+**Boundary:** No Function is skipped, renamed, invented, or moved to another group; the groups come only from this Definition and the Functions only from the Package Documentation.
 
 #### Every Function Group is its own class
 
@@ -195,7 +208,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Every result is Plain Data and every failure is MT5 Error
 
-**Rule:** Every method returns its Function's result as Plain Data: a named tuple becomes a dictionary with the same field names, an array of records becomes a list of such dictionaries, and a collection becomes a list. When the Package returns its failure value, such as None or False, the method raises MT5 Error with the code and message of `last_error`.
+**Rule:** Every method returns its Function's result as Plain Data, a valid JSON value: a named tuple becomes a dictionary with the same field names, an array of records becomes a list of such dictionaries, and a collection becomes a list. When the Package returns its failure value, such as None or False, the method raises MT5 Error with the code and message of `last_error`.
 **Why:** Every caller, including API, receives data it can use and send directly, and never has to check for a silent failure value.
 **Boundary:** Conversion changes only the form of a result, never its values or field names.
 
@@ -206,6 +219,14 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Rule:** MT5 Service runs the Package for each Terminal in that Terminal's own Terminal Process: `initialize` for a new Terminal starts it, every later call for that Terminal runs in it, one after another, and `shutdown` ends it.
 **Why:** The Package holds one connection per process and is not safe for concurrent use, so one process per Terminal keeps Terminals apart and lets them work at the same time.
 **Boundary:** A call for a Terminal with no running process, other than `initialize`, raises MT5 Error; MT5 Service never chooses or starts a Terminal on its own.
+
+### JSON
+
+#### Every input and output is JSON
+
+**Rule:** Every method takes only JSON values as parameters and returns only a JSON value. Every date and time, in a parameter or in a result, is a Timestamp. A parameter the Package needs in another form is converted inside MT5 Service, never by the caller.
+**Why:** API and every other caller pass requests and results through unchanged, with no conversion of their own.
+**Boundary:** Conversion changes only the form of a value, never its meaning; a parameter that is not a JSON value is refused with MT5 Error.
 
 ### Constants
 
@@ -220,13 +241,14 @@ Every Principle below is mandatory and belongs to the category that owns it.
 #### Review observes MT5 Service through a fixed set of checks
 
 **Rule:** Review establishes MT5 Service conformance through these observations, every one of them on every review:
-- MT5 Service Interface publishes exactly one class for every Function Group of the Package Documentation, and nothing else.
-- Every Function of the Package Documentation has exactly one method, with its exact name, in the class of its group.
+- MT5 Service Interface publishes exactly one class for every Function Group this Definition names, the Constants, and MT5 Error, and nothing else.
+- Every Function of the Package Documentation has exactly one method, with its exact name, in the class of the group this Definition lists it under.
 - Every Function Group sits in its own unit and is importable on its own.
 - Every method takes exactly its Function's parameters, with the same names, order, and defaults, plus only `terminal`, and passes them unchanged.
 - Every call runs in the Terminal Process of its Terminal; calls for one Terminal run one after another, and no call runs the Package in the caller's process.
 - No other part of the application imports the Package.
-- Every result is Plain Data with the Package's field names and values, and every Package failure raises MT5 Error with the code and message of `last_error`.
+- Every result is Plain Data, a valid JSON value, with the Package's field names and values, and every Package failure raises MT5 Error with the code and message of `last_error`.
+- Every method takes only JSON values as parameters and returns only a JSON value, and every date and time is a Timestamp.
 - The Constants group holds every Constant of the Package with its own name and value, and nothing else.
 - Loading the Interface opens no connection to MetaTrader 5.
 **Why:** A fixed set of observations proves the same things on every review.
@@ -250,7 +272,7 @@ Every obligation in the file, under the Principle it comes from.
 
 **Every Function of the Package is implemented**
 
-- **Must** — Give every Function of the Package Documentation one method, with its exact name, in its group's class.
+- **Must** — Give every Function of the Package Documentation one method, with its exact name, in the class of the group this Definition lists it under.
 - **Never** — Skip, rename, invent, or list a Function from memory.
 
 **Every Function Group is its own class**
@@ -265,7 +287,7 @@ Every obligation in the file, under the Principle it comes from.
 
 **Every result is Plain Data and every failure is MT5 Error**
 
-- **Must** — Return every result as Plain Data and raise MT5 Error with `last_error` on every Package failure.
+- **Must** — Return every result as Plain Data, a valid JSON value, and raise MT5 Error with `last_error` on every Package failure.
 - **Never** — Return a Package failure value, or change a value or field name while converting.
 
 ### Terminal Processes
@@ -274,6 +296,13 @@ Every obligation in the file, under the Principle it comes from.
 
 - **Must** — Run every call in its Terminal's own process, one after another for one Terminal.
 - **Never** — Run the Package in the caller's process or share a process between Terminals.
+
+### JSON
+
+**Every input and output is JSON**
+
+- **Must** — Take only JSON values as parameters, return only a JSON value, and give every date and time as a Timestamp.
+- **Never** — Require a caller to send or receive a non-JSON value, such as a datetime object or an array type.
 
 ### Constants
 
