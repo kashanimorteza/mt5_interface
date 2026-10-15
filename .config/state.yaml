@@ -31,9 +31,9 @@ content:
   active:
     mode: "reviewing"
     phase: "P6"
-    mode_reason: "Review of P6 is not satisfied: Blocker B-037-1 (no real MetaTrader5 package on this host)."
+    mode_reason: "Review of P6 is not satisfied: Finding F2 under Blocker B-037-1 (no real MetaTrader5 package on this host)."
     set_by: "my-interface-review"
-    set_at: "2026-10-14T11:14:44Z"
+    set_at: "2026-10-14T12:28:49Z"
   phases:
     P1:
       id: "P1"
@@ -1618,3 +1618,56 @@ content:
       open_questions: []
       blockers: []
       report: "Interrupted by the Human after reading the Review Definition and Preferences, before Source Understanding was established. No Finding was raised, no implementation or evidence was changed, and P6 Review progress was left at not satisfied. Blocker B-037-1 still applies to any Review on this Linux host."
+    - id: "042"
+      skill: "my-interface-review"
+      phase: "P6"
+      event: "review"
+      outcome: "not satisfied"
+      started_at: "2026-10-14T12:22:26Z"
+      completed_at: "2026-10-14T12:28:49Z"
+      duration: "6:23"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P6 against its current Plan (20 done, 11 replaced Tasks) and the Logic, MT5 Service, API, and MT5 Group Review categories; transient verification, since testing is disabled."
+        - name: "fastapi"
+          report: "Guided the reading of MT5 Group's Adapters and API's served description."
+      open_questions: []
+      blockers:
+        - "B-037-1"
+      report: "Review of P6 after the Entry 038 replan and Develop Entry 040, judged at commit e2d47d3 (which holds Develop's output) against the current Plan and the Review categories of Logic (5 observations), MT5 Service (10), API (12), and MT5 Group (6). Two Findings. F1 was raised and resolved: a supplied unnamed parameter after one left out (date_to without date_from in history_orders_get and history_deals_get) was silently dropped; it now reaches the Package, the gap sent as None, and both MT5 READMEs say so. F2, missing evidence, stays open under Blocker B-037-1: nothing observes the real MetaTrader5 package or Windows, so the Package-dependent acceptance of P6-G1-T1, P6-G1-T4, P6-G1-T5, P6-G2-T4, P6-G2-T5, and P6-G8-T3, and MT5 Service's Terminal Process, result, and JSON observations with real results, are not established. Everything observable here holds: locks, locked installs, builds, ruff format, ruff check, and ty check in Logic and API; zero-diff regeneration of every Function Group, the Constants (from the locked wheel), every Adapter, and both MT5 READMEs; all 32 methods matching their documented syntax and listed groups; the Interfaces publishing exactly what their contracts name; the running API with 2 workers serving 117 Endpoints as documented, with one Terminal Process across Adapters and workers. Outcome: not satisfied. P6 review progress stays not satisfied. The F1 changes (Logic's terminal unit and the two MT5 READMEs) are uncommitted."
+      data:
+        reviewed_at: "e2d47d3 plus the F1 resolution in the working tree"
+        findings:
+          F1:
+            state: "resolved"
+            baseline: "P6-G2-T5 acceptance: a call whose parameters are JSON values reaches the Package with every parameter's meaning unchanged. MT5 Service Review observation: every method passes its Function's parameters unchanged. Develop generation obligation: omission never hides an error."
+            expected: "A supplied unnamed parameter reaches the Package, or the call fails explicitly."
+            observed: "With the echo stand-in Package, History.history_orders_get(T, None, 1790812800, group='EUR*') reached the Package as history_orders_get(group='EUR*') and History.history_deals_get(T, date_to=1790812800) as history_deals_get(): the supplied date_to was silently left out because the unnamed parameters stop at the first one left as None."
+            location: "logic/services/mt5/terminal.py, given(): the loop broke at the first None; reached through History.history_orders_get and History.history_deals_get (date_from left out, date_to given)."
+            resolution: "logic/services/mt5/terminal.py given() now drops only trailing unnamed parameters left as None and sends one left out before a given one as None, every given value still converted; the MT5 Service and MT5 Group README generators and both READMEs now state that exception; API's environment was refreshed with uv sync --locked --reinstall-package logic. Recheck with the echo stand-in: both calls reach the Package with args [None, 1790812800] (group kept), and over HTTP POST <base_url>/mt5/history/history_orders_get with only date_to answers 200 with the same args; symbol_select(T, 'EURUSD', None) still sends only 'EURUSD'; the parameter, JSON parameter, result, and failure checks give the same results as before; ruff format, ruff check, and ty check pass; both READMEs regenerate identically."
+          F2:
+            state: "open"
+            blocker: "B-037-1"
+            kind: "missing evidence"
+            baseline: "P6-G1-T1 acceptance as it holds on the deployment platform; P6-G1-T4 and P6-G8-T3 acceptance on Windows, where Terminal Processes use named pipes; P6-G1-T5 and P6-G2-T5 acceptance that JSON values and Timestamps reach the Package in a form it accepts; P6-G2-T4 acceptance that results equal the Package's, every date and time a Timestamp, and failures equal its last-error report; MT5 Service Review observations on Terminal Processes, Plain Data results and MT5 Error, and JSON parameters and results."
+            expected: "Observable results from the real MetaTrader5 package and a MetaTrader 5 terminal on Windows."
+            observed: "The record shows no observation of the real package: this Linux aarch64 host cannot install it (PyPI publishes win_amd64 wheels only), every Package-dependent check in the Task Logs and in this Review used scratch stand-in packages, and the Windows named-pipe path of the Terminal Process layer has never run. This states what the record does not show, not that the conditions are unmet."
+            location: "P6-G1-T1, P6-G1-T4, P6-G1-T5, P6-G2-T4, P6-G2-T5, P6-G8-T3 Task Logs; this host (Linux aarch64)."
+        blockers:
+          B-037-1: "Still holds, unchanged: the real MetaTrader5 package and a MetaTrader 5 terminal cannot be observed on this host. Required Human action: run /my-interface-review 6 on the Windows Server deployment machine with uv sync done in logic/ and api/, a MetaTrader 5 terminal installed, and a demo account available."
+        checks:
+          technical: "Logic and API: uv lock --check, uv sync --locked, ruff format --check (27 and 24 files), ruff check, ty check, and uv build pass, before and after F1; the wheels contain the seven Function Group units, terminal, constants, and interface (Logic) and the seven Adapters plus constants (API), and no python_integration unit; API's installed Logic equals the Logic source."
+          inputs: "The Definition's seven groups list 32 distinct Functions equal to the 32 documented; the transcribed endpoint rules equal API Preferences' verb table and placement; Service names and directories (Entity/entity, MT5/mt5), Function Group classes and units, and the 8 Adapter segments are unique; the Constants come from the locked metatrader5 5.0.6231 cp314 win_amd64 wheel (sha256 9a63f026…841b); testing is disabled in every applicable Preferences file, so verification is transient."
+          regeneration: "From unchanged authorities the seven Function Group units, the Constants, the seven Adapters, the Constants Adapter, the empty package initialiser, and both MT5 READMEs regenerate byte-identical."
+          plan: "Every current Task's acceptance not covered by F2 was observed: P6-G1-T5 conversion and refusals; P6-G2-T3 classes and signatures; P6-G2-T4 Plain Data and MT5 Error with the stand-in; P6-G2-T5 JSON parameters and -2 refusals; P6-G3-T3 Interface; P6-G5-T3 and P6-G5-T4 documentation; P6-G6-T2 environment; P6-G7-T3 Adapters; P6-G8-T3 registration and continuity; P6-G8-T4 sections; P6-G9-T3 and P6-G9-T4 documentation; preserved P6-G1-T1 to T4, P6-G3-T1, P6-G4-T1, and P6-G7-T2 results still hold. Phase constraints: no Entity Service or Entity Group unit changed in this round, and Entity Group serves its 84 Endpoints; nothing published, served, or documented in Logic or API presents the earlier single Function Group."
+          logic: "Logic Interface publishes exactly Entity and MT5, each the identical Service Interface; no Service imports Logic Interface; no Service but Entity Service imports Database Interface; no two Services share a name or directory."
+          mt5_service: "The Interface publishes exactly the seven Function Groups, Constants, and MT5Error; every documented Function has one method, with its name, in the class of its listed group; each group is its own unit and imports alone without loading the Interface or the Package; all 32 method parameter lists equal their documented syntax blocks plus terminal; with stand-ins, parameters reach the Package unchanged in one Terminal Process per Terminal, calls for one Terminal run one after another and different Terminals at the same time, the Package never loads in the caller, results are strict JSON with the Package's names and values, failures raise MT5Error with last_error, non-JSON parameters raise MT5Error -2, and every date parameter is an int Timestamp; only the terminal unit imports the Package; the 223 Constants equal get() and the wheel's source; loading the Interface starts no process."
+          api: "The running API (2 workers) registers exactly Entity and MT5 beneath their segments under the URL Key, serves 117 operations (84 Entity, 33 MT5) and none of its own, with unique segments and Method-and-Path combinations; MT5 Endpoints are POST /<Function> with Body Parameters and the Constants Endpoint GET /get, per the verb table and placement rule; MT5Error and validation errors answer RFC 9457 Problem Details with class name as type (500, 422); the key is non-empty (32 characters); both documentation addresses in config.yaml answer and the description is sectioned Entity and MT5, with one section per Adapter; config.yaml holds every Structure value with url and documentation derived, a valid port, and positive workers; Bootstrap opens only config.yaml and names no Definition or Preferences file."
+          mt5_group: "One Adapter per Function Group (connection 7, symbols 5, market_book 3, market_data 5, orders 6, positions 2, history 4) and the Constants Adapter returning all 223 Constants; every Endpoint keeps its Function's Parameter names, requirements, and defaults, plus terminal; all 33 Handlers are only their docstring and one call of their Function through Logic Interface with every Parameter; no class, loop, shared base, or generated route; no Package import."
+          continuity: "With the echo stand-in, a Terminal opened through the connection Adapter answered 240 concurrent calls across symbols, market_data, orders, history, positions, and market_book from one Terminal Process while both API workers held requests; after shutdown through connection a market_data call answered MT5Error -10004."
+          documentation: "MT5 Service, Logic, MT5 Group, and API documentation keep their sections in order with resolving links; every example that needs no MetaTrader 5 terminal runs and prints as stated, all 33 MT5 Group Endpoint examples answered 200 with the echo stand-in, and every table equals the published or served surface; only placeholder credentials appear and no URL Key."
+        observations:
+          - "Commits ba626b2 and e2d47d3 by the Human hold Develop Entry 040's output; the staged deletion reported by Entry 040 is now committed."
+          - "The F1 resolution changed logic/logic/services/mt5/terminal.py and both MT5 READMEs after commit e2d47d3; they are not committed."
+          - "The generators that make regeneration reproducible, the downloaded Package Documentation, the locked wheel, and the stand-in packages live outside the project in session scratch space."
+          - "Every API run used the live Database store only for read-only Entity reads; no Database file changed; no Terminal Process, socket, or cache directory was left."

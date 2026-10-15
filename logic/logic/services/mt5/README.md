@@ -21,7 +21,7 @@ Inside Logic, reach it as `MT5` through Logic Interface: `from logic.interface i
 
 ### Function Groups
 
-MT5 Service names its Function Groups itself, and every Function of the package documentation belongs to exactly one of them: `Connection` (7), `Symbols` (5), `MarketBook` (3), `MarketData` (5), `Orders` (6), `Positions` (2), `History` (4). Each is a class in its own unit that can be imported on its own, with one method for every Function of its group. Every method is static, takes `terminal` first, and then exactly its Function's parameters; a parameter left as `None` is not sent, so the package applies its own default.
+MT5 Service names its Function Groups itself, and every Function of the package documentation belongs to exactly one of them: `Connection` (7), `Symbols` (5), `MarketBook` (3), `MarketData` (5), `Orders` (6), `Positions` (2), `History` (4). Each is a class in its own unit that can be imported on its own, with one method for every Function of its group. Every method is static, takes `terminal` first, and then exactly its Function's parameters; a parameter left as `None` is not sent, so the package applies its own default, except an unnamed one left out before a later unnamed one that is given, which is sent as `None`.
 
 #### Connection
 

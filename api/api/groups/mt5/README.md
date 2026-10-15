@@ -13,7 +13,7 @@ curl -s -X POST "$BASE/mt5/connection/initialize" -H 'content-type: application/
 
 ## Endpoints
 
-One Adapter for every Function Group of MT5 Service, in MT5 Service's order, each named from its Function Group, and the Constants Adapter. Every Function Endpoint is `POST`, because no Function's name begins with a verb in API's verb table, and takes its Parameters as one JSON object in Body; a Parameter left out takes its default, and an optional Parameter left out is not sent to the package. `date_from` and `date_to` are Timestamps: whole seconds since 1970-01-01 00:00:00 UTC.
+One Adapter for every Function Group of MT5 Service, in MT5 Service's order, each named from its Function Group, and the Constants Adapter. Every Function Endpoint is `POST`, because no Function's name begins with a verb in API's verb table, and takes its Parameters as one JSON object in Body; a Parameter left out takes its default, and an optional Parameter left out is not sent to the package, except one left out before a later unnamed Parameter that is given, such as `date_from` before `date_to`, which is sent as `null`. `date_from` and `date_to` are Timestamps: whole seconds since 1970-01-01 00:00:00 UTC.
 
 ### `connection`: Connection Function Group
 

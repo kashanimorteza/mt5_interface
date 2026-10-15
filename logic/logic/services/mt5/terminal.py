@@ -124,13 +124,13 @@ def _parameter(name: str, value: Any) -> Any:
 
 
 def given(**values: Any) -> tuple:
-    """The unnamed parameters a caller supplied, in order up to the first one left out, as the Package takes them."""
-    taken = []
-    for name, value in values.items():
-        if value is None:
-            break
-        taken.append(_parameter(name, value))
-    return tuple(taken)
+    """The unnamed parameters a caller supplied, in order up to the last one given, as the Package takes them; one left out before it is sent as None."""
+    items = list(values.items())
+    while items and items[-1][1] is None:
+        items.pop()
+    return tuple(
+        None if value is None else _parameter(name, value) for name, value in items
+    )
 
 
 def named(**values: Any) -> dict[str, Any]:
