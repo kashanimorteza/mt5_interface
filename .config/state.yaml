@@ -31,9 +31,9 @@ content:
   active:
     mode: "implementing"
     phase: "P2"
-    mode_reason: "Implement 012 is coordinating Plan, Develop, and Review for phase P2."
+    mode_reason: "Implement 016 is coordinating Plan, Develop, and Review for phase P2."
     set_by: "implement"
-    set_at: "2026-10-16T07:28:50Z"
+    set_at: "2026-10-16T07:39:41Z"
   phases:
     P1:
       id: "P1"
@@ -43,10 +43,10 @@ content:
       completed_at: null
     P2:
       id: "P2"
-      planning: "not started"
-      development: "not started"
-      review: "not started"
-      completed_at: null
+      planning: "completed"
+      development: "completed"
+      review: "satisfied"
+      completed_at: "2026-10-16T07:58:13Z"
   log:
     - id: "001"
       skill: "configure"
@@ -717,3 +717,178 @@ content:
         findings: []
         phase_state_note: "P2 Review progress is left at not started because no review was performed; nothing was judged unsatisfied."
         timing_note: "Start time was not captured; it falls after Develop Log 014 completed at 2026-10-16T07:30:05Z, so duration is not recorded."
+    - id: "016"
+      skill: "implement"
+      phase: "P2"
+      event: "implement"
+      outcome: "completed"
+      started_at: "2026-10-16T07:39:41Z"
+      completed_at: "2026-10-16T07:58:45Z"
+      duration: "19:04"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used:
+        - {name: "plan", report: "Log 017 completed: P2 Plan created with 5 Groups and 16 Tasks."}
+        - {name: "develop", report: "Log 018 completed: all 16 Tasks done; Open Question Q2 on API workers."}
+        - {name: "review", report: "Log 019 satisfied: all API and MT5 Group observations and 16 acceptances established; F24 resolved."}
+      open_questions: ["Q2"]
+      blockers: []
+      report: "Coordinated Plan, Develop, and Review for P2 after the Human resolved B1. Config was valid, so Configure was not needed. Plan (017) created the API Plan. Develop (018) built the API executable with the MT5 Group (33 Endpoints), runtime Configuration, Problem Details errors, interactive documentation, and both READMEs. Review (019) is satisfied after resolving F24. P2 is complete. Aggregate: 1 Open Question (Q2), 0 Blockers."
+      data:
+        selection:
+          requested: ["2"]
+          resolved: ["P2"]
+        config_check: {plan: "valid", state: "valid", configure_invoked: false}
+        operations:
+          - {log: "017", skill: "plan", phase: "P2", outcome: "completed"}
+          - {log: "018", skill: "develop", phase: "P2", outcome: "completed"}
+          - {log: "019", skill: "review", phase: "P2", outcome: "satisfied"}
+        aggregate: {open_questions: 1, blockers: 0}
+    - id: "017"
+      skill: "plan"
+      parent_id: "016"
+      phase: "P2"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-16T07:39:41Z"
+      completed_at: "2026-10-16T07:43:48Z"
+      duration: "4:07"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: []
+      report: "Created the P2 (API) Plan with 5 Groups and 16 Tasks: the API executable and its Connection to Logic, the runtime Configuration, one Adapter for each of the seven MT5 Service Function Groups plus the Constants Adapter, Bootstrap with Problem Details errors and interactive documentation, and the MT5 Group and API documentation. No prior P2 Plan existed, so nothing was preserved, changed, removed, or replaced. Blocker B1 for P1 is recorded as resolved by the Human, so no earlier open Blocker stops this phase."
+      data:
+        selection:
+          requested: ["P2"]
+          planned: ["P2"]
+          skipped: []
+        gate:
+          earlier_phase: "P1"
+          open_blockers: []
+          note: "B1 is marked resolved in Review Entries 004, 007, and 011 by the Human's commit 643464a, which also added the MT5 Service Principle that acceptances never need a live terminal. P1 Review stays not satisfied, which is not a Blocker."
+        reconciliation:
+          prior_plan: "none"
+          added:
+            - {id: "P2-G1", reason: "API needs its own executable package and its Connection to Logic before anything can be served."}
+            - {id: "P2-G1-T1", reason: "API must exist as an installable executable."}
+            - {id: "P2-G1-T2", reason: "The MT5 Group reaches MT5 Service only through Logic Interface over the declared api_to_logic Connection."}
+            - {id: "P2-G2", reason: "Bootstrap reads every runtime value only from the runtime Configuration."}
+            - {id: "P2-G2-T1", reason: "The API Configuration Structure and the URL Key setting define the runtime Configuration."}
+            - {id: "P2-G3", reason: "The MT5 Group gives every Function Group one Adapter plus a Constants Adapter."}
+            - {id: "P2-G3-T1", reason: "Connection Adapter."}
+            - {id: "P2-G3-T2", reason: "Symbols Adapter."}
+            - {id: "P2-G3-T3", reason: "MarketBook Adapter."}
+            - {id: "P2-G3-T4", reason: "MarketData Adapter."}
+            - {id: "P2-G3-T5", reason: "Orders Adapter."}
+            - {id: "P2-G3-T6", reason: "Positions Adapter."}
+            - {id: "P2-G3-T7", reason: "History Adapter."}
+            - {id: "P2-G3-T8", reason: "Constants Adapter with one Endpoint returning every Constant."}
+            - {id: "P2-G4", reason: "API is one running boundary with shared error and documentation behavior."}
+            - {id: "P2-G4-T1", reason: "Bootstrap composes API and registers the MT5 Group beneath its segment."}
+            - {id: "P2-G4-T2", reason: "Every Endpoint error is RFC 9457 Problem Details by the error table."}
+            - {id: "P2-G4-T3", reason: "API always serves its interactive documentation, sectioned by Group and Adapter."}
+            - {id: "P2-G5", reason: "API and MT5 Group each define their documentation sections."}
+            - {id: "P2-G5-T1", reason: "MT5 Group documentation."}
+            - {id: "P2-G5-T2", reason: "API root documentation."}
+          changed: []
+          removed: []
+          replaced: []
+          preserved: []
+        understanding:
+          target_overrides_applied:
+            - "API serves only the MT5 Group: the Target defines MT5 as the only API Group and Logic has no Entity Service, so the Entity Group listed in API Preferences is not planned."
+          constraint_rationale: "P2-G3 records that its acceptances are observable without the Package or a running terminal; the MT5 Service Principle states this for MT5 Service acceptances only, and the MT5 Group acceptances call through it, so the boundary is stated once for that work area to keep B1's condition from recurring in P2."
+        task_counts: {P2: 16, total: 57}
+        risks:
+          - "Most MT5 Function names lead with a word absent from the API verb table (for example symbols, market, copy, order, positions, history), so most Function Endpoints are expected to derive POST with Body parameters; Develop resolves each Method from the verb table when it writes the Endpoints."
+    - id: "018"
+      skill: "develop"
+      parent_id: "016"
+      phase: "P2"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-16T07:44:17Z"
+      completed_at: "2026-10-16T07:52:58Z"
+      duration: "8:41"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used:
+        - {name: "fastapi", report: "Guided the Annotated parameter style, router-level prefix and tags, sync route functions for blocking calls, return types, and the pyproject entrypoint."}
+      open_questions: ["Q2"]
+      blockers: []
+      decisions:
+        - "P2-G1-T1"
+        - "P2-G1-T2"
+        - "P2-G2-T1"
+        - "P2-G3-T1"
+        - "P2-G3-T5"
+        - "P2-G3-T8"
+        - "P2-G4-T1"
+        - "P2-G4-T2"
+        - "P2-G4-T3"
+      report: "Developed all 16 P2 Tasks. API is a new executable package (FastAPI 0.143.3) connected to Logic as an editable local dependency, with a generated runtime Configuration and kept URL Key, the MT5 Group (eight Adapters, 33 POST Endpoints covering all 32 Functions plus Constants), Bootstrap registering only the MT5 Group beneath /<key>/MT5, Problem Details errors, interactive documentation with one tag per Adapter and one tag group per Group, and both READMEs. API installed and started on this Linux host without the MetaTrader 5 Package. Open Question Q2 records that the default of 2 workers splits Terminal Processes between workers."
+      data:
+        tasks_done: ["P2-G1-T1", "P2-G1-T2", "P2-G2-T1", "P2-G3-T1", "P2-G3-T2", "P2-G3-T3", "P2-G3-T4", "P2-G3-T5", "P2-G3-T6", "P2-G3-T7", "P2-G3-T8", "P2-G4-T1", "P2-G4-T2", "P2-G4-T3", "P2-G5-T1", "P2-G5-T2"]
+        component: "API"
+        target_overrides_applied:
+          - "Only the MT5 Group is registered and generated; the Entity Group listed in API Preferences is excluded because the Target defines MT5 as the only API Group."
+        open_questions:
+          - id: "Q2"
+            subject: "API workers versus per-process Terminal Processes"
+            question: "API Preferences default workers to 2, and the runtime Configuration holds 2. MT5 Service keeps its Terminal Processes in the Python process that calls it, so each API worker keeps its own: a request after initialize can reach a worker where that Terminal was never initialized and fail with MT5Error 'is not initialized'. Should the API default to one worker, or should the Human accept this and set workers to 1 per deployment?"
+            current_choice: "workers stays 2 as API Preferences give it; both READMEs state the effect, and API Troubleshooting says to set workers to 1."
+        verification_limits:
+          - "MetaTrader5 is not installed on this Linux host; Function Endpoints were observed reaching MT5 Service and returning its MT5Error, not a real Terminal result. Following the MT5 Service Principle added in commit 643464a, live-terminal behavior is not part of conformance."
+    - id: "019"
+      skill: "review"
+      parent_id: "016"
+      phase: "P2"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-16T07:53:31Z"
+      completed_at: "2026-10-16T07:58:13Z"
+      duration: "4:42"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: []
+      report: "P2 satisfied. All 12 API Review observations and all 6 MT5 Group Review observations hold, and all 16 Task acceptances are established. Technical checks pass, two builds are byte-identical, and a fresh frozen install imports all 13 units without the MetaTrader 5 Package. Finding F24 (Swagger OAuth2 redirect served at the bare root, outside the URL Key) was resolved and rechecked. Develop's Open Question Q2 (workers above 1 split Terminal Processes) is outside every Review baseline and stays a Human decision."
+      data:
+        findings:
+          - id: "F24"
+            kind: "defect"
+            baseline: "API Review observation: every listed Group is registered exactly beneath the URL segment of its name, and nothing else is registered; URL Key Principle: an Endpoint need not sit at a bare, guessable address"
+            expected: "Every route API serves sits beneath the Base URL path, including the interactive documentation's own routes."
+            observed: "Besides /<key>/docs, /<key>/redoc, /<key>/openapi.json, and the MT5 Group, the API registers GET /docs/oauth2-redirect at the bare root, outside the URL Key; it is the Swagger UI OAuth2 redirect helper that FastAPI adds by default, and API has no request authentication that would use it."
+            location: "api/api/bootstrap.py (API creation without swagger_ui_oauth2_redirect_url); app top-level routes"
+            state: "resolved"
+            resolution: "Bootstrap now creates the API with swagger_ui_oauth2_redirect_url=None, since API has no request authentication. Rechecked: the only top-level routes besides the MT5 Group are /<key>/openapi.json, /<key>/docs, and /<key>/redoc; GET /docs/oauth2-redirect returns 404 on the running server; <key>/docs still returns 200; ruff format, ruff check, and ty check pass."
+        established:
+          component_review:
+            api: "12 of 12. Only the MT5 Group is registered, beneath /<key>/MT5, and nothing else besides the documentation routes beneath the URL Key (after F24). Group segment MT5, the eight Adapter segments, and all 33 Method-and-Path pairs are unique. The MT5 Group conforms to the Group contract: one source (MT5 Service through Logic Interface), one Adapter per published Function Group plus Constants, one Endpoint per operation, the operation's parameters exactly, and Handlers that return results and errors unchanged. API serves no Endpoint of its own. Every Method is POST, as the verb table gives for every leading word, and every Path is /<operation> (no operation takes id). Every Parameter is in Body. The JSON-object request Parameter is validated as a JSON object before its Handler runs. Every error observed (unknown Terminal, missing Parameter, non-JSON body, wrong type, Package unavailable, wrong method) is application/problem+json with the class name as type and the table status, or 500 for MT5Error, which the table does not name. The URL Key is non-empty. Swagger and ReDoc are served at the configured addresses and list all 33 Endpoints in 8 Adapter tags grouped under MT5. config.yaml holds every Structure value and follows every rule. Bootstrap reads only config.yaml."
+            mt5_group: "6 of 6. One Adapter for each of the 7 Function Groups that MT5 instances expose, with 32 Endpoints equal to the 32 published Functions. The Constants Endpoint returns all 223 Constants, equal to MT5 Service Constants. Every Endpoint keeps the Function's parameter names, order, requirements, and defaults and adds only the required terminal. Every Handler is a single return of MT5.MT5(terminal).<Group>.<function> with every parameter passed by name. No Adapter unit has a class, loop, or import beyond typing, fastapi, pydantic, and logic.interface, and the group __init__ files are empty. No API unit names the MetaTrader5 package."
+          task_acceptance_established: ["P2-G1-T1", "P2-G1-T2", "P2-G2-T1", "P2-G3-T1", "P2-G3-T2", "P2-G3-T3", "P2-G3-T4", "P2-G3-T5", "P2-G3-T6", "P2-G3-T7", "P2-G3-T8", "P2-G4-T1", "P2-G4-T2", "P2-G4-T3", "P2-G5-T1", "P2-G5-T2"]
+          runtime: "With a recording stand-in Package, each of the 32 Endpoints reached the Package with exactly the calls and results of the same Function called directly through Logic Interface. initialize kept timeout 1500; symbol_info, market_book_get, copy_rates_range, and history_deals_get passed symbol, timeframe, Timestamps, and group unchanged; order_check passed the request mapping field for field; positions_get with no filter sent no optional parameter. With the Package absent, all 32 Endpoints returned the same MT5Error as direct calls; initialize returned MT5Error (-1) 'The MetaTrader5 package is unavailable'; Constants still returned all 223. The unchanged source, served with a changed key and port in a scratch copy of config.yaml, answered at the new address and 404 at the old one. Following README Setup (uv run api) served docs, redoc, and Constants with 2 worker processes."
+          technical: "uv lock --check, ruff format --check, ruff check, ty check, and uv pip check pass. Two builds of the wheel and sdist are byte-identical, and the wheel carries only the api package and the MT5 Group README. A frozen no-dev install into a fresh environment imports all 13 units with warnings as errors, without MetaTrader5 or dev tools. The lock pins fastapi 0.143.3 from PyPI and logic as editable ../logic."
+          regeneration: "Regenerating config.yaml from the API Configuration Structure and API Preferences defaults, keeping the existing URL Key as the URL Key Principle requires, gives a byte-identical file. The other units have no re-runnable generator, so zero-diff regeneration was not observable for them."
+          documentation: "MT5 Group README has Overview, Endpoints, Use, Verify in order. Its 33 Endpoint rows equal the served Method-and-Path pairs, with identical parameter names, requirements, and defaults, and its example bodies use only each Endpoint's parameters. API README has the seven Definition sections in order, explains every config.yaml value, links the existing MT5 Group README, and copies no Endpoint. Neither README contains the URL Key value."
+          testing_authority: "API Preferences set testing false, so all verification was transient; nothing was added to the repository."
+        method:
+          - "Runtime behavior was observed in-process through FastAPI's TestClient, with a recording stand-in MetaTrader5 module and a scratch Terminal Configuration kept outside the repository and assigned only inside the transient review process; real servers were started for Setup and for the changed key and port."
+          - "The reviewer is the same agent session that developed P2; independence rests on fresh observations of the Source and the running API, never on Develop's recorded checks."
+        review_observations:
+          - "Open Question Q2 (Develop 018): with workers 2, each uvicorn worker keeps its own Terminal Processes, so a request after initialize may reach a worker where that Terminal is not initialized. No API, MT5 Group, or Plan baseline covers multi-worker behavior, so it is not a Finding; both READMEs state it."
+          - "MT5Error for an unknown Terminal name is sent with status 500, because the API error table names no class MT5 Service raises. This follows the table as written."
+          - "Bootstrap finds config.yaml at the Component root beside the package. An install of the API wheel outside the repository would not carry it; Development keeps Component packages project-internal, so no baseline requires that install."
+          - "The project root README is outside the API Component and was not changed; whether it should mention API belongs to its owner."

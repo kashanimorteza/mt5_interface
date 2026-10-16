@@ -26,7 +26,7 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 41
+  task_count: 57
   plans:
     P1:
       id: "P1"
@@ -1591,3 +1591,614 @@ content:
                 - at: "2026-10-16T03:06:13Z"
                   event: "done"
                   by: "010"
+    P2:
+      id: "P2"
+      title: "API"
+      order: 2
+      target: "API"
+      does: "API runs as a separate executable over the Logic library and serves the MT5 Group, through which external programs call every MetaTrader 5 Function and read every Constant over HTTP for a Terminal named in the request."
+      constraints: []
+      task_count: 16
+      groups:
+        P2-G1:
+          id: "P2-G1"
+          title: "API executable foundation"
+          description: "The executable package that Bootstrap, the MT5 Group, the runtime Configuration, and the documentation live inside, together with the Logic library it consumes; nothing in the phase can be served before it exists."
+          area: "API's identity as a project-internal executable, its development environment, and its Connection to Logic"
+          does: "API exists as an executable package that installs into its own isolated environment with its API package and the Logic library available, and passes the project's quality tools."
+          constraints: []
+          task_count: 2
+          tasks:
+            P2-G1-T1:
+              id: "P2-G1-T1"
+              source_id: "017"
+              title: "Establish the API executable package"
+              description: "Create API as a project-internal executable package with its own isolated development environment, its locked dependencies including the selected API package, and the project's formatter, linter, and type checker available to it, adding any ignore entries it needs to the project's single ignore file."
+              reason: "Bootstrap, the MT5 Group, and the runtime Configuration need an installable executable to live in."
+              inputs: []
+              skills: ["fastapi"]
+              expected_result: "An empty API package that installs into its own isolated environment and imports without error."
+              depends_on: []
+              constraints: []
+              acceptance: "The API package installs from the repository into its isolated environment and imports successfully; its locked dependencies name the selected API package at one concrete stable version; the formatter, linter, and type checker report no problems on it."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:46:10Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:46:32Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Python version and build backend of the API package"
+                  chosen: "requires-python >=3.14 with uv_build 0.13.1, module-root at the Component directory"
+                  reason: "API consumes the Logic library, which requires Python >=3.14 and builds with uv_build 0.13.1; matching keeps one interpreter and one build backend across the project."
+                - at: "2026-10-16T07:46:32Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Concrete version of the selected API package fastapi[standard] (latest-compatible)"
+                  chosen: "fastapi[standard]==0.143.3"
+                  reason: "0.143.3 is the current stable FastAPI release on PyPI and supports Python 3.14."
+                - at: "2026-10-16T07:46:32Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Versions of the quality tools"
+                  chosen: "ruff==0.17.1 and ty==0.0.89 in the dev dependency group"
+                  reason: "Same versions Logic pins, so the project runs one formatter, linter, and type checker version."
+                - at: "2026-10-16T07:46:32Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/pyproject.toml, api/uv.lock, the empty api/api/__init__.py, and a README placeholder completed by P2-G5-T2. uv sync installed api 0.1.0 with fastapi 0.143.3 into api/.venv; importing api succeeds; ruff format --check, ruff check, and ty check passed. api/.venv and caches are covered by existing root ignore entries, so no entry was added."
+                - at: "2026-10-16T07:46:32Z"
+                  event: "done"
+                  by: "018"
+            P2-G1-T2:
+              id: "P2-G1-T2"
+              source_id: "017"
+              title: "Connect API to the Logic library"
+              description: "Declare the Logic library as a dependency of API, realized as a local dependency on Logic within the repository, so that API can reach MT5 Service through Logic Interface."
+              reason: "The MT5 Group's source is MT5 Service, which API may use only through its declared Connection to Logic."
+              inputs:
+                - "The installable API package"
+                - "Logic Interface"
+              skills: []
+              expected_result: "API's environment resolves the Logic library from the repository, and Logic Interface loads inside it."
+              depends_on:
+                - "P2-G1-T1"
+              constraints: []
+              acceptance: "API's locked dependencies resolve Logic from within the repository rather than from a package index, and inside API's environment Logic Interface loads and publishes MT5 on a host where the MetaTrader 5 Package is not installed."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:46:32Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:46:47Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Whether the local Logic dependency is installed editable"
+                  chosen: "editable path source ../logic"
+                  reason: "MT5 Service reads its Terminal Configuration from its own package directory; an editable install makes API read the repository config.yaml an operator edits, instead of a copy frozen into the API environment."
+                - at: "2026-10-16T07:46:47Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "api/pyproject.toml declares logic with [tool.uv.sources] logic = { path = \"../logic\", editable = true }; api/uv.lock records source = { editable = \"../logic\" }, not a package index. In api/.venv, with MetaTrader5 not installed, from logic.interface import MT5 loaded under -W error and publishes Constants, MT5, MT5Error; Terminal Configuration resolves to logic/logic/services/mt5/config.yaml in the repository."
+                - at: "2026-10-16T07:46:47Z"
+                  event: "done"
+                  by: "018"
+        P2-G2:
+          id: "P2-G2"
+          title: "Runtime Configuration"
+          description: "The runtime values that identify and run API, which Bootstrap reads and an operator edits instead of source."
+          area: "API runtime Configuration"
+          does: "API's runtime Configuration exists with every value its structure defines, including a URL Key that stays the same across generations."
+          constraints: []
+          task_count: 1
+          tasks:
+            P2-G2-T1:
+              id: "P2-G2-T1"
+              source_id: "017"
+              title: "Generate the API runtime Configuration"
+              description: "Generate API's runtime Configuration in the API Configuration Structure with the values API Preferences give, including a URL Key generated once and kept afterwards."
+              reason: "Bootstrap reads every changeable runtime value only from the runtime Configuration."
+              inputs:
+                - "The installable API package"
+              skills: []
+              expected_result: "A runtime Configuration for API holding every value of its structure, a non-empty URL Key, and a Base URL formed from them."
+              depends_on:
+                - "P2-G1-T1"
+              constraints: []
+              acceptance: "The runtime Configuration holds every value the API Configuration Structure defines, with a valid port and a positive worker count; its Base URL and documentation addresses are formed from the protocol, host, port, and URL Key; the URL Key is non-empty and is unchanged when the Configuration is generated again."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:46:47Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:47:03Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "How the Base URL scheme is written from transport_protocol HTTP"
+                  chosen: "lower-case scheme, http://<host>:<port>/<key>"
+                  reason: "API Preferences show the default url as http://127.0.0.1:8000/<key>, and URL schemes are conventionally lower case."
+                - at: "2026-10-16T07:47:03Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/config.yaml with title Target API and empty description (API Preferences identity defaults), host 127.0.0.1, port 8000, workers 2, transport_protocol HTTP, a 32-character URL-safe key generated once with secrets.token_urlsafe, url derived from them, and documentation swagger <url>/docs and redoc <url>/redoc. Generation refuses to run when config.yaml already exists, so a kept key is never regenerated. Checked: every structure field present, key length 32 and URL-safe, url and documentation equal their derivations. The key value is not recorded here."
+                - at: "2026-10-16T07:47:03Z"
+                  event: "done"
+                  by: "018"
+        P2-G3:
+          id: "P2-G3"
+          title: "MT5 Group Adapters"
+          description: "The MT5 Group: one Adapter for every Function Group of MT5 Service and one for the Constants, each writing out its own Endpoints, so that every MetaTrader 5 Function and Constant is reachable over HTTP."
+          area: "MT5 Group"
+          does: "Every Function of MT5 Service is served by its own Endpoint, which takes that Function's parameters plus the name of a Terminal and returns the Function's result or error unchanged from an MT5 Instance of that Terminal, and every Constant is served by the Constants Endpoint."
+          constraints:
+            - "Every acceptance in this work area is observable without the MetaTrader 5 Package or a running terminal: with the Package absent, or with a stand-in that records what each Function receives and returns what the Package Documentation describes."
+          task_count: 8
+          tasks:
+            P2-G3-T1:
+              id: "P2-G3-T1"
+              source_id: "017"
+              title: "Write the Connection Adapter"
+              description: "Write the Adapter for MT5 Service's Connection Function Group, with one Endpoint for every Function of that group."
+              reason: "External programs start, sign in to, inspect, and end their Terminal sessions through these Functions."
+              inputs:
+                - "Logic Interface with the MT5 class and its Connection Function Group"
+              skills: ["fastapi"]
+              expected_result: "A Connection Adapter whose Endpoints cover every Connection Function."
+              depends_on:
+                - "P2-G1-T2"
+              constraints: []
+              acceptance: "The Connection Adapter serves one Endpoint for each Function of the Connection group and no other; a request that initializes a configured Terminal with a timeout reaches initialization on an MT5 Instance of that Terminal with the timeout unchanged, and with the Package absent the request returns that Function's MT5 Error."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:47:03Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:48:30Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Adapter unit and segment naming from the Adapter pattern <group>"
+                  chosen: "the Function Group name in snake_case (connection, symbols, market_book, market_data, orders, positions, history, constants) for both the Adapter unit and its URL segment"
+                  reason: "MT5 Group Preferences name Adapters by <group> and API Preferences select snake_case identifiers; one name per Adapter keeps the unit and its segment aligned."
+                - at: "2026-10-16T07:48:30Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Leading verb of an operation for the verb-to-Method table"
+                  chosen: "the first underscore-separated word of the operation name"
+                  reason: "The API Definition derives the Method from the operation leading verb; none of the MT5 Functions leads with a listed verb, so every MT5 Group Endpoint is POST with its Parameters in Body."
+                - at: "2026-10-16T07:48:30Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Body shape when an Endpoint has a single Body Parameter"
+                  chosen: "every Body Parameter embedded by name, so every request body is one JSON object of Parameter names"
+                  reason: "Clients send the same shape to every Endpoint, including Endpoints whose only Parameter is terminal."
+                - at: "2026-10-16T07:48:30Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Result type the Endpoints declare, since MT5 Service publishes its JSON alias only privately"
+                  chosen: "pydantic JsonValue"
+                  reason: "It is the same recursive JSON value type MT5 Service returns, and using it avoids depending on a private MT5 Service unit."
+                - at: "2026-10-16T07:48:30Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/__init__.py and api/api/groups/mt5/__init__.py (empty) and api/api/groups/mt5/connection.py with one APIRouter (prefix /connection, tag MT5 · Connection) and one explicit POST route per Function: initialize, login, shutdown, version, last_error, account_info, terminal_info. Each takes a required Body terminal then the Function parameters with identical names, order, and defaults, and calls MT5.MT5(terminal).Connection.<function> through logic.interface with every parameter by name. A signature comparison against the Logic Connection class found 7 of 7 Functions with 0 mismatches; ruff format, ruff check, and ty check passed. Behavior with the Package absent is observed after Bootstrap (P2-G4-T1)."
+                - at: "2026-10-16T07:48:30Z"
+                  event: "done"
+                  by: "018"
+            P2-G3-T2:
+              id: "P2-G3-T2"
+              source_id: "017"
+              title: "Write the Symbols Adapter"
+              description: "Write the Adapter for MT5 Service's Symbols Function Group, with one Endpoint for every Function of that group."
+              reason: "External programs list, inspect, and select symbols through these Functions."
+              inputs:
+                - "Logic Interface with the MT5 class and its Symbols Function Group"
+              skills: ["fastapi"]
+              expected_result: "A Symbols Adapter whose Endpoints cover every Symbols Function."
+              depends_on:
+                - "P2-G1-T2"
+              constraints: []
+              acceptance: "The Symbols Adapter serves one Endpoint for each Function of the Symbols group and no other; a request for a symbol's information that names a configured Terminal reaches that Function with the symbol unchanged and returns its result as received."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:47:03Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:48:31Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/mt5/symbols.py with one APIRouter (prefix /symbols, tag MT5 · Symbols) and one explicit POST route per Function: symbols_total, symbols_get, symbol_info, symbol_info_tick, symbol_select. Each takes a required Body terminal then the Function parameters with identical names, order, and defaults, and calls MT5.MT5(terminal).Symbols.<function> through logic.interface with every parameter by name. Naming, Method, and Body decisions are those recorded in P2-G3-T1. A signature comparison against the Logic Symbols class found 5 of 5 Functions with 0 mismatches; ruff format, ruff check, and ty check passed."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "done"
+                  by: "018"
+            P2-G3-T3:
+              id: "P2-G3-T3"
+              source_id: "017"
+              title: "Write the MarketBook Adapter"
+              description: "Write the Adapter for MT5 Service's MarketBook Function Group, with one Endpoint for every Function of that group."
+              reason: "External programs subscribe to, read, and release Depth of Market through these Functions."
+              inputs:
+                - "Logic Interface with the MT5 class and its MarketBook Function Group"
+              skills: ["fastapi"]
+              expected_result: "A MarketBook Adapter whose Endpoints cover every MarketBook Function."
+              depends_on:
+                - "P2-G1-T2"
+              constraints: []
+              acceptance: "The MarketBook Adapter serves one Endpoint for each Function of the MarketBook group and no other; reading a symbol's market book for a configured Terminal reaches that Function with the symbol unchanged and returns the list of entries as received."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:47:03Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:48:31Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/mt5/market_book.py with one APIRouter (prefix /market_book, tag MT5 · MarketBook) and one explicit POST route per Function: market_book_add, market_book_get, market_book_release. Each takes a required Body terminal then the Function parameters with identical names, order, and defaults, and calls MT5.MT5(terminal).MarketBook.<function> through logic.interface with every parameter by name. Naming, Method, and Body decisions are those recorded in P2-G3-T1. A signature comparison against the Logic MarketBook class found 3 of 3 Functions with 0 mismatches; ruff format, ruff check, and ty check passed."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "done"
+                  by: "018"
+            P2-G3-T4:
+              id: "P2-G3-T4"
+              source_id: "017"
+              title: "Write the MarketData Adapter"
+              description: "Write the Adapter for MT5 Service's MarketData Function Group, with one Endpoint for every Function of that group."
+              reason: "External programs read bars and ticks through these Functions."
+              inputs:
+                - "Logic Interface with the MT5 class and its MarketData Function Group"
+              skills: ["fastapi"]
+              expected_result: "A MarketData Adapter whose Endpoints cover every MarketData Function."
+              depends_on:
+                - "P2-G1-T2"
+              constraints: []
+              acceptance: "The MarketData Adapter serves one Endpoint for each Function of the MarketData group and no other; requesting bars over a Timestamp range with a timeframe value for a configured Terminal reaches that Function with the symbol, timeframe, and both Timestamps unchanged and returns the list of bars as received."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:47:03Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:48:31Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/mt5/market_data.py with one APIRouter (prefix /market_data, tag MT5 · MarketData) and one explicit POST route per Function: copy_rates_from, copy_rates_from_pos, copy_rates_range, copy_ticks_from, copy_ticks_range. Each takes a required Body terminal then the Function parameters with identical names, order, and defaults, and calls MT5.MT5(terminal).MarketData.<function> through logic.interface with every parameter by name. Naming, Method, and Body decisions are those recorded in P2-G3-T1. A signature comparison against the Logic MarketData class found 5 of 5 Functions with 0 mismatches; ruff format, ruff check, and ty check passed."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "done"
+                  by: "018"
+            P2-G3-T5:
+              id: "P2-G3-T5"
+              source_id: "017"
+              title: "Write the Orders Adapter"
+              description: "Write the Adapter for MT5 Service's Orders Function Group, with one Endpoint for every Function of that group."
+              reason: "External programs read active orders, calculate margin and profit, and check and send trade requests through these Functions."
+              inputs:
+                - "Logic Interface with the MT5 class and its Orders Function Group"
+              skills: ["fastapi"]
+              expected_result: "An Orders Adapter whose Endpoints cover every Orders Function."
+              depends_on:
+                - "P2-G1-T2"
+              constraints: []
+              acceptance: "The Orders Adapter serves one Endpoint for each Function of the Orders group and no other; checking a trade request sent as a JSON object for a configured Terminal reaches that Function with the same mapping, field for field, and returns the check result as received."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:47:03Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:48:31Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Type of the trade request Parameter of order_check and order_send"
+                  chosen: "dict[str, JsonValue], a JSON object"
+                  reason: "MT5 Service takes the request as a mapping of JSON values; the same structure travels as a JSON object of its fields without conversion."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/mt5/orders.py with one APIRouter (prefix /orders, tag MT5 · Orders) and one explicit POST route per Function: orders_total, orders_get, order_calc_margin, order_calc_profit, order_check, order_send. Each takes a required Body terminal then the Function parameters with identical names, order, and defaults, and calls MT5.MT5(terminal).Orders.<function> through logic.interface with every parameter by name. Naming, Method, and Body decisions are those recorded in P2-G3-T1. A signature comparison against the Logic Orders class found 6 of 6 Functions with 0 mismatches; ruff format, ruff check, and ty check passed."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "done"
+                  by: "018"
+            P2-G3-T6:
+              id: "P2-G3-T6"
+              source_id: "017"
+              title: "Write the Positions Adapter"
+              description: "Write the Adapter for MT5 Service's Positions Function Group, with one Endpoint for every Function of that group."
+              reason: "External programs count and read open positions through these Functions."
+              inputs:
+                - "Logic Interface with the MT5 class and its Positions Function Group"
+              skills: ["fastapi"]
+              expected_result: "A Positions Adapter whose Endpoints cover every Positions Function."
+              depends_on:
+                - "P2-G1-T2"
+              constraints: []
+              acceptance: "The Positions Adapter serves one Endpoint for each Function of the Positions group and no other; reading positions for a configured Terminal without any optional filter reaches that Function with every optional parameter at the Function's own default."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:47:03Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:48:31Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/mt5/positions.py with one APIRouter (prefix /positions, tag MT5 · Positions) and one explicit POST route per Function: positions_total, positions_get. Each takes a required Body terminal then the Function parameters with identical names, order, and defaults, and calls MT5.MT5(terminal).Positions.<function> through logic.interface with every parameter by name. Naming, Method, and Body decisions are those recorded in P2-G3-T1. A signature comparison against the Logic Positions class found 2 of 2 Functions with 0 mismatches; ruff format, ruff check, and ty check passed."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "done"
+                  by: "018"
+            P2-G3-T7:
+              id: "P2-G3-T7"
+              source_id: "017"
+              title: "Write the History Adapter"
+              description: "Write the Adapter for MT5 Service's History Function Group, with one Endpoint for every Function of that group."
+              reason: "External programs read historical orders and deals through these Functions."
+              inputs:
+                - "Logic Interface with the MT5 class and its History Function Group"
+              skills: ["fastapi"]
+              expected_result: "A History Adapter whose Endpoints cover every History Function."
+              depends_on:
+                - "P2-G1-T2"
+              constraints: []
+              acceptance: "The History Adapter serves one Endpoint for each Function of the History group and no other; requesting deals over a Timestamp range with a group filter for a configured Terminal reaches that Function with both Timestamps and the filter unchanged and returns the list of deals as received."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:47:03Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:48:31Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/mt5/history.py with one APIRouter (prefix /history, tag MT5 · History) and one explicit POST route per Function: history_orders_total, history_orders_get, history_deals_total, history_deals_get. Each takes a required Body terminal then the Function parameters with identical names, order, and defaults, and calls MT5.MT5(terminal).History.<function> through logic.interface with every parameter by name. Naming, Method, and Body decisions are those recorded in P2-G3-T1. A signature comparison against the Logic History class found 4 of 4 Functions with 0 mismatches; ruff format, ruff check, and ty check passed."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "done"
+                  by: "018"
+            P2-G3-T8:
+              id: "P2-G3-T8"
+              source_id: "017"
+              title: "Write the Constants Adapter"
+              description: "Write the Adapter that serves MT5 Service's Constants through one Endpoint taking no Terminal."
+              reason: "External programs cannot import the Package, yet need every value a Function accepts."
+              inputs:
+                - "Logic Interface with the MT5 Service Constants"
+              skills: ["fastapi"]
+              expected_result: "A Constants Adapter with one Endpoint returning every Constant by name and value."
+              depends_on:
+                - "P2-G1-T2"
+              constraints: []
+              acceptance: "The Constants Adapter serves exactly one Endpoint, which takes no parameter and, with the Package absent, returns a mapping from every Constant name to its value equal to the Constants MT5 Service publishes."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:47:04Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:48:31Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Operation name of the Constants Endpoint"
+                  chosen: "all, the name of the MT5 Service Constants method that returns every Constant, giving POST /constants/all"
+                  reason: "Endpoint identity derives from the operation; all is not in the verb table, so the Method is POST."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/mt5/constants.py with one APIRouter (prefix /constants, tag MT5 · Constants) and one POST route all taking no parameter and returning MT5.Constants.all() as dict[str, int]; ruff format, ruff check, and ty check passed. The returned mapping is observed after Bootstrap (P2-G4-T1)."
+                - at: "2026-10-16T07:48:31Z"
+                  event: "done"
+                  by: "018"
+        P2-G4:
+          id: "P2-G4"
+          title: "API serving"
+          description: "The single running API boundary: Bootstrap composing API from its runtime Configuration and registering the MT5 Group, together with the shared HTTP behavior every Endpoint is served with."
+          area: "Bootstrap, Group registration, error responses, and interactive documentation"
+          does: "One running API serves the MT5 Group beneath its segment after the Base URL and nothing else, returns every Endpoint error as Problem Details, and publishes interactive documentation of every Endpoint."
+          constraints: []
+          task_count: 3
+          tasks:
+            P2-G4-T1:
+              id: "P2-G4-T1"
+              source_id: "017"
+              title: "Compose and start API from its runtime Configuration"
+              description: "Realize Bootstrap: read the runtime Configuration, create API with its configured identity, register the MT5 Group beneath its segment after the Base URL, and start serving at the configured address with the configured workers."
+              reason: "API is the one running network boundary through which external programs reach the MT5 Group."
+              inputs:
+                - "The API runtime Configuration"
+                - "Every MT5 Group Adapter"
+              skills: ["fastapi"]
+              expected_result: "A startable API serving every MT5 Group Endpoint beneath the MT5 segment after the Base URL."
+              depends_on:
+                - "P2-G2-T1"
+                - "P2-G3-T1"
+                - "P2-G3-T2"
+                - "P2-G3-T3"
+                - "P2-G3-T4"
+                - "P2-G3-T5"
+                - "P2-G3-T6"
+                - "P2-G3-T7"
+                - "P2-G3-T8"
+              constraints: []
+              acceptance: "Starting API on a host without the MetaTrader 5 Package serves every MT5 Group Endpoint beneath the Base URL followed by the MT5 segment, and no Endpoint of API's own or of any other Group; changing the URL Key or port in the runtime Configuration moves the served address accordingly with no source change."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:48:56Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:49:41Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Which Groups Bootstrap registers, since API Preferences list both entity and mt5"
+                  chosen: "only the MT5 Group"
+                  reason: "The Target defines MT5 as the only API Group and Logic has no Entity Service; explicit Target meaning outranks API Preferences."
+                - at: "2026-10-16T07:49:41Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "How Bootstrap locates the runtime Configuration"
+                  chosen: "config.yaml at the Component root, found from the location of the bootstrap unit"
+                  reason: "API Preferences place config.yaml at the Component root; resolving it from the package location works from any working directory with the project-internal editable install."
+                - at: "2026-10-16T07:49:41Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "How API is started"
+                  chosen: "a console script api (api.bootstrap:main) running uvicorn with the import string api.bootstrap:app, plus the FastAPI CLI entrypoint api.bootstrap:app in pyproject"
+                  reason: "uvicorn needs an import string to run several workers; the fastapi skill recommends declaring the entrypoint in pyproject."
+                - at: "2026-10-16T07:49:41Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Direct dependencies imported by Bootstrap"
+                  chosen: "pyyaml==6.0.3 and uvicorn==0.54.0 declared explicitly"
+                  reason: "Bootstrap imports both directly; the versions equal those already locked (pyyaml through Logic, uvicorn through fastapi[standard])."
+                - at: "2026-10-16T07:49:41Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/bootstrap.py: reads config.yaml, creates FastAPI with the configured title and description and documentation under the Base URL path, adds CORSMiddleware as API Preferences give it, and includes the eight MT5 Group routers beneath /<key>/MT5. Started with uv run api on this Linux aarch64 host without MetaTrader5: uvicorn bound 127.0.0.1:8000 with 2 worker processes; openapi listed 33 paths, all POST and all beneath /<key>/MT5/; POST constants/all returned 200 with 223 Constants (TIMEFRAME_H1 16385); POST without the key segment returned 404. ruff format, ruff check, and ty check passed. Server stopped afterwards."
+                - at: "2026-10-16T07:49:41Z"
+                  event: "done"
+                  by: "018"
+            P2-G4-T2:
+              id: "P2-G4-T2"
+              source_id: "017"
+              title: "Return every Endpoint error as Problem Details"
+              description: "Make every error an Endpoint returns reach the client as Problem Details carrying the error's class name and the status API's error table sets."
+              reason: "Every client reads every Group's errors the same way, with the error's class unchanged."
+              inputs:
+                - "The composed API"
+              skills: ["fastapi"]
+              expected_result: "Every Endpoint error response is Problem Details with the error's class name and its mapped status."
+              depends_on:
+                - "P2-G4-T1"
+              constraints: []
+              acceptance: "A request naming a Terminal that is not configured, and a request missing a required parameter, each return a Problem Details response whose type is the error's class name and whose status is the one the error table sets, or 500 for an error the table does not name."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:49:41Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:50:38Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Which error class the error table entry Invalid Input names"
+                  chosen: "FastAPI RequestValidationError, a request that does not match its Endpoint Parameters, sent with status 422"
+                  reason: "The table names error kinds, not classes; a request input the Endpoint cannot accept is invalid input. MT5Error is not named by the table, so it is sent with 500."
+                - at: "2026-10-16T07:50:38Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "How routing errors raised before any Endpoint runs (such as 404 or 405) are sent"
+                  chosen: "as Problem Details with the HTTP status the router raised"
+                  reason: "They are not errors an Endpoint returns, so the 500 fallback for unnamed Endpoint errors does not apply; sending them in the same Problem Details form keeps every client response uniform."
+                - at: "2026-10-16T07:50:38Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Content of Problem Details beyond type and status"
+                  chosen: "title equal to the class name and detail holding the error unchanged: str(error) for MT5Error and other errors, the validation error list for invalid input, the HTTP detail for routing errors"
+                  reason: "RFC 9457 defines title and detail; carrying the error as raised keeps the MT5Error code and message intact for the client."
+                - at: "2026-10-16T07:50:38Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Lint finding BLE001 (blind except) on the catch-all that turns every remaining error into Problem Details"
+                  chosen: "keep the catch-all with an inline noqa stating its reason"
+                  reason: "Catching every error is the purpose of the mapping; narrowing it would let an error reach the client as plain text."
+                - at: "2026-10-16T07:50:38Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/problems.py (handlers for RequestValidationError and HTTPException plus an http middleware catching every other error) and registered it in bootstrap before CORSMiddleware. Observed with a transient TestClient: unknown Terminal -> 500 application/problem+json type MT5Error detail (-2) Terminal ... is not in config.yaml; missing symbol -> 422 type RequestValidationError; GET on a POST Endpoint -> 405 type HTTPException; error responses carry access-control-allow-origin *. ruff format, ruff check, ty check passed."
+                - at: "2026-10-16T07:50:38Z"
+                  event: "done"
+                  by: "018"
+            P2-G4-T3:
+              id: "P2-G4-T3"
+              source_id: "017"
+              title: "Publish interactive documentation by Group and Adapter"
+              description: "Enable the API package's interactive documentation of the served Endpoints, sectioned by Group and, within it, by Adapter."
+              reason: "Every client can discover and try every Endpoint without reading source."
+              inputs:
+                - "The composed API"
+              skills: ["fastapi"]
+              expected_result: "Interactive documentation listing every served Endpoint, one section per Adapter under the MT5 Group."
+              depends_on:
+                - "P2-G4-T1"
+              constraints: []
+              acceptance: "The running API serves interactive documentation at the addresses the runtime Configuration records; it lists every MT5 Group Endpoint in one section per Adapter grouped under the MT5 Group, and shows nothing the Groups do not serve."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:50:38Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:51:13Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "Where the interactive documentation and its schema are served"
+                  chosen: "<Base URL>/docs, <Base URL>/redoc, and <Base URL>/openapi.json, beneath the URL Key"
+                  reason: "The API Configuration Structure records the documentation addresses as <url>/docs and <url>/redoc; the schema follows the same base."
+                - at: "2026-10-16T07:51:13Z"
+                  event: "decision"
+                  by: "018"
+                  unset: "How the Group tag groups are added to the documentation schema"
+                  chosen: "a FastAPI subclass in Bootstrap overriding openapi to add x-tagGroups from the registered Groups"
+                  reason: "Assigning a replacement openapi function to the app fails the type checker; an override keeps the schema typed and derives the tag groups from the same Group list that registers the routers."
+                - at: "2026-10-16T07:51:13Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Bootstrap creates the API from class API with docs_url, redoc_url, and openapi_url beneath the Base URL path. Observed with a transient TestClient: <key>/docs 200, <key>/redoc 200, /docs without key 404; the schema lists 33 Endpoints under 8 tags MT5 · Connection (7), Symbols (5), MarketBook (3), MarketData (5), Orders (6), Positions (2), History (4), Constants (1), and x-tagGroups holds one group MT5 with those 8 tags. ruff format, ruff check, ty check passed."
+                - at: "2026-10-16T07:51:13Z"
+                  event: "done"
+                  by: "018"
+        P2-G5:
+          id: "P2-G5"
+          title: "API documentation"
+          description: "The written documentation of API and of its MT5 Group, which tells an operator and a client how to start API and call it."
+          area: "API and MT5 Group documentation"
+          does: "API and the MT5 Group each have documentation in the sections their Definitions name, matching what is served."
+          constraints: []
+          task_count: 2
+          tasks:
+            P2-G5-T1:
+              id: "P2-G5-T1"
+              source_id: "017"
+              title: "Document the MT5 Group"
+              description: "Write the MT5 Group documentation in the sections the MT5 Group Definition names."
+              reason: "A client needs every Endpoint's Method, Path, and Parameters with an example to call MetaTrader 5 over HTTP."
+              inputs:
+                - "Every MT5 Group Adapter"
+                - "The composed API"
+              skills: ["fastapi"]
+              expected_result: "MT5 Group documentation with Overview, Endpoints, Use, and Verify."
+              depends_on:
+                - "P2-G4-T1"
+              constraints: []
+              acceptance: "The MT5 Group documentation has Overview, Endpoints, Use, and Verify in that order; every Endpoint the MT5 Group serves appears with its Method, Path, Parameters, and one example, and no Endpoint it does not serve appears."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:51:13Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:52:11Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Created api/api/groups/mt5/README.md with Overview (one curl example), Endpoints (one table per Adapter with Method, Path, Parameters, and one example body for each of the 33 Endpoints), Use, and Verify, in that order. A transient comparison with the served OpenAPI schema found the same 33 Method-and-Path pairs and identical parameter names, requirements, and defaults; every example body uses only that Endpoint parameters; the quoted Constant values (TIMEFRAME_H1 16385, COPY_TICKS_ALL -1, TRADE_ACTION_DEAL 1, ORDER_TYPE_BUY 0) equal MT5 Service Constants. The Use section states that Terminal Processes are kept per API worker process."
+                - at: "2026-10-16T07:52:11Z"
+                  event: "done"
+                  by: "018"
+            P2-G5-T2:
+              id: "P2-G5-T2"
+              source_id: "017"
+              title: "Document API"
+              description: "Write API's root documentation in the sections the API Definition names, linking to the MT5 Group documentation."
+              reason: "An operator needs to configure, install, start, and verify API, and a client needs to know how to reach a Group."
+              inputs:
+                - "The API runtime Configuration"
+                - "The composed API"
+                - "The MT5 Group documentation"
+              skills: ["fastapi"]
+              expected_result: "API root documentation with Overview, Configuration, Groups, Setup, Use, Verify, and Troubleshooting."
+              depends_on:
+                - "P2-G2-T1"
+                - "P2-G4-T2"
+                - "P2-G4-T3"
+                - "P2-G5-T1"
+              constraints: []
+              acceptance: "API's root documentation has Overview, Configuration, Groups, Setup, Use, Verify, and Troubleshooting in that order; it explains every runtime Configuration value and how the Base URL is formed; its Groups section lists MT5 beneath its segment with a link to the MT5 Group documentation and copies none of its Endpoints; following its Setup starts API as described."
+              status: "done"
+              log:
+                - at: "2026-10-16T07:52:11Z"
+                  event: "claimed"
+                  by: "018"
+                - at: "2026-10-16T07:52:58Z"
+                  event: "evidence"
+                  by: "018"
+                  note: "Replaced the placeholder api/README.md with Overview (one curl example), Configuration (every config.yaml value and how url and documentation are formed), Groups (MT5 at <url>/MT5 linking api/groups/mt5/README.md, no Endpoints copied), Setup, Use, Verify, and Troubleshooting, in that order. Followed Setup: uv sync then uv run api served <key>/docs, <key>/redoc, and <key>/openapi.json with 200; the server was stopped afterwards. Troubleshooting quotes MT5 Service error texts as written in its source, and states that with workers above 1 each worker keeps its own Terminal Processes. ruff format, ruff check, and ty check pass on the whole Component."
+                - at: "2026-10-16T07:52:58Z"
+                  event: "done"
+                  by: "018"

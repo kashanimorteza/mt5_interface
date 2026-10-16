@@ -1,0 +1,34 @@
+[project]
+name = "api"
+version = "0.1.0"
+description = "The API executable of MT5 Interface: every Group served through one REST boundary."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]==0.143.3",
+    "logic",
+    "pyyaml==6.0.3",
+    "uvicorn==0.54.0",
+]
+
+[project.scripts]
+api = "api.bootstrap:main"
+
+[dependency-groups]
+dev = [
+    "ruff==0.17.1",
+    "ty==0.0.89",
+]
+
+[tool.uv.sources]
+logic = { path = "../logic", editable = true }
+
+[tool.fastapi]
+entrypoint = "api.bootstrap:app"
+
+[build-system]
+requires = ["uv_build==0.13.1"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""

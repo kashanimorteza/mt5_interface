@@ -1,0 +1,11 @@
+title: "Target API"
+description: ""
+key: "nqNQ0795kpuLDcb9mts0NvdeD0SvJ-Fw"
+host: "127.0.0.1"
+port: 8000
+workers: 2
+transport_protocol: "HTTP"
+url: "http://127.0.0.1:8000/nqNQ0795kpuLDcb9mts0NvdeD0SvJ-Fw"
+documentation:
+  swagger: "http://127.0.0.1:8000/nqNQ0795kpuLDcb9mts0NvdeD0SvJ-Fw/docs"
+  redoc: "http://127.0.0.1:8000/nqNQ0795kpuLDcb9mts0NvdeD0SvJ-Fw/redoc"
