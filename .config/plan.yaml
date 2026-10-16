@@ -26,7 +26,7 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 22
+  task_count: 27
   plans:
     P1:
       id: "P1"
@@ -35,7 +35,7 @@ content:
       target: "Logic"
       does: "The Logic library provides the MT5 Service, which performs every Function of the MetaTrader 5 Package on a Terminal selected by its name through the Terminal configuration."
       constraints: []
-      task_count: 22
+      task_count: 27
       groups:
         P1-G1:
           id: "P1-G1"
@@ -95,7 +95,7 @@ content:
           area: "MT5 Service identity, Package dependency, error, Function coverage, and Constants"
           does: "MT5 Service exists inside Logic with its Package dependency resolved, its error defined, its Function coverage confirmed, and every Package Constant published."
           constraints: []
-          task_count: 4
+          task_count: 5
           tasks:
             P1-G2-T1:
               id: "P1-G2-T1"
@@ -205,7 +205,7 @@ content:
                 - "P1-G2-T1"
               constraints: []
               acceptance: "Every Constant the Package defines is available from the Constants group with the Package's name and value, nothing else is in it, and the all-Constants method returns them as a JSON-valid name-to-value mapping."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:40:41Z'
                   event: claimed
@@ -223,6 +223,49 @@ content:
                 - at: '2026-10-16T01:42:39Z'
                   event: done
                   by: '003'
+                - at: '2026-10-16T02:26:01Z'
+                  event: replaced
+                  by: '006'
+                  replaced_by: P1-G2-T5
+            P1-G2-T5:
+              id: "P1-G2-T5"
+              source_id: "005"
+              title: "Write out every Package Constant inside MT5 Service"
+              description: "Provide the Constants group with every Constant of the Package written out in MT5 Service itself, each under the name and with the value the Package defines, together with the method that returns all of them as a name-to-value mapping, so that no Constant is obtained from the Package while the application runs."
+              reason: "The current MT5 Service Definition requires every Constant to be written out in the Service and never read from the Package at runtime or through a bridge or handler; the earlier Constants obtain their values from the Package while running."
+              inputs:
+                - "The Constants defined by the Package in its selected version"
+              skills: []
+              replaces: "P1-G2-T4"
+              expected_result: "A Constants group, taking no Terminal, whose every Constant and all-Constants mapping are available without the Package."
+              depends_on:
+                - "P1-G2-T1"
+              constraints: []
+              acceptance: "Every Constant the Package defines is available from the Constants group under the Package's name with the Package's value and nothing else is in it; the all-Constants method returns them as a JSON-valid name-to-value mapping; reading any Constant or the full mapping succeeds where the Package is not installed and starts no process."
+              status: "done"
+              log:
+                - at: '2026-10-16T02:27:15Z'
+                  event: claimed
+                  by: '006'
+                - at: '2026-10-16T02:28:30Z'
+                  event: decision
+                  by: '006'
+                  unset: How the Package's Constant names and values are taken without running the Package
+                  chosen: Download the pinned MetaTrader5 5.0.6231 cp314 win_amd64 wheel (sha256 verified against PyPI), evaluate its upper-case module-level assignments statically, and confirm the compiled core exports no further upper-case names
+                  reason: The Package installs only on Windows; its Constants are literal assignments in its own source, so static evaluation takes every name and value from the Package without executing it.
+                - at: '2026-10-16T02:28:30Z'
+                  event: decision
+                  by: '006'
+                  unset: Form and order of the written-out Constants
+                  chosen: Plain class attributes of Constants in the Package's own order, values as decimal integers, grouped under the Package's section headings, with all() deriving the mapping from those attributes
+                  reason: Package order makes the unit comparable line by line with the Package and keeps regeneration deterministic; deriving all() from the attributes keeps one list of values.
+                - at: '2026-10-16T02:28:30Z'
+                  event: evidence
+                  by: '006'
+                  note: 'Rewrote logic/logic/services/mt5/constants.py: 223 Constants written out, no process, Package import, or MT5Error left in it. Constants.all() equals the 223 statically read Package values in the Package''s order and round-trips through JSON; Constants.TIMEFRAME_H1 is 16385; the only non-Constant public name is all; an unknown name raises AttributeError; with the Package not installed, reading the Constants loaded no MetaTrader5 module and started no child process. ruff format --check, ruff check, and ty check pass.'
+                - at: '2026-10-16T02:28:30Z'
+                  event: done
+                  by: '006'
         P1-G3:
           id: "P1-G3"
           title: "Terminal configuration and selection"
@@ -230,7 +273,7 @@ content:
           area: "MT5 Service Terminal configuration and name-based Terminal selection"
           does: "Every MT5 Service call can name its Terminal and reach that Terminal's executable through the Terminal configuration, and an unknown name is refused."
           constraints: []
-          task_count: 3
+          task_count: 5
           tasks:
             P1-G3-T1:
               id: "P1-G3-T1"
@@ -245,7 +288,7 @@ content:
                 - "P1-G2-T1"
               constraints: []
               acceptance: "The Terminal configuration record exists in the repository, is not excluded from version control, and its entries carry exactly the fields the Target defines with the Target's required and optional status."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:40:19Z'
                   event: claimed
@@ -263,6 +306,10 @@ content:
                 - at: '2026-10-16T01:40:41Z'
                   event: done
                   by: '003'
+                - at: '2026-10-16T02:26:01Z'
+                  event: replaced
+                  by: '006'
+                  replaced_by: P1-G3-T4
             P1-G3-T2:
               id: "P1-G3-T2"
               source_id: "002"
@@ -278,7 +325,7 @@ content:
                 - "P1-G2-T2"
               constraints: []
               acceptance: "A configuration with uniquely named, complete entries loads every Terminal; a configuration with a missing name or path, or a repeated name, is refused with an error naming the problem."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:40:41Z'
                   event: claimed
@@ -302,6 +349,10 @@ content:
                 - at: '2026-10-16T01:42:39Z'
                   event: done
                   by: '003'
+                - at: '2026-10-16T02:26:01Z'
+                  event: replaced
+                  by: '006'
+                  replaced_by: P1-G3-T5
             P1-G3-T3:
               id: "P1-G3-T3"
               source_id: "002"
@@ -334,6 +385,84 @@ content:
                 - at: '2026-10-16T01:42:55Z'
                   event: done
                   by: '003'
+            P1-G3-T4:
+              id: "P1-G3-T4"
+              source_id: "005"
+              title: "Provide the Terminal Configuration in its current structure"
+              description: "Provide the Terminal Configuration of MT5 Service, kept in the repository, with the identity, sections, entry fields, and single sample Terminal the MT5 Service Definition gives it, superseding the earlier Terminal configuration record so that MT5 Service keeps exactly one."
+              reason: "The Target and the MT5 Service Definition now name a different Terminal Configuration with a general section, a terminals section, two additional optional fields, and a sample Terminal; the earlier record follows the former Target shape."
+              inputs: []
+              skills: []
+              replaces: "P1-G3-T1"
+              expected_result: "One tracked Terminal Configuration in the Definition's structure, holding the sample Terminal, and no other Terminal configuration record in MT5 Service."
+              depends_on:
+                - "P1-G2-T1"
+              constraints: []
+              acceptance: "The Terminal Configuration exists in the repository, is not excluded from version control, has exactly the sections the Definition names with the general section present and empty of settings, holds the sample Terminal under the Definition's sample name with every other field empty, documents every entry field with its type and required or optional status, and no earlier Terminal configuration record remains in MT5 Service."
+              status: "done"
+              log:
+                - at: '2026-10-16T02:27:15Z'
+                  event: claimed
+                  by: '006'
+                - at: '2026-10-16T02:28:59Z'
+                  event: decision
+                  by: '006'
+                  unset: How the sample Terminal's empty fields and the empty general section are written
+                  chosen: general as an empty mapping; the demo entry lists every field with no value (YAML null)
+                  reason: The Definition keeps general present with no setting and leaves every sample field other than name empty; listing each field shows the full entry shape when a Terminal is added.
+                - at: '2026-10-16T02:28:59Z'
+                  event: evidence
+                  by: '006'
+                  note: 'Created logic/logic/services/mt5/config.yaml: top-level sections general ({}) and terminals (one entry, name demo, every other field null); its header documents all nine entry fields with type and required or optional status and the stored-only fields. git check-ignore does not match it. Removed the superseded logic/logic/services/mt5/terminal.config (tracked in git, so recoverable); no other Terminal configuration record remains in the MT5 Service directory.'
+                - at: '2026-10-16T02:28:59Z'
+                  event: done
+                  by: '006'
+            P1-G3-T5:
+              id: "P1-G3-T5"
+              source_id: "005"
+              title: "Load and validate the current Terminal Configuration"
+              description: "Read the Terminal entries from the terminals section of the current Terminal Configuration, accepting every field the Definition lists in its defined type and refusing a record whose entries lack a required field, repeat a name, or carry a value of the wrong type."
+              reason: "Name-based Terminal selection must read the current Terminal Configuration; the earlier loading reads the superseded record and refuses the newly defined fields and the integer port."
+              inputs:
+                - "The current Terminal Configuration"
+              skills: []
+              replaces: "P1-G3-T2"
+              expected_result: "Valid Terminal Configurations load into Terminal entries through which name resolution finds each Terminal's path; invalid ones are refused with a clear reason."
+              depends_on:
+                - "P1-G3-T4"
+                - "P1-G2-T2"
+              constraints: []
+              acceptance: "The generated Terminal Configuration with only its sample Terminal loads without being refused; a configuration with uniquely named entries that carry name and path, with optional fields absent, empty, or in their defined types, loads every Terminal; a missing name or path, a repeated name, or a value of the wrong type is refused with MT5 Error naming each problem without echoing any value; resolving a name then finds that Terminal in the current Terminal Configuration and an unknown name is refused."
+              status: "done"
+              log:
+                - at: '2026-10-16T02:28:59Z'
+                  event: claimed
+                  by: '006'
+                - at: '2026-10-16T02:30:36Z'
+                  event: decision
+                  by: '006'
+                  unset: How the required path coexists with the sample Terminal whose fields are all empty (Open Question Q1)
+                  chosen: A required field must be present as a key; name must also be a non-empty string; an empty path loads, and resolving a Terminal whose path is empty raises MT5Error (-2) 'has no path in config.yaml'
+                  reason: The generated file must load so the other Terminals stay usable, while a Terminal without a path still fails explicitly when it is used instead of reaching the Package with no path.
+                - at: '2026-10-16T02:30:36Z'
+                  event: decision
+                  by: '006'
+                  unset: What counts as an empty field and how types are checked
+                  chosen: Empty is YAML null for every field, and also '' for string fields; empty fields are held as None; port must be an integer (booleans refused); every other field must be a string; fields the Definition does not list are refused
+                  reason: The Definition gives each field one type and lets the optional ones be empty; coercing a value or ignoring an unknown field would hide a configuration error.
+                - at: '2026-10-16T02:30:36Z'
+                  event: decision
+                  by: '006'
+                  unset: How strictly the two sections are checked
+                  chosen: Both general and terminals must be present; any other section, and any setting inside general, is refused; an empty terminals section means no Terminals
+                  reason: The Definition fixes exactly two sections and defines no general setting yet, so anything else is an error worth reporting.
+                - at: '2026-10-16T02:30:36Z'
+                  event: evidence
+                  by: '006'
+                  note: 'terminal.py now reads config.yaml beside it: load_terminals checks sections and every entry, collecting all problems into one MT5Error (-2) without echoing field values; Terminal gains port and api_key; resolve and its messages name config.yaml. The Connection.initialize docstring now names config.yaml. Checked with scratch configurations: the generated file loads [''demo''] and resolving demo raises MT5Error (-2) ''Terminal demo has no path in config.yaml''; an unknown name raises MT5Error (-2) ''not in config.yaml''; a full entry with port 443, api_key, and an empty password loads and resolves to its configured path; a missing name, a missing path, an unknown field, a numeric password, a string port, a boolean port, and a repeated name are refused together in one MT5Error (-2) naming each; a missing section, an unknown section, a general setting, a non-mapping document, and malformed YAML are refused with MT5Error (-2). ruff format, ruff check, and ty check pass.'
+                - at: '2026-10-16T02:30:36Z'
+                  event: done
+                  by: '006'
         P1-G4:
           id: "P1-G4"
           title: "Package execution"
@@ -710,7 +839,7 @@ content:
           area: "MT5 Service Interface, Logic Interface, and their documentation"
           does: "Consumers import MT5 Service through its own Interface and through Logic Interface, and both are documented."
           constraints: []
-          task_count: 4
+          task_count: 6
           tasks:
             P1-G6-T1:
               id: "P1-G6-T1"
@@ -762,7 +891,7 @@ content:
                 - "P1-G6-T1"
               constraints: []
               acceptance: "The MT5 Service documentation has the Definition's sections in order, every Function it lists exists on the published Function Group it is shown under, and its examples name the Terminal by name."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:46:10Z'
                   event: claimed
@@ -774,6 +903,10 @@ content:
                 - at: '2026-10-16T01:46:56Z'
                   event: done
                   by: '003'
+                - at: '2026-10-16T02:26:01Z'
+                  event: replaced
+                  by: '006'
+                  replaced_by: P1-G6-T5
             P1-G6-T3:
               id: "P1-G6-T3"
               source_id: "002"
@@ -819,7 +952,7 @@ content:
                 - "P1-G6-T2"
               constraints: []
               acceptance: "The Logic documentation has the Definition's sections in order, lists exactly the names the Logic Interface publishes, and its Service links resolve."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:46:56Z'
                   event: claimed
@@ -831,3 +964,76 @@ content:
                 - at: '2026-10-16T01:47:30Z'
                   event: done
                   by: '003'
+                - at: '2026-10-16T02:26:01Z'
+                  event: replaced
+                  by: '006'
+                  replaced_by: P1-G6-T6
+            P1-G6-T5:
+              id: "P1-G6-T5"
+              source_id: "005"
+              title: "Document the MT5 Service for the current Terminal Configuration and Constants"
+              description: "Write the MT5 Service documentation with the sections and order its Definition names, covering each Function Group with its Functions and one example each, reading the Constants without the Package, selecting a Terminal by name, and adding a Terminal to the current Terminal Configuration."
+              reason: "The Definition's Use section now also explains how a Terminal is added to Terminal Configuration, and the earlier documentation describes the superseded configuration record and Constants that need the Package."
+              inputs:
+                - "The published MT5 Service Interface"
+                - "The current Terminal Configuration and its validation rules"
+                - "The written-out Constants"
+              skills: []
+              replaces: "P1-G6-T2"
+              expected_result: "MT5 Service documentation that matches its published Interface, its current Terminal Configuration, and its written-out Constants."
+              depends_on:
+                - "P1-G6-T1"
+                - "P1-G2-T5"
+                - "P1-G3-T4"
+                - "P1-G3-T5"
+              constraints: []
+              acceptance: "The MT5 Service documentation has the Definition's sections in order; every Function it lists exists on the published Function Group it is shown under; its examples name the Terminal by name; its Use section shows adding a Terminal entry to the current Terminal Configuration with the fields that configuration accepts; nothing in it refers to the superseded configuration record or says the Constants need the Package."
+              status: "done"
+              log:
+                - at: '2026-10-16T02:30:42Z'
+                  event: claimed
+                  by: '006'
+                - at: '2026-10-16T02:31:24Z'
+                  event: decision
+                  by: '006'
+                  unset: Terminal name used in the documentation examples
+                  chosen: demo, the name of the generated sample Terminal, replacing Demo
+                  reason: Terminal names are matched exactly; using the sample's own name lets a reader run every example after filling in only the sample's path.
+                - at: '2026-10-16T02:31:24Z'
+                  event: evidence
+                  by: '006'
+                  note: 'Updated logic/logic/services/mt5/README.md: sections Overview, Interface, Use, Verify in order; the Interface text names config.yaml; every Function Group table lists exactly that published class''s methods, each example naming the Terminal ''demo''; the Constants paragraph says they are written out from MetaTrader5 5.0.6231 and need neither the package nor a terminal; MT5Error lists config problems and a missing path under -2; Use step 1 shows adding a Terminal to the terminals section of config.yaml, the optional and stored-only fields with port as an integer, the general section, and the refusal rules; Verify checks the Constants on any machine. The README no longer mentions terminal.config or reading Constants in a separate process. The Use YAML example loads through load_terminals and resolves demo to its path.'
+                - at: '2026-10-16T02:31:24Z'
+                  event: done
+                  by: '006'
+            P1-G6-T6:
+              id: "P1-G6-T6"
+              source_id: "005"
+              title: "Document the Logic library for the current MT5 Service"
+              description: "Write the Logic root documentation with the sections and order the Logic Definition names, linking the MT5 Service to its documentation, Definition, and Preferences without copying its contract, with setup and troubleshooting that match the current Terminal Configuration and the written-out Constants."
+              reason: "The earlier Logic documentation sends consumers to the superseded configuration record, states its former validation rules, and lists an error for Constants that no longer needs the Package."
+              inputs:
+                - "The published Logic Interface"
+                - "The current MT5 Service documentation"
+              skills: []
+              replaces: "P1-G6-T4"
+              expected_result: "Logic root documentation that matches the published Logic Interface and the current MT5 Service."
+              depends_on:
+                - "P1-G6-T3"
+                - "P1-G6-T5"
+                - "P1-G3-T5"
+                - "P1-G2-T5"
+              constraints: []
+              acceptance: "The Logic documentation has the Definition's sections in order, lists exactly the names the Logic Interface publishes, its Service links resolve, and its Setup and Troubleshooting name the current Terminal Configuration and the problems a consumer can actually meet with it, with no reference to the superseded configuration record or to Constants needing the Package."
+              status: "done"
+              log:
+                - at: '2026-10-16T02:31:24Z'
+                  event: claimed
+                  by: '006'
+                - at: '2026-10-16T02:32:10Z'
+                  event: evidence
+                  by: '006'
+                  note: 'Updated logic/README.md: sections Overview, Interface, Services, Setup, Use, Verify, Troubleshooting in order; Interface lists exactly MT5, matching logic.interface.__all__; all Service links resolve, including the new link to the MT5 Service README Use section; Setup names logic/services/mt5/config.yaml and its demo sample and says reading MT5.Constants needs neither the package nor a terminal; examples name the Terminal ''demo''; Troubleshooting covers the unknown-name, missing-path, and invalid config.yaml errors with the current rules, and the package-unavailable error now only for Terminal calls. No mention of terminal.config remains. Component-wide: uv lock --check, ruff format --check, ruff check, and ty check pass; a wheel built to a scratch directory carries config.yaml and the MT5 Service README and no terminal.config.'
+                - at: '2026-10-16T02:32:10Z'
+                  event: done
+                  by: '006'

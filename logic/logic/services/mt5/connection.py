@@ -27,7 +27,7 @@ class Connection:
     ) -> JSON:
         """Establish a connection with the Terminal, starting its Terminal Process.
 
-        `path` defaults to the Terminal's path in terminal.config; any other path is refused.
+        `path` defaults to the Terminal's path in config.yaml; any other path is refused.
         """
         configured = resolve(terminal).path
         if path is not None and path != configured:

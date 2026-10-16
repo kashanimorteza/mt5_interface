@@ -7,7 +7,7 @@ Logic is the reusable library that holds the Behavior of MT5 Interface in its Se
 ```python
 from logic.interface import MT5
 
-MT5.Connection.initialize("Demo")
+MT5.Connection.initialize("demo")
 ```
 
 ## Interface
@@ -28,7 +28,7 @@ Logic needs Python 3.14 and [uv](https://docs.astral.sh/uv/). From this director
 uv sync
 ```
 
-The MetaTrader5 package is installed only on Windows. Using MT5 Service also needs MetaTrader 5 installed on the same machine and each Terminal listed in `logic/services/mt5/terminal.config`.
+The MetaTrader5 package is installed only on Windows. Calling a Terminal through MT5 Service also needs MetaTrader 5 installed on the same machine and the Terminal declared in `logic/services/mt5/config.yaml`; its sample `demo` entry needs only its `path` filled in, and the [MT5 Service README](logic/services/mt5/README.md#use) shows how to add more. Reading `MT5.Constants` needs neither.
 
 A consumer in this repository depends on Logic as a local path dependency on this directory.
 
@@ -39,11 +39,11 @@ Import a Service from the Logic Interface and use what it publishes:
 ```python
 from logic.interface import MT5
 
-MT5.Connection.initialize("Demo")
+MT5.Connection.initialize("demo")
 bars = MT5.MarketData.copy_rates_from_pos(
-    "Demo", "EURUSD", MT5.Constants.TIMEFRAME_H1, 0, 10
+    "demo", "EURUSD", MT5.Constants.TIMEFRAME_H1, 0, 10
 )
-MT5.Connection.shutdown("Demo")
+MT5.Connection.shutdown("demo")
 ```
 
 ## Verify
@@ -57,7 +57,8 @@ prints `['MT5']`, and `L.MT5` is the module `logic.services.mt5.interface` itsel
 ## Troubleshooting
 
 - **`RuntimeError: An attempt has been made to start a new process before the current process has finished its bootstrapping phase`** — MT5 Service runs the package in separate processes started with `spawn`. Put the code that calls MT5 Service under `if __name__ == "__main__":` in the script you run.
-- **`MT5Error (-1) The MetaTrader5 package is unavailable`** — the package is installed only on Windows. Run on Windows with `uv sync`.
-- **`MT5Error (-2) Terminal 'X' is not in terminal.config`** — add an entry with that `name` to `logic/services/mt5/terminal.config`, or use a configured name.
-- **`MT5Error (-2) terminal.config is invalid: ...`** — fix every listed entry: `name` and `path` are required, names are unique, only the documented fields are allowed, and every value is a string (quote numeric passwords).
+- **`MT5Error (-1) The MetaTrader5 package is unavailable`** — raised by a call to a Terminal, because the package is installed only on Windows. Run on Windows with `uv sync`.
+- **`MT5Error (-2) Terminal 'X' is not in config.yaml`** — add an entry with that `name` to the `terminals` section of `logic/services/mt5/config.yaml`, or use a configured name.
+- **`MT5Error (-2) Terminal 'X' has no path in config.yaml`** — fill in that Terminal's `path`, as for the sample `demo` entry.
+- **`MT5Error (-2) config.yaml is invalid: ...`** — fix every listed problem: keep exactly the `general` and `terminals` sections; every entry has a `name` and a `path`; names are unique; only the documented fields are allowed; `port` is an integer and every other field is a string (quote numeric passwords), or left empty.
 - **`MT5Error (-1) Terminal 'X' is not initialized`** — call `Connection.initialize` for that Terminal first; `shutdown` ends its process.

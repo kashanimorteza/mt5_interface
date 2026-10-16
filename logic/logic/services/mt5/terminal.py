@@ -17,9 +17,20 @@ type JSON = dict[str, JSON] | list[JSON] | str | int | float | bool | None
 GENERIC_FAIL = -1
 INVALID_PARAMS = -2
 
-CONFIG = Path(__file__).with_name("terminal.config")
+CONFIG = Path(__file__).with_name("config.yaml")
+SECTIONS = ("general", "terminals")
+FIELDS: dict[str, type] = {
+    "name": str,
+    "path": str,
+    "username": str,
+    "password": str,
+    "investor_password": str,
+    "ip": str,
+    "port": int,
+    "api_key": str,
+    "description": str,
+}
 REQUIRED_FIELDS = ("name", "path")
-OPTIONAL_FIELDS = ("username", "password", "investor_password", "ip", "description")
 
 
 class MT5Error(Exception):
@@ -36,82 +47,115 @@ class MT5Error(Exception):
 
 @dataclass(frozen=True)
 class Terminal:
-    """One MetaTrader 5 terminal listed in terminal.config."""
+    """One MetaTrader 5 terminal declared in config.yaml; an empty field is None."""
 
     name: str
-    path: str
+    path: str | None = None
     username: str | None = None
     password: str | None = None
     investor_password: str | None = None
     ip: str | None = None
+    port: int | None = None
+    api_key: str | None = None
     description: str | None = None
 
 
+def _entry_problems(label: str, entry: dict[object, object]) -> list[str]:
+    """List every problem of one Terminal entry without echoing any field value."""
+    problems: list[str] = []
+    unknown = sorted(str(key) for key in entry if key not in FIELDS)
+    if unknown:
+        problems.append(f"{label} has unknown fields: {', '.join(unknown)}")
+    for key in REQUIRED_FIELDS:
+        if key not in entry:
+            problems.append(f"{label} needs the field '{key}'")
+    name = entry.get("name")
+    if "name" in entry and (not isinstance(name, str) or not name.strip()):
+        problems.append(f"{label} needs a non-empty string 'name'")
+    for key, kind in FIELDS.items():
+        value = entry.get(key)
+        if key == "name" or value is None or (kind is str and value == ""):
+            continue
+        if not isinstance(value, kind) or isinstance(value, bool):
+            problems.append(f"{label} field '{key}' must be {kind.__name__} or empty")
+    return problems
+
+
 def load_terminals() -> dict[str, Terminal]:
-    """Read terminal.config, refusing it with every problem found when an entry is invalid."""
+    """Read config.yaml, refusing it with every problem found when it is invalid."""
     try:
         text = CONFIG.read_text(encoding="utf-8")
     except OSError as error:
         raise MT5Error(
-            GENERIC_FAIL, f"terminal.config cannot be read: {error.strerror}"
+            GENERIC_FAIL, f"config.yaml cannot be read: {error.strerror}"
         ) from None
     try:
-        entries = yaml.safe_load(text)
+        document = yaml.safe_load(text)
     except yaml.YAMLError as error:
         mark = getattr(error, "problem_mark", None)
         where = f" at line {mark.line + 1}" if mark is not None else ""
         raise MT5Error(
-            INVALID_PARAMS, f"terminal.config is not valid YAML{where}"
+            INVALID_PARAMS, f"config.yaml is not valid YAML{where}"
         ) from None
+    if not isinstance(document, dict):
+        raise MT5Error(
+            INVALID_PARAMS, "config.yaml must hold the sections general and terminals"
+        )
+    problems: list[str] = []
+    for section in SECTIONS:
+        if section not in document:
+            problems.append(f"the section '{section}' is missing")
+    unknown = sorted(str(key) for key in document if key not in SECTIONS)
+    if unknown:
+        problems.append(f"unknown sections: {', '.join(unknown)}")
+    general = document.get("general")
+    if general is not None and not isinstance(general, dict):
+        problems.append("the section 'general' must be a mapping")
+    elif general:
+        settings = ", ".join(sorted(str(key) for key in general))
+        problems.append(f"the section 'general' has unknown settings: {settings}")
+    entries = document.get("terminals")
     if entries is None:
         entries = []
     if not isinstance(entries, list):
-        raise MT5Error(
-            INVALID_PARAMS, "terminal.config must be a list of Terminal entries"
-        )
-    problems: list[str] = []
-    names: set[str] = set()
+        problems.append("the section 'terminals' must be a list of Terminal entries")
+        entries = []
+    first: dict[str, int] = {}
     for index, entry in enumerate(entries, start=1):
-        label = f"entry {index}"
+        label = f"terminal {index}"
         if not isinstance(entry, dict):
             problems.append(f"{label} is not a mapping")
             continue
-        unknown = sorted(
-            str(key) for key in entry if key not in REQUIRED_FIELDS + OPTIONAL_FIELDS
-        )
-        if unknown:
-            problems.append(f"{label} has unknown fields: {', '.join(unknown)}")
-        for key in REQUIRED_FIELDS:
-            value = entry.get(key)
-            if not isinstance(value, str) or not value.strip():
-                problems.append(f"{label} needs a non-empty string '{key}'")
-        for key in OPTIONAL_FIELDS:
-            value = entry.get(key)
-            if value is not None and not isinstance(value, str):
-                problems.append(f"{label} field '{key}' must be a string")
+        problems.extend(_entry_problems(label, entry))
         name = entry.get("name")
         if isinstance(name, str):
-            if name in names:
-                problems.append(f"{label} repeats the name '{name}'")
-            names.add(name)
+            if name in first:
+                problems.append(f"{label} repeats the name of terminal {first[name]}")
+            first.setdefault(name, index)
     if problems:
-        raise MT5Error(
-            INVALID_PARAMS, "terminal.config is invalid: " + "; ".join(problems)
-        )
-    return {entry["name"]: Terminal(**entry) for entry in entries}
+        raise MT5Error(INVALID_PARAMS, "config.yaml is invalid: " + "; ".join(problems))
+    terminals: dict[str, Terminal] = {}
+    for entry in entries:
+        values: dict[str, Any] = {
+            key: None if value == "" else value for key, value in entry.items()
+        }
+        terminals[entry["name"]] = Terminal(**values)
+    return terminals
 
 
 def resolve(terminal: object) -> Terminal:
-    """Find the Terminal a caller names, refusing a name terminal.config does not list."""
+    """Find the Terminal a caller names, refusing a name config.yaml does not declare."""
     if not isinstance(terminal, str):
         raise MT5Error(
             INVALID_PARAMS,
-            "parameter 'terminal' must be the name of a Terminal in terminal.config",
+            "parameter 'terminal' must be the name of a Terminal in config.yaml",
         )
     found = load_terminals().get(terminal)
     if found is None:
+        raise MT5Error(INVALID_PARAMS, f"Terminal '{terminal}' is not in config.yaml")
+    if found.path is None:
         raise MT5Error(
-            INVALID_PARAMS, f"Terminal '{terminal}' is not in terminal.config"
+            INVALID_PARAMS, f"Terminal '{terminal}' has no path in config.yaml"
         )
     return found
 
