@@ -15,9 +15,12 @@ from logic.services.mt5.terminal import (
 class Connection:
     """Connect to a Terminal, log in, and read version, error, account, and terminal info."""
 
-    @staticmethod
+    def __init__(self, terminal: str) -> None:
+        """Bind this Function Group to the Terminal of its MT5 instance."""
+        self._terminal = terminal
+
     def initialize(
-        terminal: str,
+        self,
         path: str | None = None,
         login: int | None = None,
         password: str | None = None,
@@ -29,14 +32,14 @@ class Connection:
 
         `path` defaults to the Terminal's path in config.yaml; any other path is refused.
         """
-        configured = resolve(terminal).path
+        configured = resolve(self._terminal).path
         if path is not None and path != configured:
             raise MT5Error(
                 INVALID_PARAMS,
-                f"parameter 'path' differs from the path of Terminal '{terminal}'",
+                f"parameter 'path' differs from the path of Terminal '{self._terminal}'",
             )
         return call(
-            terminal,
+            self._terminal,
             "initialize",
             {"path": configured},
             {
@@ -48,9 +51,8 @@ class Connection:
             },
         )
 
-    @staticmethod
     def login(
-        terminal: str,
+        self,
         login: int,
         password: str | None = None,
         server: str | None = None,
@@ -58,21 +60,19 @@ class Connection:
     ) -> JSON:
         """Connect to a trading account."""
         return call(
-            terminal,
+            self._terminal,
             "login",
             {"login": login},
             {"password": password, "server": server, "timeout": timeout},
         )
 
-    @staticmethod
-    def shutdown(terminal: str) -> JSON:
+    def shutdown(self) -> JSON:
         """Close the connection to the Terminal and end its Terminal Process."""
-        return call(terminal, "shutdown")
+        return call(self._terminal, "shutdown")
 
-    @staticmethod
-    def version(terminal: str) -> JSON:
+    def version(self) -> JSON:
         """Return the Terminal version, build, and release date as a Timestamp."""
-        result = call(terminal, "version")
+        result = call(self._terminal, "version")
         if not isinstance(result, list) or len(result) != 3:
             raise MT5Error(GENERIC_FAIL, "version returned an unexpected result")
         version, build, released = result
@@ -85,17 +85,14 @@ class Connection:
             ) from None
         return [version, build, int(date.timestamp())]
 
-    @staticmethod
-    def last_error(terminal: str) -> JSON:
+    def last_error(self) -> JSON:
         """Return the last error code and description."""
-        return call(terminal, "last_error")
+        return call(self._terminal, "last_error")
 
-    @staticmethod
-    def account_info(terminal: str) -> JSON:
+    def account_info(self) -> JSON:
         """Return info on the current trading account."""
-        return call(terminal, "account_info")
+        return call(self._terminal, "account_info")
 
-    @staticmethod
-    def terminal_info(terminal: str) -> JSON:
+    def terminal_info(self) -> JSON:
         """Return the Terminal status and settings."""
-        return call(terminal, "terminal_info")
+        return call(self._terminal, "terminal_info")

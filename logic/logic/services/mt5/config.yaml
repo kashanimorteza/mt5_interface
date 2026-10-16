@@ -1,10 +1,11 @@
 # Terminal Configuration of MT5 Service: every MetaTrader 5 Terminal it works with.
 #
 # general    General settings of MT5 Service; none are defined yet.
-# terminals  One entry per Terminal, any number of them. Fields of an entry:
+# terminals  One entry per Terminal, any number of them, keyed by the Terminal's unique name;
+#            every MT5 instance is created with that name. Every entry holds all of these fields:
 #
-#   name               string   required  unique; every call names its Terminal by it
-#   path               string   required  local path of the MetaTrader 5 terminal executable
+#   path               string   required  local path of the MetaTrader 5 terminal executable;
+#                                         may stay empty until the Terminal is used
 #   username           string   optional  username used to log in through the Terminal
 #   password           string   optional  password used to log in through the Terminal
 #   investor_password  string   optional  read-only investor password of the Terminal
@@ -16,17 +17,17 @@
 # username, password, investor_password, ip, port, and api_key are only stored, as plain text,
 # may be left empty, and are not used by MT5 Service for now.
 #
-# The demo entry shows how a Terminal is added: give it a unique name and its path.
+# The demo entry shows how a Terminal is added: give it a unique name as its key and its path.
 
 general: {}
 
 terminals:
-  - name: demo
-    path:
-    username:
-    password:
-    investor_password:
-    ip:
+  demo:
+    path: ""
+    username: ""
+    password: ""
+    investor_password: ""
+    ip: ""
     port:
-    api_key:
-    description:
+    api_key: ""
+    description: ""

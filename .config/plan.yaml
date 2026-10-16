@@ -26,7 +26,7 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 27
+  task_count: 41
   plans:
     P1:
       id: "P1"
@@ -35,7 +35,7 @@ content:
       target: "Logic"
       does: "The Logic library provides the MT5 Service, which performs every Function of the MetaTrader 5 Package on a Terminal selected by its name through the Terminal configuration."
       constraints: []
-      task_count: 27
+      task_count: 41
       groups:
         P1-G1:
           id: "P1-G1"
@@ -269,11 +269,11 @@ content:
         P1-G3:
           id: "P1-G3"
           title: "Terminal configuration and selection"
-          description: "The Terminal configuration record owned by MT5 Service and the selection of a Terminal by its name, through which every MT5 Service call reaches its Terminal's executable."
+          description: "The Terminal Configuration owned by MT5 Service and the selection of a Terminal by its name, through which every MT5 Instance reaches its Terminal's executable."
           area: "MT5 Service Terminal configuration and name-based Terminal selection"
-          does: "Every MT5 Service call can name its Terminal and reach that Terminal's executable through the Terminal configuration, and an unknown name is refused."
+          does: "Every MT5 Instance names its Terminal and reaches that Terminal's executable through the Terminal Configuration, and an unknown name is refused."
           constraints: []
-          task_count: 5
+          task_count: 7
           tasks:
             P1-G3-T1:
               id: "P1-G3-T1"
@@ -399,7 +399,7 @@ content:
                 - "P1-G2-T1"
               constraints: []
               acceptance: "The Terminal Configuration exists in the repository, is not excluded from version control, has exactly the sections the Definition names with the general section present and empty of settings, holds the sample Terminal under the Definition's sample name with every other field empty, documents every entry field with its type and required or optional status, and no earlier Terminal configuration record remains in MT5 Service."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T02:27:15Z'
                   event: claimed
@@ -417,6 +417,10 @@ content:
                 - at: '2026-10-16T02:28:59Z'
                   event: done
                   by: '006'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G3-T6"
             P1-G3-T5:
               id: "P1-G3-T5"
               source_id: "005"
@@ -433,7 +437,7 @@ content:
                 - "P1-G2-T2"
               constraints: []
               acceptance: "The generated Terminal Configuration with only its sample Terminal loads without being refused; a configuration with uniquely named entries that carry name and path, with optional fields absent, empty, or in their defined types, loads every Terminal; a missing name or path, a repeated name, or a value of the wrong type is refused with MT5 Error naming each problem without echoing any value; resolving a name then finds that Terminal in the current Terminal Configuration and an unknown name is refused."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T02:28:59Z'
                   event: claimed
@@ -463,6 +467,96 @@ content:
                 - at: '2026-10-16T02:30:36Z'
                   event: done
                   by: '006'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G3-T7"
+            P1-G3-T6:
+              id: "P1-G3-T6"
+              source_id: "009"
+              title: "Provide the Terminal Configuration in the MT5 Configuration Schema structure"
+              description: "Provide the Terminal Configuration of MT5 Service, kept in the repository, in exactly the structure the MT5 Configuration Schema defines: the general section and a terminals mapping keyed by Terminal name, holding only the sample Terminal with every field empty."
+              reason: "The MT5 Configuration Schema now fixes the structure of the Terminal Configuration with Terminals keyed by name and the name never repeated as a field; the earlier Terminal Configuration lists its Terminals with the name as a field."
+              inputs:
+                - "The MT5 Configuration Schema"
+              skills: []
+              replaces: "P1-G3-T4"
+              expected_result: "One tracked Terminal Configuration in the Schema's structure holding only the sample Terminal."
+              depends_on:
+                - "P1-G2-T1"
+              constraints: []
+              acceptance: "The Terminal Configuration exists in the repository, is not excluded from version control, and has exactly the general and terminals sections at its top level; general is an empty mapping; terminals is a mapping, not a list, whose only key is the sample Terminal's name; that entry holds exactly the Schema's entry fields in the Schema's order, all empty, and no name field."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "How the sample Terminal's empty fields are written"
+                  chosen: "Exactly as the MT5 Configuration Schema example: string fields as \"\" and port with no value"
+                  reason: "The Schema fixes the structure and shows this form; following it keeps generation identical every time."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "Whether the file keeps a field guide"
+                  chosen: "A header comment listing every entry field with type and required or optional status, the name-as-key rule, and the stored-only fields"
+                  reason: "Comments do not change the YAML structure and show how a Terminal is added in the file itself."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "Rewrote logic/logic/services/mt5/config.yaml: top level holds exactly general ({}) and terminals; terminals is a mapping whose only key is demo; the demo entry lists path, username, password, investor_password, ip, port, api_key, description in the Schema order, all empty, and no name field. git check-ignore does not match it, and a scratch build of the wheel carries it."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G3-T7:
+              id: "P1-G3-T7"
+              source_id: "009"
+              title: "Load and validate the Terminal Configuration keyed by Terminal name"
+              description: "Read the Terminals from the terminals mapping of the Terminal Configuration, taking each Terminal's name from its key and accepting its fields in the types the MT5 Configuration Schema defines, and refuse a configuration that departs from that structure."
+              reason: "Name-based Terminal selection must read the Terminal Configuration in its current structure; the earlier loading expects a list of entries that each carry their name as a field."
+              inputs:
+                - "The Terminal Configuration in the MT5 Configuration Schema structure"
+              skills: []
+              replaces: "P1-G3-T5"
+              expected_result: "Terminal Configurations in the Schema's structure load into Terminals keyed by name; any other structure is refused with a clear reason."
+              depends_on:
+                - "P1-G3-T6"
+                - "P1-G2-T2"
+              constraints: []
+              acceptance: "The generated Terminal Configuration loads its sample Terminal; a configuration whose Terminals are keyed by name with the Schema's fields, optional ones empty or in their defined type, loads every Terminal under its key; a terminals section given as a list, an entry with a missing or unknown field, or a value of the wrong type is refused with MT5 Error naming each problem without echoing any value; resolving a configured name then returns that Terminal's path, a Terminal with an empty path is refused when it is used, and an unknown name is refused."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:06:13Z"
+                  event: "claimed"
+                  by: "010"
+                  note: "Claim recorded at completion: the work was done in this execution after its dependencies were done, before this claim was written."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "Whether field order is enforced when reading"
+                  chosen: "Field order is not checked when reading; missing and unknown fields are"
+                  reason: "YAML mappings carry no meaningful order, and refusing a reordered but complete entry would reject a configuration with exactly the Schema's content."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "How a repeated Terminal name (a repeated YAML key) is detected"
+                  chosen: "A safe YAML loader that refuses any mapping repeating a key, reported as MT5Error (-2) 'config.yaml repeats a key at line N'"
+                  reason: "The standard safe loader keeps the last duplicate silently, which would drop a Terminal without any error."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "How problems name an entry without echoing values"
+                  chosen: "Entries are labelled by position ('terminal N'); every problem is collected into one MT5Error (-2)"
+                  reason: "Keeps the earlier no-echo rule (Review F9) while naming each problem."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "terminal.py load_terminals now reads terminals as a mapping from name to fields; Terminal takes its name from the key; every Schema field must be present, port an integer, the rest strings, each possibly empty; find() checks a name, resolve() also refuses an empty path. Scratch configurations: the generated file loads ['demo'] and resolving demo raises MT5Error (-2) 'Terminal 'demo' has no path in config.yaml'; a full entry with port 443 loads and resolves to its path; terminals given as a list, an unknown field, missing fields, a numeric path and password, a string and a boolean port are refused in one MT5Error (-2) naming each problem with no value; a repeated name gives 'config.yaml repeats a key at line 5'; a numeric key and a null entry are refused; an unknown name raises 'not in config.yaml'. ruff format, ruff check, ty check pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
         P1-G4:
           id: "P1-G4"
           title: "Package execution"
@@ -470,7 +564,7 @@ content:
           area: "MT5 Service Terminal Processes and JSON parameter and result conversion"
           does: "Any Package Function can be run for a named Terminal in that Terminal's own process with JSON parameters, returning Plain Data or raising MT5 Error."
           constraints: []
-          task_count: 3
+          task_count: 4
           tasks:
             P1-G4-T1:
               id: "P1-G4-T1"
@@ -573,14 +667,41 @@ content:
                 - at: '2026-10-16T01:42:39Z'
                   event: done
                   by: '003'
+            P1-G4-T4:
+              id: "P1-G4-T4"
+              source_id: "009"
+              title: "Fail every Function call with MT5 Error where the Package is not available"
+              description: "Ensure that, on a host where the Package cannot be installed, the Logic library still installs and every attempt to run a Package Function for a Terminal ends in MT5 Error rather than any other failure."
+              reason: "The Target now requires Source generation, installation, and startup to work on every operating system, with every MetaTrader 5 Function failing with an error at runtime where the Package or terminal is not available."
+              inputs: []
+              skills: []
+              expected_result: "Package-dependent calls fail predictably with MT5 Error where the Package is absent, while installation succeeds."
+              depends_on:
+                - "P1-G4-T1"
+                - "P1-G2-T1"
+                - "P1-G2-T2"
+              constraints: []
+              acceptance: "On a host where the Package is not installed, the Logic library installs from the repository without error, and running any Package Function for a configured Terminal, including initialize, raises MT5 Error and never another error."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "No Source change was needed: the Terminal Process already reports a missing Package as MT5Error. Fresh install of the logic package from the repository into a new scratch environment on this Linux host succeeded with MetaTrader5 absent (the lock declares it only for win32). With warnings as errors: initialize for a configured Terminal raised MT5Error (-1) 'The MetaTrader5 package is unavailable' and left no child process; terminal_info and positions_total raised MT5Error (-1) 'not initialized'; a Terminal with an empty path raised MT5Error (-2). No other exception type appeared."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
         P1-G5:
           id: "P1-G5"
           title: "MT5 Function Groups"
-          description: "The seven Function Group classes named by the MT5 Service Definition, each realizing the Package Functions it lists as explicitly written methods over the shared execution path for a named Terminal."
+          description: "The seven Function Group classes named by the MT5 Service Definition, each realizing the Package Functions it lists as explicitly written methods over the shared execution path, for the Terminal of the MT5 Instance through which the group is reached."
           area: "MT5 Service Function Groups"
-          does: "Every Package Function is callable through exactly one method, taking its Function's parameters plus the Terminal name, of the Function Group class the Definition places it in, and each class imports on its own."
+          does: "Every Package Function is callable through exactly one method of the Function Group the Definition places it in, reached through an MT5 Instance and taking exactly its Function's parameters with no Terminal parameter, and each class imports on its own."
           constraints: []
-          task_count: 7
+          task_count: 14
           tasks:
             P1-G5-T1:
               id: "P1-G5-T1"
@@ -598,7 +719,7 @@ content:
                 - "P1-G4-T3"
               constraints: []
               acceptance: "Initializing a configured Terminal through Connection and then reading its terminal information returns that Terminal's data as Plain Data, and shutting it down ends its session."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:44:35Z'
                   event: claimed
@@ -634,6 +755,10 @@ content:
                 - at: '2026-10-16T01:45:52Z'
                   event: done
                   by: '003'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G5-T8"
             P1-G5-T2:
               id: "P1-G5-T2"
               source_id: "002"
@@ -650,7 +775,7 @@ content:
                 - "P1-G4-T3"
               constraints: []
               acceptance: "Querying a known symbol through Symbols on an initialized Terminal returns its information and latest tick as Plain Data."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:44:35Z'
                   event: claimed
@@ -666,6 +791,10 @@ content:
                 - at: '2026-10-16T01:45:52Z'
                   event: done
                   by: '003'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G5-T9"
             P1-G5-T3:
               id: "P1-G5-T3"
               source_id: "002"
@@ -682,7 +811,7 @@ content:
                 - "P1-G4-T3"
               constraints: []
               acceptance: "After subscribing to a symbol through MarketBook, reading its book returns a list of Plain Data entries, and releasing it ends the subscription."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:44:35Z'
                   event: claimed
@@ -698,6 +827,10 @@ content:
                 - at: '2026-10-16T01:45:52Z'
                   event: done
                   by: '003'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G5-T10"
             P1-G5-T4:
               id: "P1-G5-T4"
               source_id: "002"
@@ -714,7 +847,7 @@ content:
                 - "P1-G4-T3"
               constraints: []
               acceptance: "Requesting bars for a symbol over a Timestamp range through MarketData returns a list of mappings with the Package's field names and Timestamp times."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:44:35Z'
                   event: claimed
@@ -736,6 +869,10 @@ content:
                 - at: '2026-10-16T01:45:52Z'
                   event: done
                   by: '003'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G5-T11"
             P1-G5-T5:
               id: "P1-G5-T5"
               source_id: "002"
@@ -752,7 +889,7 @@ content:
                 - "P1-G4-T3"
               constraints: []
               acceptance: "Checking a trade request given as a JSON mapping through Orders returns the Package's check result as Plain Data."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:44:35Z'
                   event: claimed
@@ -768,6 +905,10 @@ content:
                 - at: '2026-10-16T01:45:52Z'
                   event: done
                   by: '003'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G5-T12"
             P1-G5-T6:
               id: "P1-G5-T6"
               source_id: "002"
@@ -784,7 +925,7 @@ content:
                 - "P1-G4-T3"
               constraints: []
               acceptance: "Reading positions through Positions on an initialized Terminal returns a list of Plain Data mappings, empty when none are open, and the count matches its length."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:44:35Z'
                   event: claimed
@@ -800,6 +941,10 @@ content:
                 - at: '2026-10-16T01:45:52Z'
                   event: done
                   by: '003'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G5-T13"
             P1-G5-T7:
               id: "P1-G5-T7"
               source_id: "002"
@@ -816,7 +961,7 @@ content:
                 - "P1-G4-T3"
               constraints: []
               acceptance: "Requesting deals over a Timestamp range through History returns a list of Plain Data mappings whose times are Timestamps."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:44:35Z'
                   event: claimed
@@ -832,6 +977,243 @@ content:
                 - at: '2026-10-16T01:45:52Z'
                   event: done
                   by: '003'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G5-T14"
+            P1-G5-T8:
+              id: "P1-G5-T8"
+              source_id: "009"
+              title: "Bind the Connection Function Group to an MT5 Instance's Terminal"
+              description: "Provide the Connection group, reached through an MT5 Instance, with one method for each Function the Definition lists in Connection, including the initialize and shutdown methods that start and end its Terminal's process."
+              reason: "The MT5 Service Definition now takes the Terminal from the MT5 Instance and forbids a Terminal parameter on any method; the earlier Connection methods take the Terminal name as their first parameter."
+              inputs: []
+              skills: []
+              replaces: "P1-G5-T1"
+              expected_result: "The Connection group, through which a caller opens, uses, and closes the session of its MT5 Instance's Terminal."
+              depends_on:
+                - "P1-G2-T3"
+                - "P1-G4-T1"
+                - "P1-G4-T2"
+                - "P1-G4-T3"
+              constraints: []
+              acceptance: "Every Connection method takes exactly its Function's parameters and no Terminal; initializing through the Connection group of an MT5 Instance for a configured Terminal and then reading its terminal information returns that Terminal's data as Plain Data, and shutting it down ends that Terminal's session."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "How a Function Group receives its Terminal"
+                  chosen: "Each Function Group class is created with the Terminal name and its methods are instance methods without a Terminal parameter; the earlier per-method default handling and initialize path rule are kept"
+                  reason: "The Definition reaches every group through an MT5 Instance and forbids a Terminal parameter; binding at creation keeps every method's parameters exactly the Function's."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "Connection now holds initialize, login, shutdown, version, last_error, account_info, terminal_info, each without a Terminal parameter, calling the shared execution path for the Terminal it was created with; inspection of an MT5 instance found no method of any group with a terminal parameter. initialize() through MT5('a') reached the stand-in with Terminal a's configured path; terminal_info() returned Plain Data from a process other than the caller's; version() returned [500, 2007, 1551052800]; account_info() returning None raised MT5Error (-10004) from last_error; shutdown() returned None and a later call through another instance of a raised 'not initialized'. Checked with a scratch stand-in of the MetaTrader5 module kept outside the repository; real Package behavior on an initialized Terminal needs Windows with MetaTrader 5 and is not observable on this Linux aarch64 host. ruff format, ruff check, and ty check pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G5-T9:
+              id: "P1-G5-T9"
+              source_id: "009"
+              title: "Bind the Symbols Function Group to an MT5 Instance's Terminal"
+              description: "Provide the Symbols group, reached through an MT5 Instance, with one method for each Function the Definition lists in Symbols."
+              reason: "Symbols methods must take their Terminal from the MT5 Instance; the earlier ones take the Terminal name as their first parameter."
+              inputs: []
+              skills: []
+              replaces: "P1-G5-T2"
+              expected_result: "The Symbols group, through which a caller discovers and inspects the symbols of its MT5 Instance's Terminal."
+              depends_on:
+                - "P1-G2-T3"
+                - "P1-G4-T1"
+                - "P1-G4-T2"
+                - "P1-G4-T3"
+              constraints: []
+              acceptance: "Every Symbols method takes exactly its Function's parameters and no Terminal; querying a known symbol through the Symbols group of an MT5 Instance whose Terminal is initialized returns its information and latest tick as Plain Data."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "note"
+                  by: "010"
+                  note: "Follows the Function Group binding decision recorded in P1-G5-T8."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "Symbols now holds symbols_total, symbols_get, symbol_info, symbol_info_tick, symbol_select, each without a Terminal parameter, calling the shared execution path for the Terminal it was created with; inspection of an MT5 instance found no method of any group with a terminal parameter. symbol_info('EURUSD') through an initialized instance returned Plain Data with the symbol passed unchanged. Checked with a scratch stand-in of the MetaTrader5 module kept outside the repository; real Package behavior on an initialized Terminal needs Windows with MetaTrader 5 and is not observable on this Linux aarch64 host. ruff format, ruff check, and ty check pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G5-T10:
+              id: "P1-G5-T10"
+              source_id: "009"
+              title: "Bind the MarketBook Function Group to an MT5 Instance's Terminal"
+              description: "Provide the MarketBook group, reached through an MT5 Instance, with one method for each Function the Definition lists in MarketBook."
+              reason: "MarketBook methods must take their Terminal from the MT5 Instance; the earlier ones take the Terminal name as their first parameter."
+              inputs: []
+              skills: []
+              replaces: "P1-G5-T3"
+              expected_result: "The MarketBook group, through which a caller manages and reads Depth of Market subscriptions on its MT5 Instance's Terminal."
+              depends_on:
+                - "P1-G2-T3"
+                - "P1-G4-T1"
+                - "P1-G4-T2"
+                - "P1-G4-T3"
+              constraints: []
+              acceptance: "Every MarketBook method takes exactly its Function's parameters and no Terminal; after subscribing to a symbol through the MarketBook group of an MT5 Instance whose Terminal is initialized, reading its book returns a list of Plain Data entries, and releasing it ends the subscription."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "note"
+                  by: "010"
+                  note: "Follows the Function Group binding decision recorded in P1-G5-T8."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "MarketBook now holds market_book_add, market_book_get, market_book_release, each without a Terminal parameter, calling the shared execution path for the Terminal it was created with; inspection of an MT5 instance found no method of any group with a terminal parameter. market_book_add, market_book_get, and market_book_release('EURUSD') returned True, [{'type': 1, 'price': 1.0}], and True. Checked with a scratch stand-in of the MetaTrader5 module kept outside the repository; real Package behavior on an initialized Terminal needs Windows with MetaTrader 5 and is not observable on this Linux aarch64 host. ruff format, ruff check, and ty check pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G5-T11:
+              id: "P1-G5-T11"
+              source_id: "009"
+              title: "Bind the MarketData Function Group to an MT5 Instance's Terminal"
+              description: "Provide the MarketData group, reached through an MT5 Instance, with one method for each Function the Definition lists in MarketData, taking and returning every date and time as a Timestamp."
+              reason: "MarketData methods must take their Terminal from the MT5 Instance; the earlier ones take the Terminal name as their first parameter."
+              inputs: []
+              skills: []
+              replaces: "P1-G5-T4"
+              expected_result: "The MarketData group, through which a caller retrieves historical bars and ticks from its MT5 Instance's Terminal."
+              depends_on:
+                - "P1-G2-T3"
+                - "P1-G4-T1"
+                - "P1-G4-T2"
+                - "P1-G4-T3"
+              constraints: []
+              acceptance: "Every MarketData method takes exactly its Function's parameters and no Terminal; requesting bars for a symbol over a Timestamp range through the MarketData group of an MT5 Instance whose Terminal is initialized returns a list of mappings with the Package's field names and Timestamp times."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "note"
+                  by: "010"
+                  note: "Follows the Function Group binding decision recorded in P1-G5-T8."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "MarketData now holds copy_rates_from, copy_rates_from_pos, copy_rates_range, copy_ticks_from, copy_ticks_range, each without a Terminal parameter, calling the shared execution path for the Terminal it was created with; inspection of an MT5 instance found no method of any group with a terminal parameter. copy_rates_range('EURUSD', 16385, 1704067200, 1704153600) returned [{'time': 1704067200, 'open': 1.1}]. Checked with a scratch stand-in of the MetaTrader5 module kept outside the repository; real Package behavior on an initialized Terminal needs Windows with MetaTrader 5 and is not observable on this Linux aarch64 host. ruff format, ruff check, and ty check pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G5-T12:
+              id: "P1-G5-T12"
+              source_id: "009"
+              title: "Bind the Orders Function Group to an MT5 Instance's Terminal"
+              description: "Provide the Orders group, reached through an MT5 Instance, with one method for each Function the Definition lists in Orders, passing trade requests to the Package as JSON mappings."
+              reason: "Orders methods must take their Terminal from the MT5 Instance; the earlier ones take the Terminal name as their first parameter."
+              inputs: []
+              skills: []
+              replaces: "P1-G5-T5"
+              expected_result: "The Orders group, through which a caller reads active orders and evaluates and submits trade requests on its MT5 Instance's Terminal."
+              depends_on:
+                - "P1-G2-T3"
+                - "P1-G4-T1"
+                - "P1-G4-T2"
+                - "P1-G4-T3"
+              constraints: []
+              acceptance: "Every Orders method takes exactly its Function's parameters and no Terminal; checking a trade request given as a JSON mapping through the Orders group of an MT5 Instance whose Terminal is initialized returns the Package's check result as Plain Data."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "note"
+                  by: "010"
+                  note: "Follows the Function Group binding decision recorded in P1-G5-T8."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "Orders now holds orders_total, orders_get, order_calc_margin, order_calc_profit, order_check, order_send, each without a Terminal parameter, calling the shared execution path for the Terminal it was created with; inspection of an MT5 instance found no method of any group with a terminal parameter. order_check with a JSON request mapping returned the stand-in's result with the request unchanged. Checked with a scratch stand-in of the MetaTrader5 module kept outside the repository; real Package behavior on an initialized Terminal needs Windows with MetaTrader 5 and is not observable on this Linux aarch64 host. ruff format, ruff check, and ty check pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G5-T13:
+              id: "P1-G5-T13"
+              source_id: "009"
+              title: "Bind the Positions Function Group to an MT5 Instance's Terminal"
+              description: "Provide the Positions group, reached through an MT5 Instance, with one method for each Function the Definition lists in Positions."
+              reason: "Positions methods must take their Terminal from the MT5 Instance; the earlier ones take the Terminal name as their first parameter."
+              inputs: []
+              skills: []
+              replaces: "P1-G5-T6"
+              expected_result: "The Positions group, through which a caller counts and reads open positions on its MT5 Instance's Terminal."
+              depends_on:
+                - "P1-G2-T3"
+                - "P1-G4-T1"
+                - "P1-G4-T2"
+                - "P1-G4-T3"
+              constraints: []
+              acceptance: "Every Positions method takes exactly its Function's parameters and no Terminal; reading positions through the Positions group of an MT5 Instance whose Terminal is initialized returns a list of Plain Data mappings, empty when none are open, and the count matches its length."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "note"
+                  by: "010"
+                  note: "Follows the Function Group binding decision recorded in P1-G5-T8."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "Positions now holds positions_total, positions_get, each without a Terminal parameter, calling the shared execution path for the Terminal it was created with; inspection of an MT5 instance found no method of any group with a terminal parameter. positions_get() returned [] and positions_total() 0. Checked with a scratch stand-in of the MetaTrader5 module kept outside the repository; real Package behavior on an initialized Terminal needs Windows with MetaTrader 5 and is not observable on this Linux aarch64 host. ruff format, ruff check, and ty check pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G5-T14:
+              id: "P1-G5-T14"
+              source_id: "009"
+              title: "Bind the History Function Group to an MT5 Instance's Terminal"
+              description: "Provide the History group, reached through an MT5 Instance, with one method for each Function the Definition lists in History, taking every date and time as a Timestamp."
+              reason: "History methods must take their Terminal from the MT5 Instance; the earlier ones take the Terminal name as their first parameter."
+              inputs: []
+              skills: []
+              replaces: "P1-G5-T7"
+              expected_result: "The History group, through which a caller counts and reads past orders and deals of its MT5 Instance's Terminal."
+              depends_on:
+                - "P1-G2-T3"
+                - "P1-G4-T1"
+                - "P1-G4-T2"
+                - "P1-G4-T3"
+              constraints: []
+              acceptance: "Every History method takes exactly its Function's parameters and no Terminal; requesting deals over a Timestamp range through the History group of an MT5 Instance whose Terminal is initialized returns a list of Plain Data mappings whose times are Timestamps."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:02:18Z"
+                  event: "claimed"
+                  by: "010"
+                - at: "2026-10-16T03:06:13Z"
+                  event: "note"
+                  by: "010"
+                  note: "Follows the Function Group binding decision recorded in P1-G5-T8."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "History now holds history_orders_total, history_orders_get, history_deals_total, history_deals_get, each without a Terminal parameter, calling the shared execution path for the Terminal it was created with; inspection of an MT5 instance found no method of any group with a terminal parameter. history_deals_get(1704067200, 1706745600, group='*') sent the interval positionally and group by name and returned a list of Plain Data mappings. Checked with a scratch stand-in of the MetaTrader5 module kept outside the repository; real Package behavior on an initialized Terminal needs Windows with MetaTrader 5 and is not observable on this Linux aarch64 host. ruff format, ruff check, and ty check pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
         P1-G6:
           id: "P1-G6"
           title: "Public surfaces and documentation"
@@ -839,7 +1221,7 @@ content:
           area: "MT5 Service Interface, Logic Interface, and their documentation"
           does: "Consumers import MT5 Service through its own Interface and through Logic Interface, and both are documented."
           constraints: []
-          task_count: 6
+          task_count: 9
           tasks:
             P1-G6-T1:
               id: "P1-G6-T1"
@@ -865,7 +1247,7 @@ content:
                 - "P1-G2-T2"
               constraints: []
               acceptance: "Loading the MT5 Service Interface starts no Terminal Process and exposes exactly the seven Function Groups, the Constants, and MT5 Error, with the Package itself not reachable through it."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T01:45:52Z'
                   event: claimed
@@ -877,6 +1259,10 @@ content:
                 - at: '2026-10-16T01:46:10Z'
                   event: done
                   by: '003'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G6-T7"
             P1-G6-T2:
               id: "P1-G6-T2"
               source_id: "002"
@@ -988,7 +1374,7 @@ content:
                 - "P1-G3-T5"
               constraints: []
               acceptance: "The MT5 Service documentation has the Definition's sections in order; every Function it lists exists on the published Function Group it is shown under; its examples name the Terminal by name; its Use section shows adding a Terminal entry to the current Terminal Configuration with the fields that configuration accepts; nothing in it refers to the superseded configuration record or says the Constants need the Package."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T02:30:42Z'
                   event: claimed
@@ -1006,6 +1392,10 @@ content:
                 - at: '2026-10-16T02:31:24Z'
                   event: done
                   by: '006'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G6-T8"
             P1-G6-T6:
               id: "P1-G6-T6"
               source_id: "005"
@@ -1025,7 +1415,7 @@ content:
                 - "P1-G2-T5"
               constraints: []
               acceptance: "The Logic documentation has the Definition's sections in order, lists exactly the names the Logic Interface publishes, its Service links resolve, and its Setup and Troubleshooting name the current Terminal Configuration and the problems a consumer can actually meet with it, with no reference to the superseded configuration record or to Constants needing the Package."
-              status: "done"
+              status: "replaced"
               log:
                 - at: '2026-10-16T02:31:24Z'
                   event: claimed
@@ -1037,3 +1427,167 @@ content:
                 - at: '2026-10-16T02:32:10Z'
                   event: done
                   by: '006'
+                - at: "2026-10-16T03:02:18Z"
+                  event: "replaced"
+                  by: "010"
+                  replaced_by: "P1-G6-T9"
+            P1-G6-T7:
+              id: "P1-G6-T7"
+              source_id: "009"
+              title: "Publish the MT5 Service Interface with the MT5 class"
+              description: "Publish exactly the MT5 class, the Constants, and MT5 Error through the MT5 Service Interface under its current contract version, without opening any connection to MetaTrader 5 when it loads."
+              reason: "The MT5 Service Interface contract now publishes the MT5 class instead of the seven Function Groups; the earlier Interface publishes the Function Groups directly."
+              inputs:
+                - "The MT5 class"
+                - "The Constants group"
+                - "MT5 Error"
+              skills: []
+              replaces: "P1-G6-T1"
+              expected_result: "An MT5 Service Interface publishing the MT5 class, Constants, and MT5 Error and nothing else."
+              depends_on:
+                - "P1-G7-T1"
+                - "P1-G2-T5"
+                - "P1-G2-T2"
+              constraints: []
+              acceptance: "Loading the MT5 Service Interface starts no Terminal Process and exposes exactly the MT5 class, the Constants, and MT5 Error, with no Function Group published on its own and the Package itself not reachable through it."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:06:13Z"
+                  event: "claimed"
+                  by: "010"
+                  note: "Claim recorded at completion: the work was done in this execution after its dependencies were done, before this claim was written."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "logic/logic/services/mt5/interface.py now publishes exactly MT5, Constants, MT5Error (__all__); no Function Group is published on its own. Importing it in a fresh environment without the Package loaded no MetaTrader5 module and started no child process. ruff and ty pass."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G6-T8:
+              id: "P1-G6-T8"
+              source_id: "009"
+              title: "Document the MT5 Service for MT5 Instances and the keyed Terminal Configuration"
+              description: "Write the MT5 Service documentation with the sections and order its Definition names, showing how to create an MT5 Instance, each Function Group with its Functions and one example each called through an MT5 Instance, reading the Constants, and adding a Terminal under its name to the Terminal Configuration."
+              reason: "Callers now create an MT5 Instance by Terminal name and the Terminal Configuration keys Terminals by name; the earlier documentation passes the Terminal to every method and shows Terminals listed with a name field."
+              inputs:
+                - "The published MT5 Service Interface"
+                - "The Terminal Configuration keyed by Terminal name and its validation rules"
+              skills: []
+              replaces: "P1-G6-T5"
+              expected_result: "MT5 Service documentation that matches its published Interface and its current Terminal Configuration."
+              depends_on:
+                - "P1-G6-T7"
+                - "P1-G3-T6"
+                - "P1-G3-T7"
+                - "P1-G2-T5"
+              constraints: []
+              acceptance: "The MT5 Service documentation has the Definition's sections in order; it shows creating an MT5 Instance by Terminal name; every Function it lists exists, without a Terminal parameter, on the Function Group of an MT5 Instance it is shown under; its Use section shows adding a Terminal under its name to the terminals mapping with exactly the fields the Terminal Configuration accepts; nothing in it passes a Terminal to a method or shows a Terminal's name as a field."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:06:13Z"
+                  event: "claimed"
+                  by: "010"
+                  note: "Claim recorded at completion: the work was done in this execution after its dependencies were done, before this claim was written."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "Form of the documentation examples"
+                  chosen: "Examples call through demo = MT5(\"demo\"); the Use section's YAML shows the demo sample and a second Terminal 'live' with a path"
+                  reason: "Shows both the sample to fill in and how another Terminal is added under its own name."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "Rewrote logic/logic/services/mt5/README.md: sections Overview, Interface, Use, Verify in order; Interface explains creating an MT5 instance; the 32 table rows match exactly the methods of each group of an MT5 instance and pass no Terminal; Use shows terminals keyed by name with all eight fields, and its YAML example loads through load_terminals with live resolving to its path; nothing shows a name field or a Terminal argument. Code blocks are formatted by ruff format."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+            P1-G6-T9:
+              id: "P1-G6-T9"
+              source_id: "009"
+              title: "Document the Logic library for MT5 Instances"
+              description: "Write the Logic root documentation with the sections and order the Logic Definition names, linking the MT5 Service to its documentation, Definition, and Preferences without copying its contract, with examples, setup, and troubleshooting that match MT5 Instances, the keyed Terminal Configuration, and installation where the Package is not available."
+              reason: "The earlier Logic documentation calls Function Groups with the Terminal as a parameter, describes Terminal entries that carry a name field, and states the Package is installed only on Windows without saying what happens elsewhere."
+              inputs:
+                - "The published Logic Interface"
+                - "The current MT5 Service documentation"
+              skills: []
+              replaces: "P1-G6-T6"
+              expected_result: "Logic root documentation that matches the published Logic Interface and the current MT5 Service."
+              depends_on:
+                - "P1-G6-T3"
+                - "P1-G6-T8"
+                - "P1-G3-T7"
+                - "P1-G4-T4"
+              constraints: []
+              acceptance: "The Logic documentation has the Definition's sections in order, lists exactly the names the Logic Interface publishes, and its Service links resolve; its examples reach MT5 Service through an MT5 Instance; its Setup and Troubleshooting describe the Terminal Configuration keyed by name, the problems a consumer can actually meet with it, and the MT5 Error every Function call raises where the Package is not available."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:06:13Z"
+                  event: "claimed"
+                  by: "010"
+                  note: "Claim recorded at completion: the work was done in this execution after its dependencies were done, before this claim was written."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "Updated logic/README.md: sections unchanged and in order; Interface still lists exactly MT5 (logic.interface.__all__ == ['MT5']); Overview and Use examples create MT5.MT5('demo') and call without a Terminal argument; Setup says Logic installs everywhere and Terminal calls raise MT5Error where the package is missing, and names the terminals section keyed by name; Troubleshooting covers package unavailable on initialize, unknown name at creation or call, missing path, invalid config.yaml with the mapping rules, repeated key, and not initialized. Service links unchanged and resolving. Component-wide: uv lock --check, ruff format --check, ruff check, ty check pass; a scratch wheel build carries service.py, config.yaml, and both READMEs."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"
+        P1-G7:
+          id: "P1-G7"
+          title: "MT5 Instances"
+          description: "The MT5 class through which callers reach every Function Group for one Terminal, binding the groups to the Terminal named when an MT5 Instance is created."
+          area: "MT5 Service MT5 class and its binding of Function Groups to a Terminal"
+          does: "Callers create any number of MT5 Instances by Terminal name and reach every Function Group of that Terminal through them."
+          constraints: []
+          task_count: 1
+          tasks:
+            P1-G7-T1:
+              id: "P1-G7-T1"
+              source_id: "009"
+              title: "Provide the MT5 class bound to one Terminal"
+              description: "Provide the MT5 class, created with a Terminal's name, that refuses a name the Terminal Configuration does not hold, opens no connection when created, and exposes every Function Group under the group's own name for that Terminal."
+              reason: "The MT5 Service Definition now reaches every Function Group through an MT5 Instance created for one Terminal, so callers no longer repeat the Terminal on every call."
+              inputs:
+                - "The seven Function Groups bound to a Terminal"
+                - "Terminal name resolution"
+              skills: []
+              expected_result: "An MT5 class whose instances each carry one Terminal and expose the seven Function Groups for it."
+              depends_on:
+                - "P1-G5-T8"
+                - "P1-G5-T9"
+                - "P1-G5-T10"
+                - "P1-G5-T11"
+                - "P1-G5-T12"
+                - "P1-G5-T13"
+                - "P1-G5-T14"
+                - "P1-G3-T3"
+                - "P1-G3-T7"
+                - "P1-G2-T2"
+              constraints: []
+              acceptance: "Creating an MT5 Instance with a configured Terminal name starts no Terminal Process and exposes the seven Function Groups under their own names, each working with that Terminal; creating one with an unknown name raises MT5 Error; two MT5 Instances for different Terminals work at the same time, each with its own Terminal Process, and two MT5 Instances for the same Terminal share its Terminal Process."
+              status: "done"
+              log:
+                - at: "2026-10-16T03:06:13Z"
+                  event: "claimed"
+                  by: "010"
+                  note: "Claim recorded at completion: the work was done in this execution after its dependencies were done, before this claim was written."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "What creating an MT5 Instance checks"
+                  chosen: "Creation reads config.yaml and refuses an unknown name or an invalid configuration with MT5Error (-2); an empty path is refused only when a call goes to that Terminal"
+                  reason: "The Definition refuses an unknown name at creation and the Schema requires a non-empty path only for a Terminal that is used."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "decision"
+                  by: "010"
+                  unset: "What an MT5 Instance exposes"
+                  chosen: "Only the seven Function Groups, as instance attributes named exactly like the groups; no other public attribute"
+                  reason: "The Interface contract names the groups under their own names and nothing else."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "evidence"
+                  by: "010"
+                  note: "Added logic/logic/services/mt5/service.py with class MT5. MT5('demo') exposed Connection, Symbols, MarketBook, MarketData, Orders, Positions, History and started no child process; MT5('nope') raised MT5Error (-2) 'not in config.yaml' and MT5(5) raised MT5Error (-2). With two configured Terminals: instances of a and b ran in different processes, two instances of a reported the same process id, and concurrent 1-second calls took a1 1.0s, a2 2.0s (serialized on a) and b 1.0s (parallel), wall 2.0s. Checked with a scratch stand-in of the MetaTrader5 module kept outside the repository; real Package behavior on an initialized Terminal needs Windows with MetaTrader 5 and is not observable on this Linux aarch64 host."
+                - at: "2026-10-16T03:06:13Z"
+                  event: "done"
+                  by: "010"

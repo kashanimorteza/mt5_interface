@@ -3,6 +3,7 @@
 import math
 import multiprocessing
 import threading
+from collections.abc import Hashable
 from dataclasses import dataclass, field
 from multiprocessing.connection import Connection
 from multiprocessing.process import BaseProcess
@@ -11,6 +12,7 @@ from types import ModuleType
 from typing import Any
 
 import yaml
+from yaml.constructor import ConstructorError
 
 type JSON = dict[str, JSON] | list[JSON] | str | int | float | bool | None
 
@@ -20,7 +22,6 @@ INVALID_PARAMS = -2
 CONFIG = Path(__file__).with_name("config.yaml")
 SECTIONS = ("general", "terminals")
 FIELDS: dict[str, type] = {
-    "name": str,
     "path": str,
     "username": str,
     "password": str,
@@ -30,7 +31,6 @@ FIELDS: dict[str, type] = {
     "api_key": str,
     "description": str,
 }
-REQUIRED_FIELDS = ("name", "path")
 
 
 class MT5Error(Exception):
@@ -60,21 +60,38 @@ class Terminal:
     description: str | None = None
 
 
+REPEATED_KEY = "found a repeated key"
+
+
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """A safe YAML loader that refuses a mapping repeating a key, such as a Terminal name."""
+
+    def construct_mapping(
+        self, node: yaml.MappingNode, deep: bool = False
+    ) -> dict[Any, Any]:
+        seen: set[object] = set()
+        for key_node, _ in node.value:
+            key = self.construct_object(key_node, deep=deep)
+            if not isinstance(key, Hashable):
+                continue
+            if key in seen:
+                raise ConstructorError(None, None, REPEATED_KEY, key_node.start_mark)
+            seen.add(key)
+        return super().construct_mapping(node, deep=deep)
+
+
 def _entry_problems(label: str, entry: dict[object, object]) -> list[str]:
     """List every problem of one Terminal entry without echoing any field value."""
     problems: list[str] = []
     unknown = sorted(str(key) for key in entry if key not in FIELDS)
     if unknown:
         problems.append(f"{label} has unknown fields: {', '.join(unknown)}")
-    for key in REQUIRED_FIELDS:
-        if key not in entry:
-            problems.append(f"{label} needs the field '{key}'")
-    name = entry.get("name")
-    if "name" in entry and (not isinstance(name, str) or not name.strip()):
-        problems.append(f"{label} needs a non-empty string 'name'")
+    missing = [key for key in FIELDS if key not in entry]
+    if missing:
+        problems.append(f"{label} misses the fields: {', '.join(missing)}")
     for key, kind in FIELDS.items():
         value = entry.get(key)
-        if key == "name" or value is None or (kind is str and value == ""):
+        if value is None or (kind is str and value == ""):
             continue
         if not isinstance(value, kind) or isinstance(value, bool):
             problems.append(f"{label} field '{key}' must be {kind.__name__} or empty")
@@ -90,13 +107,16 @@ def load_terminals() -> dict[str, Terminal]:
             GENERIC_FAIL, f"config.yaml cannot be read: {error.strerror}"
         ) from None
     try:
-        document = yaml.safe_load(text)
+        document = yaml.load(text, Loader=_UniqueKeyLoader)
     except yaml.YAMLError as error:
         mark = getattr(error, "problem_mark", None)
         where = f" at line {mark.line + 1}" if mark is not None else ""
-        raise MT5Error(
-            INVALID_PARAMS, f"config.yaml is not valid YAML{where}"
-        ) from None
+        problem = (
+            "repeats a key"
+            if getattr(error, "problem", None) == REPEATED_KEY
+            else "is not valid YAML"
+        )
+        raise MT5Error(INVALID_PARAMS, f"config.yaml {problem}{where}") from None
     if not isinstance(document, dict):
         raise MT5Error(
             INVALID_PARAMS, "config.yaml must hold the sections general and terminals"
@@ -116,34 +136,35 @@ def load_terminals() -> dict[str, Terminal]:
         problems.append(f"the section 'general' has unknown settings: {settings}")
     entries = document.get("terminals")
     if entries is None:
-        entries = []
-    if not isinstance(entries, list):
-        problems.append("the section 'terminals' must be a list of Terminal entries")
-        entries = []
-    first: dict[str, int] = {}
-    for index, entry in enumerate(entries, start=1):
+        entries = {}
+    if not isinstance(entries, dict):
+        problems.append(
+            "the section 'terminals' must be a mapping from Terminal name to its fields"
+        )
+        entries = {}
+    for index, (name, entry) in enumerate(entries.items(), start=1):
+        if not isinstance(name, str) or not name.strip():
+            problems.append(
+                f"terminal {index} needs a non-empty string name as its key"
+            )
+            continue
         label = f"terminal {index}"
         if not isinstance(entry, dict):
-            problems.append(f"{label} is not a mapping")
+            problems.append(f"{label} is not a mapping of fields")
             continue
         problems.extend(_entry_problems(label, entry))
-        name = entry.get("name")
-        if isinstance(name, str):
-            if name in first:
-                problems.append(f"{label} repeats the name of terminal {first[name]}")
-            first.setdefault(name, index)
     if problems:
         raise MT5Error(INVALID_PARAMS, "config.yaml is invalid: " + "; ".join(problems))
     terminals: dict[str, Terminal] = {}
-    for entry in entries:
+    for name, entry in entries.items():
         values: dict[str, Any] = {
             key: None if value == "" else value for key, value in entry.items()
         }
-        terminals[entry["name"]] = Terminal(**values)
+        terminals[name] = Terminal(name, **values)
     return terminals
 
 
-def resolve(terminal: object) -> Terminal:
+def find(terminal: object) -> Terminal:
     """Find the Terminal a caller names, refusing a name config.yaml does not declare."""
     if not isinstance(terminal, str):
         raise MT5Error(
@@ -153,6 +174,12 @@ def resolve(terminal: object) -> Terminal:
     found = load_terminals().get(terminal)
     if found is None:
         raise MT5Error(INVALID_PARAMS, f"Terminal '{terminal}' is not in config.yaml")
+    return found
+
+
+def resolve(terminal: object) -> Terminal:
+    """Find the Terminal a call is for, refusing an unknown name or a Terminal without a path."""
+    found = find(terminal)
     if found.path is None:
         raise MT5Error(
             INVALID_PARAMS, f"Terminal '{terminal}' has no path in config.yaml"

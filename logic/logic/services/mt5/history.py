@@ -14,14 +14,18 @@ def _interval(date_from: int | None, date_to: int | None) -> dict[str, JSON]:
 class History:
     """Count and read historical orders and deals; every date and time is a Timestamp."""
 
-    @staticmethod
-    def history_orders_total(terminal: str, date_from: int, date_to: int) -> JSON:
-        """Return the number of history orders within an interval."""
-        return call(terminal, "history_orders_total", _interval(date_from, date_to))
+    def __init__(self, terminal: str) -> None:
+        """Bind this Function Group to the Terminal of its MT5 instance."""
+        self._terminal = terminal
 
-    @staticmethod
+    def history_orders_total(self, date_from: int, date_to: int) -> JSON:
+        """Return the number of history orders within an interval."""
+        return call(
+            self._terminal, "history_orders_total", _interval(date_from, date_to)
+        )
+
     def history_orders_get(
-        terminal: str,
+        self,
         date_from: int | None = None,
         date_to: int | None = None,
         group: str | None = None,
@@ -30,20 +34,20 @@ class History:
     ) -> JSON:
         """Return history orders within an interval, or by order or position ticket."""
         return call(
-            terminal,
+            self._terminal,
             "history_orders_get",
             _interval(date_from, date_to),
             {"group": group, "ticket": ticket, "position": position},
         )
 
-    @staticmethod
-    def history_deals_total(terminal: str, date_from: int, date_to: int) -> JSON:
+    def history_deals_total(self, date_from: int, date_to: int) -> JSON:
         """Return the number of history deals within an interval."""
-        return call(terminal, "history_deals_total", _interval(date_from, date_to))
+        return call(
+            self._terminal, "history_deals_total", _interval(date_from, date_to)
+        )
 
-    @staticmethod
     def history_deals_get(
-        terminal: str,
+        self,
         date_from: int | None = None,
         date_to: int | None = None,
         group: str | None = None,
@@ -52,7 +56,7 @@ class History:
     ) -> JSON:
         """Return history deals within an interval, or by order or position ticket."""
         return call(
-            terminal,
+            self._terminal,
             "history_deals_get",
             _interval(date_from, date_to),
             {"group": group, "ticket": ticket, "position": position},

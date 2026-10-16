@@ -31,9 +31,9 @@ content:
   active:
     mode: "reviewing"
     phase: "P1"
-    mode_reason: "Review is examining phase P1."
+    mode_reason: "Review is examining phase P1 for Implement 008."
     set_by: "review"
-    set_at: "2026-10-16T02:36:56Z"
+    set_at: "2026-10-16T03:06:49Z"
   phases:
     P1:
       id: "P1"
@@ -407,3 +407,181 @@ content:
           - "Zero-diff regeneration could be observed only for the mechanically generated Constants unit; Develop is not a re-runnable generator for the other units."
           - "Open Question Q1 (empty sample path versus required path) is answered for now by Develop's P1-G3-T5 decision and remains a Human decision."
           - "The MT5 Service README still shows last_error returning [1, \"Success\"]; the Package Documentation names code 1 'generic success' but not that exact message. No acceptance or observation covers example output values."
+    - id: "008"
+      skill: "implement"
+      phase: "P1"
+      event: "implement"
+      outcome: "blocked"
+      started_at: "2026-10-16T02:56:48Z"
+      completed_at: "2026-10-16T03:10:28Z"
+      duration: "13:40"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used:
+        - {name: "plan", report: "Log 009 completed: P1 Plan reconciled to 41 Tasks."}
+        - {name: "develop", report: "Log 010 completed: 14 Tasks done, 12 marked replaced."}
+        - {name: "review", report: "Log 011 not satisfied: 17 of 24 acceptances established, F17-F23 missing evidence, B1 open."}
+      open_questions: []
+      blockers: ["B1"]
+      report: "Coordinated Plan, Develop, and Review for P1. Config was valid, so Configure was not needed. Plan (009) reconciled P1 with the new MT5 Instance model and the MT5 Configuration Schema. Develop (010) completed all 14 new Tasks. Review (011) is not satisfied: both Component Review categories hold and 17 of 24 acceptances are established, but the seven Function Group acceptances lack live-terminal evidence. Blocker B1 needs a Windows host with MetaTrader 5. Aggregate: 0 Open Questions, 1 Blocker."
+      data:
+        selection:
+          requested: ["1"]
+          resolved: ["P1"]
+        config_check: {plan: "valid", state: "valid", configure_invoked: false}
+        operations:
+          - {log: "009", skill: "plan", phase: "P1", outcome: "completed"}
+          - {log: "010", skill: "develop", phase: "P1", outcome: "completed"}
+          - {log: "011", skill: "review", phase: "P1", outcome: "not satisfied"}
+        aggregate: {open_questions: 0, blockers: 1}
+    - id: "009"
+      skill: "plan"
+      parent_id: "008"
+      phase: "P1"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-16T02:58:30Z"
+      completed_at: "2026-10-16T03:00:40Z"
+      duration: "2:10"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: []
+      report: "Reconciled the P1 (Logic) Plan against current Understanding. The Target and the MT5 Service Definition and Preferences changed after Plan 005 (MT5 Instances created by Terminal name with no Terminal parameter on any method, Interface contract 2.0 publishing the MT5 class, Terminal Configuration keyed by name under the new MT5 Configuration Schema, operation where the Package is not available). 13 completed Tasks are replaced by 13 new todo Tasks and 2 new Tasks and Group P1-G7 are added; 14 Tasks preserved; nothing removed. Plan now holds 41 Tasks (22 done, 5 replaced, 14 todo). Blocker B1 is owned by Review and stays open."
+      data:
+        selection:
+          requested: ["P1"]
+          planned: ["P1"]
+          skipped: []
+        understanding_change:
+          compared_with: "005"
+          changed_authorities:
+            - "Target: constraints now require Source generation, installation, and API startup on any operating system, with every MetaTrader 5 Function failing with an error where the Package or terminal is not available."
+            - "MT5 Service Definition: callers create an MT5 Instance (MT5 class) with a Terminal name and reach every Function Group through it; methods take no Terminal parameter; the Interface publishes the MT5 class, Constants, and MT5 Error; unknown name at creation raises MT5 Error; creation opens no connection; MT5 Service must install and load where the Package is unavailable; Terminal Configuration follows the MT5 Configuration Schema."
+            - "MT5 Service Preferences: contract_version 2.0, service_class MT5, a service unit, configuration structure delegated to the MT5 Configuration Schema."
+            - "MT5 Configuration Schema (new): terminals is a mapping keyed by Terminal name, entries hold exactly path, username, password, investor_password, ip, port, api_key, description; path required and non-empty for a Terminal that is used; sample demo with every field empty."
+            - "MT5 Group Definition (API, phase P2): Handlers create an MT5 Instance per request; no effect on P1 work."
+          unchanged_authorities: ["Logic Definition and Preferences", "Development Definition and Preferences", "Plan, State, Implement, and Operations Definitions and Preferences", "Plan and State Schemas"]
+        reconciliation:
+          prior_plan: "005"
+          added:
+            - {id: "P1-G4-T4", reason: "Target now requires installation everywhere and every Function call to fail with MT5 Error where the Package is not available; no Task stated that result."}
+            - {id: "P1-G7", reason: "New work area for the MT5 class the Definition now requires."}
+            - {id: "P1-G7-T1", reason: "MT5 class created with a Terminal name, exposing every Function Group for that Terminal."}
+          replaced:
+            - {id: "P1-G3-T4", by: "P1-G3-T6", reason: "Completed Terminal Configuration lists Terminals with a name field; the MT5 Configuration Schema keys them by name."}
+            - {id: "P1-G3-T5", by: "P1-G3-T7", reason: "Completed loading reads a list of entries carrying name; it must read the keyed mapping."}
+            - {id: "P1-G5-T1", by: "P1-G5-T8", reason: "Completed Connection methods take the Terminal as first parameter; the Definition forbids it and binds the group to an MT5 Instance."}
+            - {id: "P1-G5-T2", by: "P1-G5-T9", reason: "Same Terminal-parameter change for Symbols."}
+            - {id: "P1-G5-T3", by: "P1-G5-T10", reason: "Same Terminal-parameter change for MarketBook."}
+            - {id: "P1-G5-T4", by: "P1-G5-T11", reason: "Same Terminal-parameter change for MarketData."}
+            - {id: "P1-G5-T5", by: "P1-G5-T12", reason: "Same Terminal-parameter change for Orders."}
+            - {id: "P1-G5-T6", by: "P1-G5-T13", reason: "Same Terminal-parameter change for Positions."}
+            - {id: "P1-G5-T7", by: "P1-G5-T14", reason: "Same Terminal-parameter change for History."}
+            - {id: "P1-G6-T1", by: "P1-G6-T7", reason: "Completed Interface publishes the seven Function Groups; contract 2.0 publishes the MT5 class, Constants, and MT5 Error."}
+            - {id: "P1-G6-T5", by: "P1-G6-T8", reason: "Completed MT5 Service documentation passes the Terminal to every method and shows Terminals with a name field."}
+            - {id: "P1-G6-T6", by: "P1-G6-T9", reason: "Completed Logic documentation uses the former call form and configuration shape and does not describe behavior where the Package is unavailable."}
+          preserved:
+            - {ids: ["P1-G1-T1"], reason: "Logic library foundation is unaffected."}
+            - {ids: ["P1-G2-T1", "P1-G2-T2", "P1-G2-T3", "P1-G2-T5"], reason: "Package dependency (declared only where installable), MT5 Error, Function coverage, and written-out Constants are unaffected."}
+            - {ids: ["P1-G3-T3"], reason: "Resolving a name to its path and refusing an unknown name is unchanged; it reads the Terminals that P1-G3-T7 now loads."}
+            - {ids: ["P1-G4-T1", "P1-G4-T2", "P1-G4-T3"], reason: "Per-Terminal processes keyed by Terminal, JSON parameters, and Plain Data conversion are unchanged; MT5 Instances of one Terminal share its process."}
+            - {ids: ["P1-G6-T3"], reason: "Logic Interface still publishes the MT5 Service Interface as its only entry."}
+            - {ids: ["P1-G2-T4", "P1-G3-T1", "P1-G3-T2", "P1-G6-T2", "P1-G6-T4"], reason: "Already replaced by Plan 005; kept visible."}
+          changed: []
+          removed: []
+          groups_changed:
+            - {id: "P1-G3", reason: "Description and outcome now name MT5 Instances and the Terminal Configuration instead of a Terminal on every call."}
+            - {id: "P1-G5", reason: "Description and outcome now reach groups through an MT5 Instance with no Terminal parameter."}
+        task_counts: {P1: 41, total: 41}
+        open_question_q1: "Q1 (Log 005) is now answered by the MT5 Configuration Schema: path is required and non-empty only for a Terminal that is used, and the sample has every field empty; P1-G3-T7 acceptance follows it."
+        phase_state_note: "Planning progress stays completed. Development and Review progress are owned by Develop and Review and were not changed, although P1 now holds 14 todo Tasks."
+        blockers_considered: "B1 (Review 004/007) concerns live-terminal evidence for the Function Group acceptances; the replacement Function Group Tasks keep that live behavior in their acceptance, so B1 is unaffected and remains Review's."
+    - id: "010"
+      skill: "develop"
+      parent_id: "008"
+      phase: "P1"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-16T03:01:20Z"
+      completed_at: "2026-10-16T03:06:28Z"
+      duration: "5:08"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P1-G3-T6"
+        - "P1-G3-T7"
+        - "P1-G5-T8"
+        - "P1-G7-T1"
+        - "P1-G6-T8"
+      report: "Developed all 14 todo P1 Tasks after marking the 12 Tasks they replace as replaced. Terminal Configuration is now keyed by Terminal name in the MT5 Configuration Schema structure, with repeated names refused. Function Groups are bound to an MT5 Instance with no Terminal parameter. The new MT5 class publishes them through an Interface that exposes exactly MT5, Constants, and MT5Error. Behavior where the Package is unavailable was confirmed on a fresh install. Both READMEs were rewritten. P1 now has 24 done and 17 replaced Tasks. Blocker B1 (live-terminal evidence on Windows) is untouched and still open."
+      data:
+        tasks_done: ["P1-G3-T6", "P1-G3-T7", "P1-G4-T4", "P1-G5-T8", "P1-G5-T9", "P1-G5-T10", "P1-G5-T11", "P1-G5-T12", "P1-G5-T13", "P1-G5-T14", "P1-G7-T1", "P1-G6-T7", "P1-G6-T8", "P1-G6-T9"]
+        tasks_replaced: {"P1-G3-T4": "P1-G3-T6", "P1-G3-T5": "P1-G3-T7", "P1-G5-T1": "P1-G5-T8", "P1-G5-T2": "P1-G5-T9", "P1-G5-T3": "P1-G5-T10", "P1-G5-T4": "P1-G5-T11", "P1-G5-T5": "P1-G5-T12", "P1-G5-T6": "P1-G5-T13", "P1-G5-T7": "P1-G5-T14", "P1-G6-T1": "P1-G6-T7", "P1-G6-T5": "P1-G6-T8", "P1-G6-T6": "P1-G6-T9"}
+        component: "Logic"
+        claims_recorded_late: ["P1-G3-T7", "P1-G7-T1", "P1-G6-T7", "P1-G6-T8", "P1-G6-T9"]
+        record_note: "Plan Log 009's report says 13 Tasks were replaced; the Plan and its own data list 12 replacements (plus 2 added Tasks, 14 todo in all). Develop did not change the Plan's Log Entry."
+        blockers_considered: "B1 needs a Windows host with MetaTrader 5; its condition is not resolved on this Linux host, so no Task or Blocker state changed."
+        verification_limits:
+          - "MetaTrader5 is not installed on this Linux host; Function Group and MT5 Instance behavior was exercised with a scratch stand-in Package outside the repository, and calls to a real Terminal were not exercised."
+    - id: "011"
+      skill: "review"
+      parent_id: "008"
+      phase: "P1"
+      event: "review"
+      outcome: "not satisfied"
+      started_at: "2026-10-16T03:06:49Z"
+      completed_at: "2026-10-16T03:10:16Z"
+      duration: "3:27"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: ["B1"]
+      report: "P1 not satisfied. Both Component Review categories hold (Logic 5 of 5, MT5 Service 13 of 13). 17 of the 24 current Task acceptances are established, technical checks pass, and two builds are byte-identical. No defect was found. Findings F17-F23 record missing evidence for the seven Function Group acceptances, which need an initialized MetaTrader 5 terminal on Windows; Blocker B1 still requires that Human action."
+      data:
+        findings:
+          - {id: "F17", kind: "missing evidence", baseline: "P1-G5-T8 acceptance", expected: "Every Connection method takes exactly its Function's parameters and no Terminal; initializing through the Connection group of an MT5 Instance for a configured Terminal and then reading its terminal information returns that Terminal's data as Plain Data, and shutting it down ends that Terminal's session.", observed: "Only a stand-in MetaTrader5 module was exercised; the MetaTrader5 Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host, so no real Terminal result is observable.", location: "host platform linux aarch64; P1-G5-T8 Task Log", state: "open"}
+          - {id: "F18", kind: "missing evidence", baseline: "P1-G5-T9 acceptance", expected: "Querying a known symbol through the Symbols group of an MT5 Instance whose Terminal is initialized returns its information and latest tick as Plain Data.", observed: "Only a stand-in MetaTrader5 module was exercised; the MetaTrader5 Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host, so no real Terminal result is observable.", location: "host platform linux aarch64; P1-G5-T9 Task Log", state: "open"}
+          - {id: "F19", kind: "missing evidence", baseline: "P1-G5-T10 acceptance", expected: "After subscribing to a symbol through the MarketBook group of an MT5 Instance whose Terminal is initialized, reading its book returns a list of Plain Data entries, and releasing it ends the subscription.", observed: "Only a stand-in MetaTrader5 module was exercised; the MetaTrader5 Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host, so no real Terminal result is observable.", location: "host platform linux aarch64; P1-G5-T10 Task Log", state: "open"}
+          - {id: "F20", kind: "missing evidence", baseline: "P1-G5-T11 acceptance", expected: "Requesting bars for a symbol over a Timestamp range through the MarketData group of an MT5 Instance whose Terminal is initialized returns a list of mappings with the Package's field names and Timestamp times.", observed: "Only a stand-in MetaTrader5 module was exercised; the MetaTrader5 Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host, so no real Terminal result is observable.", location: "host platform linux aarch64; P1-G5-T11 Task Log", state: "open"}
+          - {id: "F21", kind: "missing evidence", baseline: "P1-G5-T12 acceptance", expected: "Checking a trade request given as a JSON mapping through the Orders group of an MT5 Instance whose Terminal is initialized returns the Package's check result as Plain Data.", observed: "Only a stand-in MetaTrader5 module was exercised; the MetaTrader5 Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host, so no real Terminal result is observable.", location: "host platform linux aarch64; P1-G5-T12 Task Log", state: "open"}
+          - {id: "F22", kind: "missing evidence", baseline: "P1-G5-T13 acceptance", expected: "Reading positions through the Positions group of an MT5 Instance whose Terminal is initialized returns a list of Plain Data mappings, empty when none are open, and the count matches its length.", observed: "Only a stand-in MetaTrader5 module was exercised; the MetaTrader5 Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host, so no real Terminal result is observable.", location: "host platform linux aarch64; P1-G5-T13 Task Log", state: "open"}
+          - {id: "F23", kind: "missing evidence", baseline: "P1-G5-T14 acceptance", expected: "Requesting deals over a Timestamp range through the History group of an MT5 Instance whose Terminal is initialized returns a list of Plain Data mappings whose times are Timestamps.", observed: "Only a stand-in MetaTrader5 module was exercised; the MetaTrader5 Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host, so no real Terminal result is observable.", location: "host platform linux aarch64; P1-G5-T14 Task Log", state: "open"}
+        blockers:
+          - id: "B1"
+            state: "open"
+            recorded_by: "004"
+            findings: ["F17", "F18", "F19", "F20", "F21", "F22", "F23"]
+            condition: "Unchanged since Review 004: the Function Group acceptances need the MetaTrader5 Package against an initialized MetaTrader 5 terminal. The Package installs only on Windows, and this host is Linux aarch64 with no terminal."
+            required_action: "Human: provide a Windows host with MetaTrader 5 installed and a Terminal's path filled in config.yaml (for example the demo Terminal). Then run Review for P1 there, or record the observed results of the seven Function Group acceptances from such a host."
+        established:
+          component_review:
+            logic: "5 of 5: Logic Interface publishes exactly MT5 (the Target excludes the Entity Service listed in Logic Preferences); the entry is the identical MT5 Service Interface module; no Service imports Database Interface or Logic Interface; mt5 is the only Service name and directory."
+            mt5_service: "13 of 13. The Interface publishes exactly MT5, Constants, and MT5Error, and every MT5 instance exposes the seven Function Groups. The 32 Functions on the freshly fetched Package Documentation pages map one-to-one to the Definition groups and to the methods of each group, with matching names and order and no Terminal parameter. Each group is the only class in its own unit and imports alone. Two instances of one Terminal shared its process and ran serially (1.0s, 2.0s) while another Terminal ran in parallel (1.0s). A recording stand-in received every parameter of all 32 methods unchanged, in a process other than the caller's. config.yaml equals the MT5 Configuration Schema example exactly; an instance finds its Terminal by name, and an unknown name raises MT5Error (-2). Only the terminal unit imports the Package. A fresh no-dev install without the Package imports all 14 units with warnings as errors, and all 32 calls raise MT5Error. Results are Plain Data with field names kept. A Package failure value raises MT5Error with last_error's code and message, and non-JSON or non-Timestamp parameters are refused. The Constants equal the 223 constants of the sha256-verified 5.0.6231 wheel in name, value, and order, read statically, and the compiled core adds none. Loading the Interface or creating instances starts no process."
+          task_acceptance_established: ["P1-G1-T1", "P1-G2-T1", "P1-G2-T2", "P1-G2-T3", "P1-G2-T5", "P1-G3-T3", "P1-G3-T6", "P1-G3-T7", "P1-G4-T1", "P1-G4-T2", "P1-G4-T3", "P1-G4-T4", "P1-G6-T3", "P1-G6-T7", "P1-G6-T8", "P1-G6-T9", "P1-G7-T1"]
+          task_acceptance_missing_evidence: ["P1-G5-T8", "P1-G5-T9", "P1-G5-T10", "P1-G5-T11", "P1-G5-T12", "P1-G5-T13", "P1-G5-T14"]
+          tasks_not_judged: {replaced: ["P1-G2-T4", "P1-G3-T1", "P1-G3-T2", "P1-G3-T4", "P1-G3-T5", "P1-G5-T1", "P1-G5-T2", "P1-G5-T3", "P1-G5-T4", "P1-G5-T5", "P1-G5-T6", "P1-G5-T7", "P1-G6-T1", "P1-G6-T2", "P1-G6-T4", "P1-G6-T5", "P1-G6-T6"], reason: "Replaced Tasks are no longer executable; their successors carry the current acceptance."}
+          technical: "uv lock --check, ruff format --check (including README code blocks), ruff check, ty check, and uv pip check pass. A frozen no-dev install from a built wheel into a fresh environment imports all 14 units with warnings as errors. Two builds of the wheel and sdist are byte-identical. The wheel carries service.py, config.yaml, and the MT5 Service README, with no cache or terminal.config. The lock declares metatrader5 5.0.6231 only for win32."
+          regeneration: "The Constants unit is unchanged by this execution and still equals the verified wheel. The other units have no re-runnable generator, so zero-diff regeneration was not observable for them."
+          testing_authority: "Logic and MT5 Service Preferences set testing false, so all verification was transient; nothing was added to the repository."
+        method:
+          - "Package-dependent behavior was observed with Review's own recording stand-in MetaTrader5 modules, kept outside the repository."
+          - "Package Documentation was fetched from the official mql5.com pages by a delegated read-only agent; Review compared the function list and every signature itself."
+        review_observations:
+          - "history_orders_get and history_deals_get take date_from and date_to with default None, because the documentation's ticket-only and position-only call forms omit them; this matches the documented forms."
+          - "The new unit service.py is not yet tracked by git; it is not ignored, and committing is a Human decision."
+          - "Five Develop claims (P1-G3-T7, P1-G7-T1, P1-G6-T7, P1-G6-T8, P1-G6-T9) were recorded at completion rather than before work; Develop says so in its Task Logs and in Log 010."
+          - "Plan Log 009's report says 13 Tasks were replaced, but the Plan holds 12 replacements; Develop Log 010 notes this."
