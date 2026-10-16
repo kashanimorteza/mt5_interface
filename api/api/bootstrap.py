@@ -8,18 +8,9 @@ import yaml
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from logic.interface import MT5, Entity
+from logic.interface import MT5
 
 from api import endpoints
-from api.groups.entity import (
-    account,
-    account_group,
-    asset,
-    broker,
-    currency,
-    instance,
-    user,
-)
 from api.groups.mt5 import (
     connection,
     constants,
@@ -37,15 +28,6 @@ CONFIGURATION: dict[str, Any] = yaml.safe_load(
 BASE = f"/{CONFIGURATION['key']}" if CONFIGURATION["key"] else ""
 
 GROUPS = {
-    "entity": [
-        user.router,
-        instance.router,
-        currency.router,
-        broker.router,
-        asset.router,
-        account_group.router,
-        account.router,
-    ],
     "mt5": [
         connection.router,
         symbols.router,
@@ -60,10 +42,6 @@ GROUPS = {
 """Every Group's segment and its Adapter routers."""
 
 TAG_GROUPS = [
-    {
-        "name": "Entity",
-        "tags": [tag for router in GROUPS["entity"] for tag in router.tags],
-    },
     {
         "name": "MT5",
         "tags": [tag for router in GROUPS["mt5"] for tag in router.tags],
@@ -96,7 +74,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_exception_handler(Entity.database_error.DatabaseError, endpoints.problem)
 app.add_exception_handler(MT5.MT5Error, endpoints.problem)
 app.add_exception_handler(RequestValidationError, endpoints.problem)
 app.add_exception_handler(Exception, endpoints.problem)

@@ -20,26 +20,44 @@ A REST API through which external programs connect to MetaTrader 5 and perform i
 External program  →  MT5 Interface REST API  →  MetaTrader 5 API  →  MetaTrader 5 terminal
 ```
 
-- An external program sends an action to the MT5 Interface REST API.
-- MT5 Interface performs the action on MetaTrader 5 through the selected Instance and Account.
-- MT5 Interface returns the result to the program.
-
-<!-------------------------- Users and Data -->
-### Users and Data
-
-MT5 Interface supports multiple users. Each User owns a separate set of data — Instances, Accounts, Account Groups, Brokers, Assets, and Currencies — that remains distinct from the data of other users. Users manage this data through the Presentation dashboard or the REST API.
+- The MetaTrader 5 terminals the Target works with are listed in the Terminals configuration file. Each Terminal has a `name` and the `path` of its terminal executable.
+- The Target implements every function of the official MetaTrader 5 Python package, as listed in its documentation, and exposes each one as a REST API endpoint.
+- An external program calls an endpoint and names the Terminal by its `name`.
+- MT5 Interface finds that Terminal's `path` in the configuration file and executes the function on MetaTrader 5 through that terminal.
+- MT5 Interface returns the function's result to the program.
 
 <!-------------------------- Scope -->
 ### Scope
 
-- **Account management:** defining and maintaining the data needed to reach MetaTrader 5 and its trading accounts, through the Entity Service.
-- **MetaTrader 5 actions:** performing actions on MetaTrader 5 through the MT5 Service. Its actions are not yet defined.
+- **MetaTrader 5 actions:** performing every function of the official MetaTrader 5 Python package through the MT5 Service.
 
 <!-------------------------- Constraints -->
 ### Constraints
 
 - The Target is deployed on a Windows server.
 - The MetaTrader 5 Python package runs only on Windows and requires the MetaTrader 5 terminal to be installed and running on the same machine.
+- The Target has no database, no stored Entities, and no Presentation dashboard.
+
+<br><br>
+
+<!--------------------------------------------------------------------------------- Configuration --->
+## Configuration
+
+The Terminals the Target works with are defined in a YAML configuration file owned by the MT5 Service in the Logic Layer, not in a database. Each Terminal is one entry in that file with these fields:
+
+- `id` — Type: `integer`; Required: `true`; Unique: `true`; Purpose: Identifies the terminal.
+- `name` — Type: `string`; Required: `true`; Unique: `true`; Purpose: The terminal's display name.
+- `username` — Type: `string`; Required: `false`; Purpose: The username used to log in through the terminal.
+- `password` — Type: `string`; Required: `false`; Purpose: The password used to log in through the terminal.
+- `investor_password` — Type: `string`; Required: `false`; Purpose: The read-only investor password used to log in through the terminal.
+- `path` — Type: `string`; Required: `true`; Purpose: The local filesystem path of the MetaTrader 5 terminal executable.
+- `description` — Type: `string`; Required: `false`; Purpose: Describes the terminal.
+
+**Credentials:** `password` and `investor_password` are stored as plain text in the configuration file, and the file is kept in the repository as is.
+
+**Terminal selection:** Every request names its Terminal by `name`. The MT5 Service finds that Terminal in the configuration file and uses its `path` to reach the MetaTrader 5 terminal.
+
+- A request that names a Terminal not in the configuration file is refused with an error.
 
 <br><br>
 
@@ -51,47 +69,23 @@ The Target is built as layers. Each layer uses only the layers below it. The Age
 ```text
 Architecture
 └── Layers
-    ├── Entity
-    ├── Database
     ├── Logic
-    ├── API
-    └── Presentation
+    └── API
 ```
-
-<!-------------------------- Entity -->
-### Entity
-
-Produces the Entity package: the entities, fields, relationships, rules, and initial data that every other layer uses.
-
-→ [Details of Entities](entities.md)
-
-<!-------------------------- Database -->
-### Database
-
-Produces the Database package: stores every defined Entity using the Entity package and inserts the defined initial data.
-
-→ [Details of Database](database.md)
 
 <!-------------------------- Logic -->
 ### Logic
 
-Produces the Logic library through its services: the Entity Service and the MT5 Service.
+Produces the Logic library through its services: the MT5 Service.
 
 → [Details of Logic](logic.md)
 
 <!-------------------------- API -->
 ### API
 
-Produces the API executable over the Logic library, organized into groups that match the Logic services: the Entity Group and the MT5 Group.
+Produces the API executable over the Logic library, organized into groups that match the Logic services: the MT5 Group.
 
 → [Details of API](api.md)
-
-<!-------------------------- Presentation -->
-### Presentation
-
-Produces the Presentation as a dashboard with a menu and navigation, in which the records of every defined Entity can be listed, searched, filtered, added, edited, enabled, disabled, and deleted.
-
-→ [Details of Presentation](presentation.md)
 
 <br><br>
 
@@ -101,47 +95,7 @@ Produces the Presentation as a dashboard with a menu and navigation, in which th
 Defines the project's implementation phases. Phases are executed step by step in their defined order, with each phase representing the next intended stage of project development.
 
 <!-------------------------- P1 -->
-### P1 — Entity
-
-- **Target:** Entity
-- **Status:** Enabled
-- **Readiness:** Ready
-- **Goal:** Implement the independent Entity Layer and its reusable Entity package from the defined entities, fields, relationships, and rules.
-
-<!-------------------------- P2 -->
-### P2 — Database
-
-- **Target:** Database
-- **Status:** Enabled
-- **Readiness:** Ready
-- **Goal:** Implement the database using the shared Entity package and insert the defined initial data.
-
-<!-------------------------- P3 -->
-### P3 — Logic
-
-- **Target:** Logic
-- **Status:** Enabled
-- **Readiness:** Ready
-- **Goal:** Implement the Logic Layer as a reusable library with its Entity Service.
-
-<!-------------------------- P4 -->
-### P4 — API
-
-- **Target:** API
-- **Status:** Enabled
-- **Readiness:** Ready
-- **Goal:** Implement the API Layer as a separate executable over the Logic library with its Entity Group.
-
-<!-------------------------- P5 -->
-### P5 — Presentation
-
-- **Target:** Presentation
-- **Status:** Enabled
-- **Readiness:** Ready
-- **Goal:** Implement the Presentation Component as a dashboard with a menu and navigation, in which the records of every defined entity can be listed, searched, filtered, added, edited, enabled, disabled, and deleted.
-
-<!-------------------------- P6 -->
-### P6 — MT5
+### P1 — MT5
 
 - **Target:** Logic and API
 - **Status:** Enabled

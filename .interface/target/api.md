@@ -10,16 +10,12 @@ Defines the groups of the API Layer. Each group exposes the Logic service with t
 ```text
 API
 └── Groups
-    ├── Entity
     └── MT5
 ```
-
-<!-------------------------- Entity -->
-### Entity
-
-Exposes the Entity Service.
 
 <!-------------------------- MT5 -->
 ### MT5
 
 Exposes every function of the MT5 Service, so external programs can work with MetaTrader 5 through the REST API.
+
+Every request names its Terminal by `name`.
