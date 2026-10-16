@@ -20,10 +20,10 @@ A REST API through which external programs connect to MetaTrader 5 and perform i
 External program  →  MT5 Interface REST API  →  MetaTrader 5 API  →  MetaTrader 5 terminal
 ```
 
-- The MetaTrader 5 terminals the Target works with are listed in the Terminals configuration file. Each Terminal has a `name` and the `path` of its terminal executable.
+- The MetaTrader 5 terminals the Target works with are listed in `terminal.config`. Each Terminal has a `name` and the `path` of its terminal executable.
 - The Target implements every function of the official MetaTrader 5 Python package, as listed in its documentation, and exposes each one as a REST API endpoint.
 - An external program calls an endpoint and names the Terminal by its `name`.
-- MT5 Interface finds that Terminal's `path` in the configuration file and executes the function on MetaTrader 5 through that terminal.
+- MT5 Interface finds that Terminal's `path` in `terminal.config` and executes the function on MetaTrader 5 through that terminal.
 - MT5 Interface returns the function's result to the program.
 
 <!-------------------------- Scope -->
@@ -43,23 +43,19 @@ External program  →  MT5 Interface REST API  →  MetaTrader 5 API  →  MetaT
 <!--------------------------------------------------------------------------------- Configuration --->
 ## Configuration
 
-The Terminals the Target works with are defined in a YAML configuration file owned by the MT5 Service in the Logic Layer, not in a database. Each Terminal is one entry in that file with these fields:
+The Terminals are defined in `terminal.config`, a YAML configuration file owned by the MT5 Service in the Logic Layer. It holds one entry per Terminal and may hold any number of Terminals. Each entry has these fields:
 
-- `id` — Type: `integer`; Required: `true`; Unique: `true`; Purpose: Identifies the terminal.
-- `name` — Type: `string`; Required: `true`; Unique: `true`; Purpose: The terminal's display name.
+- `name` — Type: `string`; Required: `true`; Unique: `true`; Purpose: Identifies the terminal; every request names its Terminal by it.
+- `path` — Type: `string`; Required: `true`; Purpose: The local filesystem path of the MetaTrader 5 terminal executable.
 - `username` — Type: `string`; Required: `false`; Purpose: The username used to log in through the terminal.
 - `password` — Type: `string`; Required: `false`; Purpose: The password used to log in through the terminal.
 - `investor_password` — Type: `string`; Required: `false`; Purpose: The read-only investor password used to log in through the terminal.
-- `path` — Type: `string`; Required: `true`; Purpose: The local filesystem path of the MetaTrader 5 terminal executable.
+- `ip` — Type: `string`; Required: `false`; Purpose: The network address of the terminal.
 - `description` — Type: `string`; Required: `false`; Purpose: Describes the terminal.
 
-**Credentials:** `password` and `investor_password` are stored as plain text in the configuration file, and the file is kept in the repository as is.
+**Stored-only fields:** `username`, `password`, `investor_password`, and `ip` are stored as plain text, may be empty, and are not used by MT5 Service for now. `terminal.config` is kept in the repository as is.
 
-**Terminal selection:** Every request names its Terminal by `name`. The MT5 Service finds that Terminal in the configuration file and uses its `path` to reach the MetaTrader 5 terminal.
-
-The `terminal` parameter of every MT5 Service function is the Terminal's `name`; MT5 Service resolves its `path` from the configuration file. The Implementation rule that identifies a Terminal by its path does not apply to this Target.
-
-- A request that names a Terminal not in the configuration file is refused with an error.
+**Terminal selection:** The `terminal` parameter of every MT5 Service function is the Terminal's `name`. MT5 Service finds that Terminal in `terminal.config` and uses its `path` to reach the MetaTrader 5 terminal; a `name` not in the file is refused with an error. The Implementation rule that identifies a Terminal by its path does not apply to this Target.
 
 <br><br>
 
@@ -71,8 +67,8 @@ The Target is built as layers. Each layer uses only the layers below it. The Age
 ```text
 Architecture
 └── Layers
-    ├── Logic
-    └── API
+    ├── API
+    └── Logic
 ```
 
 <!-------------------------- Logic -->
@@ -99,9 +95,17 @@ Produces the API executable over the Logic library, organized into groups that m
 Defines the project's implementation phases. Phases are executed step by step in their defined order, with each phase representing the next intended stage of project development.
 
 <!-------------------------- P1 -->
-### P1 — MT5
+### P1 — Logic
 
-- **Target:** Logic and API
+- **Target:** Logic
 - **Status:** Enabled
 - **Readiness:** Ready
-- **Goal:** Implement the MT5 Service in the Logic Layer and the MT5 Group in the API Layer.
+- **Goal:** Implement the MT5 Service in the Logic Layer, including `terminal.config` and Terminal selection by `name`.
+
+<!-------------------------- P2 -->
+### P2 — API
+
+- **Target:** API
+- **Status:** Enabled
+- **Readiness:** Ready
+- **Goal:** Implement the API Layer as a separate executable over the Logic library with its MT5 Group.
