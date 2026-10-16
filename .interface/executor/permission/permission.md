@@ -36,7 +36,7 @@ The Component exists because a boundary that depends on good reasoning is not a 
 
 ### How It Works
 
-Access starts closed. The Interface is read-only to every Agent Instance and Skill; operational Config records live outside it, in `.config/` at the project root. Everything beyond that is granted by contract: each capability receives the minimum its declared work requires, deny always wins over allow, and no delegated Agent Instance or lower layer can widen what it was given.
+Access starts closed. The Interface (`.interface/`) and the Target (`.target/`) are read-only to every Agent Instance and Skill; operational Config records live outside it, in `.config/` at the project root. Everything beyond that is granted by contract: each capability receives the minimum its declared work requires, deny always wins over allow, and no delegated Agent Instance or lower layer can widen what it was given.
 
 The Executor Module is protected by an explicit Human-only read boundary. Permission enforces that boundary; Agent Native Implement performs the authorized read and produces the Native realization, while every other consumer uses the realized Native artifacts.
 
@@ -81,9 +81,9 @@ Every Principle below is mandatory.
 
 ### Interface is read-only
 
-**Rule:** The entire Interface is read-only to every Agent Instance and Skill by default. Privileged, irreversible, destructive, external, or materially scope-expanding actions additionally require the authorization applicable to their impact.
+**Rule:** The entire Interface (`.interface/`) and the entire Target (`.target/`) are read-only to every Agent Instance and Skill by default. Privileged, irreversible, destructive, external, or materially scope-expanding actions additionally require the authorization applicable to their impact.
 
-**Why:** New or moved Interface sources remain protected automatically, while operational Config records live outside it in `.config/` at the project root.
+**Why:** New or moved Interface and Target sources remain protected automatically, while operational Config records live outside it in `.config/` at the project root.
 
 **Boundary:** Human authorship is outside Agent execution. Safe read-only inspection remains available within applicable read restrictions.
 
@@ -181,7 +181,7 @@ Every obligation in the file, under the Principle it comes from.
 
 **Interface is read-only**
 
-- **Never** — modify any Interface path
+- **Never** — modify any Interface or Target path
 - **Must** — obtain applicable authorization for materially consequential actions
 
 **Permission is least-privilege and deny-safe**

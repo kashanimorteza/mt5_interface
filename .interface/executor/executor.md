@@ -40,6 +40,26 @@ Agent Native Implement reads the complete Module and realizes it in the Agent Na
 
 The Foundation File [Agent Native Implement](../foundation/create-agent-native-implement.md) defines how an Agent Native creates and runs its Agent Native Implement Skill; changes here take effect in a Native only through Agent Native Implement.
 
+### Realize the Executor
+
+To realize the Executor Module in an empty Agent Native, give the Agent this command:
+
+```text
+Read `.interface/foundation/create-agent-native-implement.md` completely and execute every instruction in it.
+
+Create or update the Agent Native Implement Skill according to the selected Agent Native's Skill-creation policy, so that it is invoked as `/my-interface-native-implement`. Do not invoke it and do not begin realization. Preserve the authority and boundaries defined there. Do not read Target sources and do not modify `.interface/executor/`.
+
+Report exactly what was created or updated.
+```
+
+Then, in a separate message, run:
+
+```text
+/my-interface-native-implement
+```
+
+Repeat only the second step whenever the Executor Module changes.
+
 <br>
 
 <!--------------------------------------------------------------------------------- Terms --->

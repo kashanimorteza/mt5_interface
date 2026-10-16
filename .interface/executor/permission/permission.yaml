@@ -72,7 +72,9 @@ content:
       - shell_execute(git rebase:*)
       - shell_execute(git clean:*)
     protected_sources:
-      protected_root: .interface/
+      protected_roots:
+      - .interface/
+      - .target/
       mutation: deny by default
       read_restrictions:
         agent_module:
@@ -93,15 +95,15 @@ content:
         security_and_integrity: fail_closed
         notification_only: fail_open
       interface-boundary-guard:
-        guarantee: Block Executor Module reads outside the exact direct-Human Agent Native Implement prompt, block every non-Human attempt to invoke Agent Native Implement, and block every direct Interface mutation.
+        guarantee: Block Executor Module reads outside the exact direct-Human Agent Native Implement prompt, block every non-Human attempt to invoke Agent Native Implement, and block every direct Interface or Target mutation.
         event: before every read, search, write, edit, shell, or Skill action
         blocking: true
         effects: Reject the action and return the boundary message.
         failure_policy: fail_closed
         required: true
         probe:
-          action: From an Agent Instance outside the Agent Native Implement prompt, read a file inside the Executor Module and search inside it; then edit the Interface entry file.
-          expect: All three are blocked with the boundary message, and no content is returned.
+          action: From an Agent Instance outside the Agent Native Implement prompt, read a file inside the Executor Module and search inside it; then edit the Interface entry file and the Target entry file.
+          expect: All four are blocked with the boundary message, and no content is returned.
         allow_probe:
           action: From any Agent Instance, run a command that names only paths outside the Interface, including a name that merely contains "interface", such as importing `entity.interface`.
           expect: The command is allowed.
