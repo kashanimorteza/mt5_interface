@@ -40,7 +40,8 @@
       "Read(~/.claude/plugins/**)"
     ],
     "deny": [
-      "Edit(/.interface/**)"
+      "Edit(/.interface/**)",
+      "Edit(/.target/**)"
     ],
     "ask": [
       "Bash(git commit:*)",

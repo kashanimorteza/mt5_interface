@@ -60,7 +60,9 @@ Architecture maps the high-level structure of Agent Interface.
 
 Target defines what the Interface is working on.
 
-→ [Read more about the Target Module](target/target.md)
+Target lives in `.target/` at the project root, outside `.interface/`; its entry point is `.target/target.md`.
+
+→ [Read more about the Target Module](../.target/target.md)
 
 ### Implementation
 

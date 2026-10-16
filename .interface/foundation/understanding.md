@@ -29,7 +29,7 @@ Target Understanding is the understanding of the project's Target that an Agent 
 
 Understanding is reconstructed from the current source when required and is never copied into Config as a second project definition.
 
-→ [Read more about the Target Definition](../target/target.md)
+→ [Read more about the Target Definition](../../.target/target.md)
 
 <br>
 

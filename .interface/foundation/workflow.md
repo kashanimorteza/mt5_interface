@@ -44,7 +44,7 @@ Before any other step, prepare the Agent Native. Step 1 is needed only once, or 
 Define the Target before selecting a Workflow Path:
 
 ```text
-Target Definition = .interface/target/target.md (with the files it references: entities.md, database.md, logic.md, api.md, presentation.md)
+Target Definition = .target/target.md (with the files it references: logic.md, api.md)
 ```
 
 The Human states the intended outcome in the Target Definition.

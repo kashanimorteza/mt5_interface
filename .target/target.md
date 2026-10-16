@@ -57,6 +57,8 @@ The Terminals the Target works with are defined in a YAML configuration file own
 
 **Terminal selection:** Every request names its Terminal by `name`. The MT5 Service finds that Terminal in the configuration file and uses its `path` to reach the MetaTrader 5 terminal.
 
+The `terminal` parameter of every MT5 Service function is the Terminal's `name`; MT5 Service resolves its `path` from the configuration file. The Implementation rule that identifies a Terminal by its path does not apply to this Target.
+
 - A request that names a Terminal not in the configuration file is refused with an error.
 
 <br><br>
@@ -77,6 +79,8 @@ Architecture
 ### Logic
 
 Produces the Logic library through its services: the MT5 Service.
+
+Logic has no Entity Service and no connection to Entity or Database. The Implementation rule that fixes an Entity Service in every Logic does not apply to this Target.
 
 → [Details of Logic](logic.md)
 

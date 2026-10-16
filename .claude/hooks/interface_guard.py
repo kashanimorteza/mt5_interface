@@ -23,6 +23,7 @@ from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[2]
 INTERFACE = PROJECT / ".interface"
+TARGET = PROJECT / ".target"
 EXECUTOR = INTERFACE / "executor"
 HOOKS_DIR = PROJECT / ".claude" / "hooks"
 STATE_DIR = HOOKS_DIR / ".state"
@@ -35,7 +36,7 @@ BOUNDARY = (
     "Blocked by interface-boundary-guard: {reason}. The Executor Module is readable only "
     "within the prompt of the Human's direct /" + NATIVE_IMPLEMENT + " invocation, that "
     "grant is non-transferable, Agent Native Implement is invoked only by the Human, and "
-    "the .interface/ tree is read-only. Do not work around this boundary; report Runtime "
+    "the .interface/ and .target/ trees are read-only. Do not work around this boundary; report Runtime "
     "drift or the needed change to the Human."
 )
 
@@ -365,7 +366,7 @@ def check_bash(cmd, cwd, granted):
                 raise Block("a recursive shell search or listing from a directory containing the Executor Module")
 
     # 3. Interface (and guard-integrity) mutation.
-    always = [INTERFACE, STATE_DIR]
+    always = [INTERFACE, TARGET, STATE_DIR]
     guarded = [] if granted else [HOOKS_DIR, SETTINGS]
     protected = always + guarded
 
@@ -405,7 +406,7 @@ def check_bash(cmd, cwd, granted):
         if name in INTERPRETERS or name == "xargs":
             # Interpreters and xargs receive their targets indirectly; refuse when the
             # command as a whole refers to a protected path at all.
-            if any(is_protected(p) for _s, _t, p in refs) or re.search(r"(^|[\s'\"=:(/])\.interface\b", raw):
+            if any(is_protected(p) for _s, _t, p in refs) or re.search(r"(^|[\s'\"=:(/])\.(interface|target)\b", raw):
                 raise Block("an interpreter or xargs command that refers to a protected path")
 
 
@@ -467,6 +468,8 @@ def check_tool(data):
         p = resolve(inp.get("file_path") or inp.get("notebook_path") or "", cwd)
         if under(p, INTERFACE):
             raise Block("a direct Interface mutation")
+        if under(p, TARGET):
+            raise Block("a direct Target mutation")
         if under(p, STATE_DIR):
             raise Block("a direct write to the Agent Native Implement grant record")
         if not granted and under(p, HOOKS_DIR):
@@ -503,6 +506,8 @@ def check_tool(data):
         if any(k in tool.lower() for k in ("write", "edit", "create", "delete", "move", "rename", "remove", "update")):
             if re.search(r"(^|[\s'\"=:(/])\.interface(/|$)", s) or (os.path.isabs(s) and under(Path(os.path.realpath(s)), INTERFACE)):
                 raise Block("a direct Interface mutation through " + tool)
+            if re.search(r"(^|[\s'\"=:(/])\.target(/|$)", s) or (os.path.isabs(s) and under(Path(os.path.realpath(s)), TARGET)):
+                raise Block("a direct Target mutation through " + tool)
 
 
 # --------------------------------------------------------------------------- main

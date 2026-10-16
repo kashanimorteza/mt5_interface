@@ -50,4 +50,4 @@ After generation, files inside `.config/` at the project root are mutable operat
 
 Operational records follow their source authorities and must not redefine them.
 
-Every file and directory in `.interface/` is human-owned and read-only to Agent and Skills. No Interface path becomes writable because it is added later, discovered by a Tool, or named by a Plan.
+Every file and directory in `.interface/` and in `.target/` (the Target, at the project root) is human-owned and read-only to Agent and Skills. No Interface path becomes writable because it is added later, discovered by a Tool, or named by a Plan.
