@@ -5,7 +5,7 @@ meta:
   purpose: "Name, directory, the entities of architecture with the Interface contract, naming patterns, the Package, and documentation, and the language profile for MT5 Service."
   standard: "Agent Project Interface"
   version: "1.0"
-  updated: "2026-10-14"
+  updated: "2026-10-16"
 
 # <!--------------------------------------------------------------------------------- Policy -->
 policy:
@@ -29,7 +29,7 @@ read_order:
 # <!--------------------------------------------------------------------------------- Content_Map -->
 content_map:
   settings: "The Logic owner, the MT5 Role, and the configurable Service name and directory."
-  architecture: "The entities of the Architecture tree — Interface with its contract version, Function Groups with their naming pattern, Configuration with its file, location, and format, and Documentation with its file, location, and format."
+  architecture: "The entities of the Architecture tree — Interface with its contract version and service class, Function Groups with their naming pattern, Configuration with its file, location, format, and structure, and Documentation with its file, location, and format."
   development: "Development capabilities, the Package, and the selected language with its realization profile."
 
 # <!--------------------------------------------------------------------------------- Content -->
@@ -48,7 +48,8 @@ content:
   architecture:
     entities:
       interface:
-        contract_version: '1.0'
+        contract_version: '2.0'
+        service_class: MT5
       function_groups:
         naming:
           group_file: <group>
@@ -57,8 +58,7 @@ content:
         file: config.yaml
         location: the MT5 Service directory
         format: yaml
-        sections: [general, terminals]
-        sample_terminal: demo
+        structure: .interface/foundation/schema/mt5-configuration.yaml
       documentation:
         file: README.md
         location: the MT5 Service directory
@@ -81,4 +81,5 @@ content:
         python:
           identifier_case: "snake_case"
           interface_file: "The Interface is the interface file at the MT5 Service directory (logic/services/mt5/interface.py); every __init__.py stays empty and publishes nothing."
+          service: "One file, service.py, directly in the MT5 Service directory, holding the MT5 class."
           group: "One file per Function Group directly in the MT5 Service directory, holding one class with one explicitly written method per Function."

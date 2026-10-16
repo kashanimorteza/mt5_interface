@@ -1,0 +1,88 @@
+schema:
+  id: "agent-interface-mt5-configuration"
+  version: "1.0"
+  purpose: "The independent structure of MT5 Service config.yaml: general settings and every Terminal, keyed by its name."
+  kind: "Structure standard"
+  applies_when: "The Implementation declares an MT5 Service in the Logic Component."
+  generates: "<mt5 service directory>/config.yaml"
+
+# <!--------------------------------------------------------------------------------- Structure -->
+structure:
+
+  general:
+    required: true
+    purpose: "General settings of MT5 Service. It holds no setting yet and stays present, as an empty mapping, for later ones."
+    value: {}
+
+  terminals:
+    required: true
+    purpose: "Every Terminal MT5 Service works with, as a mapping whose keys are Terminal names; it may hold any number of Terminals."
+    key:
+      purpose: "The Terminal's name; it identifies the Terminal, and every MT5 instance is created with it."
+      value: "<terminal name>"
+    entry:
+      path:
+        required: true
+        type: "string"
+        purpose: "The local filesystem path of the MetaTrader 5 terminal executable."
+        value: "<terminal executable path>"
+      username:
+        required: false
+        type: "string"
+        purpose: "The username used to log in through the Terminal."
+        value: "<username or empty>"
+      password:
+        required: false
+        type: "string"
+        purpose: "The password used to log in through the Terminal."
+        value: "<password or empty>"
+      investor_password:
+        required: false
+        type: "string"
+        purpose: "The read-only investor password used to log in through the Terminal."
+        value: "<investor password or empty>"
+      ip:
+        required: false
+        type: "string"
+        purpose: "The network address of the Terminal."
+        value: "<IP address or empty>"
+      port:
+        required: false
+        type: "integer"
+        purpose: "The network port of the Terminal."
+        value: "<port or empty>"
+      api_key:
+        required: false
+        type: "string"
+        purpose: "The API key of the Terminal."
+        value: "<API key or empty>"
+      description:
+        required: false
+        type: "string"
+        purpose: "Describes the Terminal."
+        value: "<description or empty>"
+
+# <!--------------------------------------------------------------------------------- Rules -->
+rules:
+  structure_only: "config.yaml is generated and read only in this structure: the general and terminals sections and nothing else at the top level."
+  name_is_key: "A Terminal's name is the key of its entry under terminals; an entry never repeats its name as a field, and terminals is never a list."
+  name_uniqueness: "Every Terminal name is unique, because it is a mapping key."
+  entry_fields: "Every entry holds exactly the fields entry lists, in that order; every field is present, and an optional field may be empty."
+  path_required: "path is required and non-empty for a Terminal that is used."
+  stored_only: "username, password, investor_password, ip, port, and api_key are stored as plain text and are not used by MT5 Service for now."
+  sample_terminal: "The generated file holds one sample Terminal named demo, with every field empty, so it shows how a Terminal is added."
+
+# <!--------------------------------------------------------------------------------- Example -->
+example: |
+  general: {}
+
+  terminals:
+    demo:
+      path: ""
+      username: ""
+      password: ""
+      investor_password: ""
+      ip: ""
+      port:
+      api_key: ""
+      description: ""

@@ -23,7 +23,7 @@ MT5 Service is the Logic Service that implements every function of the official 
 
 ### Overview
 
-MT5 Service implements every function of the `MetaTrader5` package. Its functions are organized in the Function Groups this Definition names, and each group is a separate class that a caller can import on its own.
+MT5 Service implements every function of the `MetaTrader5` package. Its functions are organized in the Function Groups this Definition names, and each group is a separate class, reached through an MT5 Instance created for one Terminal; a caller may create any number of MT5 Instances at once.
 
 ### Purpose
 
@@ -31,7 +31,7 @@ External programs and other parts of the application need MetaTrader 5 without e
 
 ### How It Works
 
-A caller imports one Function Group from MT5 Service Interface and calls a function with its parameters; MT5 Service calls the same function of the package with those parameters and returns its result as plain data, or raises MT5 Error when the package reports a failure. Every call names its Terminal by the Terminal's `name` in Terminal Configuration; MT5 Service takes that Terminal's `path` from there and runs the call in that Terminal's own process, so several Terminals work at the same time without affecting one another. Connection details, such as login, password, and server, are sent by the caller through the package's own connection Functions, such as `initialize` and `login`.
+A caller creates an MT5 Instance from MT5 Service Interface with a Terminal's name and calls a function through one of its Function Groups with the function's parameters; MT5 Service calls the same function of the package with those parameters and returns its result as plain data, or raises MT5 Error when the package reports a failure. Every call goes to the Terminal of its MT5 Instance; MT5 Service takes that Terminal's `path` from Terminal Configuration and runs the call in that Terminal's own process, so several MT5 Instances and Terminals work at the same time without affecting one another. Connection details, such as login, password, and server, are sent by the caller through the package's own connection Functions, such as `initialize` and `login`.
 
 <br>
 
@@ -41,9 +41,10 @@ A caller imports one Function Group from MT5 Service Interface and calls a funct
 - **Package** — the official MetaTrader 5 Python package, `MetaTrader5`, published by MetaQuotes.
 - **Package Documentation** — the official documentation of the Package, the only source for its Functions and their parameters.
 - **Function** — one function the Package offers.
-- **Function Group** — one of the groups of Functions this Definition names, realized as one class.
-- **Terminal** — one installed MetaTrader 5 terminal, declared in Terminal Configuration and identified by its `name`; its `path` is the path of its terminal file, the same path the Package's `initialize` takes.
-- **Terminal Configuration** — the `config.yaml` file of MT5 Service, which declares every Terminal.
+- **Function Group** — one of the groups of Functions this Definition names, realized as one class and reached through an MT5 Instance.
+- **Terminal** — one installed MetaTrader 5 terminal, declared in Terminal Configuration and identified by its name, the key of its entry; its `path` is the path of its terminal file, the same path the Package's `initialize` takes.
+- **Terminal Configuration** — the `config.yaml` file of MT5 Service, which declares every Terminal in the structure of the MT5 Configuration Schema.
+- **MT5 Instance** — one object of the MT5 class, created with a Terminal's name and bound to that Terminal; any number may exist at once.
 - **Terminal Process** — the separate operating-system process in which MT5 Service runs the Package for one Terminal.
 - **Constants** — every named constant the Package defines, such as `TIMEFRAME_H1` or `ORDER_TYPE_BUY`, with its value.
 - **Plain Data** — a valid JSON value: made only of objects, arrays, strings, numbers, booleans, and null, so it is sent as JSON unchanged.
@@ -73,10 +74,10 @@ Every entity below is declared in `architecture` in MT5 Service Preferences, whi
 
 The gateway callers import from, in its own `interface` file, the only file of MT5 Service that publishes. Its Interface contract, with `contract_version` in MT5 Service Preferences:
 
-1. **Function Groups** — exactly one class for every Function Group this Definition names, each under its own name, each importable on its own.
+1. **MT5 class** — one class, named by `service_class` in MT5 Service Preferences and created with a Terminal's name. Every MT5 Instance is bound to that Terminal and exposes every Function Group this Definition names under the group's own name, as in `MT5("demo").Symbols.symbol_info("EURUSD")`. Any number of MT5 Instances may exist at once.
 2. **Constants** — one group holding every Constant of the Package by its name and value.
 3. **MT5 Error** — the one error every method raises on a Package failure, so a caller can catch it.
-4. **Nothing else** — the Package itself and anything beyond the Function Groups, Constants, and MT5 Error are never published; loading the Interface opens no connection to MetaTrader 5.
+4. **Nothing else** — the Package itself and anything beyond the MT5 class, Constants, and MT5 Error are never published; loading the Interface opens no connection to MetaTrader 5.
 5. **Versioned** — changing this structure requires raising `contract_version` and a consumer review.
 
 <!-------------------------- Function Groups -->
@@ -87,7 +88,7 @@ Function Groups
 └── one class per Function Group
 ```
 
-One unit and one class for every Function Group, each holding one method for every Function of that group, named exactly like the Function. The Package Documentation lists its Functions in one section, so the Function Groups are fixed here; the Functions and their parameters are read from the Package Documentation, never listed from memory.
+One unit and one class for every Function Group, reached through an MT5 Instance, each holding one method for every Function of that group, named exactly like the Function. The Package Documentation lists its Functions in one section, so the Function Groups are fixed here; the Functions and their parameters are read from the Package Documentation, never listed from memory.
 
 | Function Group | Functions |
 |---|---|
@@ -108,24 +109,15 @@ A Function of the Package Documentation that no Function Group above lists stops
 Configuration
 ├── general
 └── terminals
-    └── one entry per Terminal
+    └── one entry per Terminal, keyed by its name
 ```
 
-Terminal Configuration is one YAML file, `config.yaml`, in the MT5 Service directory. It has two sections:
+Terminal Configuration is one YAML file, `config.yaml`, in the MT5 Service directory, generated and read only in the structure the [MT5 Configuration Schema](../../../../../foundation/schema/mt5-configuration.yaml) defines, as `configuration` in MT5 Service Preferences names. It has two sections:
 
 1. **`general`** — general settings of MT5 Service; it holds no setting yet and stays present for later ones.
-2. **`terminals`** — one entry for every Terminal; it may hold any number of Terminals. Every entry has these fields:
-   - `name` — `string`; required; unique; identifies the Terminal, and every call names its Terminal by it.
-   - `path` — `string`; required; the local filesystem path of the MetaTrader 5 terminal executable.
-   - `username` — `string`; optional; the username used to log in through the Terminal.
-   - `password` — `string`; optional; the password used to log in through the Terminal.
-   - `investor_password` — `string`; optional; the read-only investor password used to log in through the Terminal.
-   - `ip` — `string`; optional; the network address of the Terminal.
-   - `port` — `integer`; optional; the network port of the Terminal.
-   - `api_key` — `string`; optional; the API key of the Terminal.
-   - `description` — `string`; optional; describes the Terminal.
+2. **`terminals`** — a mapping whose keys are Terminal names; it may hold any number of Terminals. A Terminal's name is never repeated as a field, and `terminals` is never a list. Under each name sit that Terminal's fields, exactly as the Schema lists them, with their requirement, type, and purpose.
 
-The generated file holds one sample entry named `demo`, with every other field left empty, so it shows how a Terminal is added. `username`, `password`, `investor_password`, `ip`, `port`, and `api_key` are only stored, as plain text, may be empty, and are not used by MT5 Service for now.
+The generated file holds one sample Terminal named `demo`, with every field left empty, so it shows how a Terminal is added. The fields the Schema marks as stored-only are kept as plain text, may be empty, and are not used by MT5 Service for now.
 
 <!-------------------------- Terminal Processes -->
 ### Terminal Processes
@@ -140,7 +132,7 @@ The layer that runs the Package. Every Terminal has its own Terminal Process: th
 <!-------------------------- Constants -->
 ### Constants
 
-One group that holds every Constant of the Package under its own name with its value, and one method that returns them all as Plain Data, a dictionary from name to value. A caller reads a Constant's value from here and passes that value to a Function unchanged. Every Constant is written out in MT5 Service itself, with its name and value taken from the Package, so the Constants are available without the Package; they are never read from the Package at runtime or reached through a bridge or handler to it.
+One group that holds every Constant of the Package under its own name with its value, and one method that returns them all as Plain Data, a dictionary from name to value. A caller reads a Constant's value from here and passes that value to a Function unchanged. Every Constant is written out in MT5 Service itself, so the Constants are available without the Package; they are never read from the Package at runtime or reached through a bridge or handler to it. Every name and value is taken, when MT5 Service is generated, only from the Package's officially published distribution, read as files without installing or running the Package, so this works on any operating system; when that distribution cannot be obtained, generation stops and reports it, and no value is guessed or listed from memory.
 
 <!-------------------------- Documentation -->
 ### Documentation
@@ -156,8 +148,8 @@ Documentation
 The documentation of MT5 Service, in the file, location, and format MT5 Service Preferences name. Its sections, in this order:
 
 1. **Overview** — What MT5 Service is and why it exists, in one paragraph, with one simple example.
-2. **Interface** — Every Function Group with its Functions, each with one example, and how to read the Constants.
-3. **Use** — How a caller imports a Function Group and calls a Function, and how a Terminal is added to Terminal Configuration.
+2. **Interface** — How to create an MT5 Instance, every Function Group with its Functions, each with one example, and how to read the Constants.
+3. **Use** — How a caller creates MT5 Instances and calls a Function through them, and how a Terminal is added to Terminal Configuration.
 4. **Verify** — How to see that MT5 Service matches the Package Documentation.
 
 <!-------------------------- Directory Structure -->
@@ -166,6 +158,7 @@ The documentation of MT5 Service, in the file, location, and format MT5 Service 
 ```text
 Directory Structure
 ├── interface
+├── service
 ├── <group>
 ├── terminal
 ├── constants
@@ -173,7 +166,7 @@ Directory Structure
 └── README
 ```
 
-The root of this tree is the MT5 Service directory, named in `settings` in MT5 Service Preferences. It holds one unit per Function Group, named by the group naming pattern.
+The root of this tree is the MT5 Service directory, named in `settings` in MT5 Service Preferences. It holds one `service` unit with the MT5 class, published through `interface`, and one unit per Function Group, named by the group naming pattern.
 
 <br>
 
@@ -190,7 +183,7 @@ The root of this tree is the MT5 Service directory, named in `settings` in MT5 S
 
 - **The Package's own behavior** — is not MT5 Service's, because MT5 Service represents the Package without redefining it.
 - **Trading decisions and strategies** — are not MT5 Service's, because it only runs the Functions a caller requests.
-- **Choosing an Account and using stored connection details** — are not MT5 Service's, because the caller chooses its Terminal by `name` and sends every connection detail through the Package's connection Functions; the connection fields of Terminal Configuration are only stored for now.
+- **Choosing an Account and using stored connection details** — are not MT5 Service's, because the caller chooses its Terminal by creating an MT5 Instance with its name and sends every connection detail through the Package's connection Functions; the connection fields of Terminal Configuration are only stored for now.
 - **Publishing Services from Logic's root** — is not MT5 Service's, because it owns only its own Interface.
 
 <br>
@@ -215,6 +208,20 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Why:** One owner keeps every use of MetaTrader 5 consistent and replaceable.
 **Boundary:** MT5 Service never exposes the Package object itself.
 
+#### MT5 Service never depends on the Package being available
+
+**Rule:** Generating MT5 Service, installing it, loading its Interface, and starting anything that uses it work on every operating system, whether or not the Package can be installed there. The Package is declared as a dependency only where it can be installed, so installation never fails because of it. Where the Package is not available, every Function call raises MT5 Error.
+**Why:** Source is generated, installed, and served anywhere; only running MetaTrader 5 needs the Package.
+**Boundary:** No step of generation installs, imports, or runs the Package. The Constants and Terminal Configuration never need the Package.
+
+### Interface
+
+#### Every MT5 Instance works with one Terminal
+
+**Rule:** MT5 Service Interface publishes one MT5 class. An MT5 Instance is created with a Terminal's name, found in Terminal Configuration, and every call through it goes to that Terminal. Any number of MT5 Instances may exist at once, for different Terminals or the same Terminal; MT5 Instances of the same Terminal share its Terminal Process.
+**Why:** A caller works with many Terminals at once, each through its own object, without repeating the Terminal on every call.
+**Boundary:** Creating an MT5 Instance with a name that is not in Terminal Configuration raises MT5 Error. Creating an MT5 Instance opens no connection; `initialize` starts it.
+
 ### Function Groups
 
 #### Every Function of the Package is implemented
@@ -225,15 +232,15 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Every Function Group is its own class
 
-**Rule:** Every Function Group is one class in its own unit, importable on its own, with every method written out explicitly.
+**Rule:** Every Function Group is one class in its own unit, reached through an MT5 Instance under the group's own name, with every method written out explicitly.
 **Why:** A caller takes only the group it needs, and each group can be read and changed on its own.
 **Boundary:** No method is produced by a generic or dynamic dispatcher.
 
 #### Every method mirrors its Function
 
-**Rule:** Every method takes exactly the parameters of its Function, with the same names, order, and defaults, plus one parameter only, `terminal`, the `name` of the Terminal it works with in Terminal Configuration; every Function parameter is passed to the Package unchanged.
-**Why:** Whoever knows the Package already knows MT5 Service, and every caller decides for itself which terminal and Account to work with.
-**Boundary:** Apart from `terminal`, a method adds no parameter, default connection, or Account selection of its own. The Constants take no `terminal`.
+**Rule:** Every method takes exactly the parameters of its Function, with the same names, order, and defaults, and nothing else; the Terminal comes from its MT5 Instance. Every Function parameter is passed to the Package unchanged.
+**Why:** Whoever knows the Package already knows MT5 Service, and every MT5 Instance decides which Terminal it works with.
+**Boundary:** A method adds no parameter, default connection, or Account selection of its own. The Constants need no MT5 Instance.
 
 #### Every result is Plain Data and every failure is MT5 Error
 
@@ -245,9 +252,9 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Every Terminal is declared in Terminal Configuration
 
-**Rule:** Every Terminal is one entry of the `terminals` section of `config.yaml`, with the fields Configuration lists. MT5 Service finds a call's Terminal by its `name` and uses that entry's `path`; a `name` that is not in `config.yaml` is refused with MT5 Error. The generated file has a `general` section and one sample `demo` entry.
+**Rule:** `config.yaml` is generated and read only in the structure of the MT5 Configuration Schema: a `general` section, and a `terminals` mapping keyed by Terminal name with the fields the Schema lists. MT5 Service finds an MT5 Instance's Terminal by its name and uses that entry's `path`. The generated file holds one sample Terminal named `demo`.
 **Why:** Callers name a Terminal instead of knowing where it is installed, and Terminals are added by editing one file.
-**Boundary:** `username`, `password`, `investor_password`, `ip`, `port`, and `api_key` are only stored and are not used by MT5 Service for now.
+**Boundary:** The fields the MT5 Configuration Schema marks as stored-only are not used by MT5 Service for now.
 
 ### Terminal Processes
 
@@ -271,20 +278,22 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 **Rule:** The Constants group holds every Constant the Package defines, under its own name and with its own value, each written out in MT5 Service itself; no Constant is read from the Package at runtime or reached through a bridge or handler to it.
 **Why:** A caller that cannot import the Package, such as an external program through API, still needs every value a Function accepts, even where the Package is not installed.
-**Boundary:** Functions still take a Constant's value, never its name.
+**Boundary:** Functions still take a Constant's value, never its name. A value that cannot be taken from the Package's officially published distribution stops generation; it is never guessed.
 
 ### Review
 
 #### Review observes MT5 Service through a fixed set of checks
 
 **Rule:** Review establishes MT5 Service conformance through these observations, every one of them on every review:
-- MT5 Service Interface publishes exactly one class for every Function Group this Definition names, the Constants, and MT5 Error, and nothing else.
+- MT5 Service Interface publishes exactly the MT5 class, the Constants, and MT5 Error, and nothing else; every MT5 Instance exposes one class for every Function Group this Definition names.
 - Every Function of the Package Documentation has exactly one method, with its exact name, in the class of the group this Definition lists it under.
-- Every Function Group sits in its own unit and is importable on its own.
-- Every method takes exactly its Function's parameters, with the same names, order, and defaults, plus only `terminal`, and passes them unchanged.
-- `config.yaml` exists in the MT5 Service directory with a `general` section and a `terminals` section holding the `demo` entry; every call finds its Terminal there by `name`, and an unknown `name` raises MT5 Error.
+- Every Function Group sits in its own unit and is reached through an MT5 Instance.
+- Several MT5 Instances work at the same time, each with its own Terminal.
+- Every method takes exactly its Function's parameters, with the same names, order, and defaults, and nothing else, and passes them unchanged.
+- `config.yaml` exists in the MT5 Service directory in exactly the structure of the MT5 Configuration Schema, with the `demo` Terminal; an MT5 Instance finds its Terminal there by name, and an unknown name raises MT5 Error.
 - Every call runs in the Terminal Process of its Terminal; calls for one Terminal run one after another, and no call runs the Package in the caller's process.
 - No other part of the application imports the Package.
+- MT5 Service installs and its Interface loads where the Package is not available, and every Function call there raises MT5 Error.
 - Every result is Plain Data, a valid JSON value, with the Package's field names and values, and every Package failure raises MT5 Error with the code and message of `last_error`.
 - Every method takes only JSON values as parameters and returns only a JSON value, and every date and time is a Timestamp.
 - The Constants group holds every Constant of the Package with its own name and value, written out in MT5 Service, and nothing else; reading the Constants does not need the Package.
@@ -306,6 +315,18 @@ Every obligation in the file, under the Principle it comes from.
 - **Must** — Reach MetaTrader 5 only through MT5 Service Interface.
 - **Never** — Import the Package anywhere else or expose the Package object.
 
+**MT5 Service never depends on the Package being available**
+
+- **Must** — Generate, install, and load MT5 Service on every operating system, and raise MT5 Error from every Function call where the Package is not available.
+- **Never** — Install, import, or run the Package while generating, or let installation fail because the Package cannot be installed.
+
+### Interface
+
+**Every MT5 Instance works with one Terminal**
+
+- **Must** — Publish one MT5 class, create every MT5 Instance with a Terminal's name, and send every call through it to that Terminal.
+- **Never** — Accept a name that is not in Terminal Configuration, or open a connection when an MT5 Instance is created.
+
 ### Function Groups
 
 **Every Function of the Package is implemented**
@@ -315,13 +336,13 @@ Every obligation in the file, under the Principle it comes from.
 
 **Every Function Group is its own class**
 
-- **Must** — Keep every Function Group in its own unit as one importable class.
+- **Must** — Keep every Function Group in its own unit as one class reached through an MT5 Instance.
 - **Never** — Produce a method through a generic or dynamic dispatcher.
 
 **Every method mirrors its Function**
 
-- **Must** — Give every method exactly its Function's parameters plus `terminal`, and pass them to the Package unchanged.
-- **Never** — Add any other parameter, a default connection, or an Account selection.
+- **Must** — Give every method exactly its Function's parameters, and pass them to the Package unchanged.
+- **Never** — Add any parameter, including a Terminal, a default connection, or an Account selection.
 
 **Every result is Plain Data and every failure is MT5 Error**
 
@@ -332,8 +353,8 @@ Every obligation in the file, under the Principle it comes from.
 
 **Every Terminal is declared in Terminal Configuration**
 
-- **Must** — Declare every Terminal in `config.yaml`, find it by `name`, use its `path`, and keep the `general` section and the `demo` entry.
-- **Never** — Accept an unknown `name` or use the stored-only fields for now.
+- **Must** — Generate and read `config.yaml` only in the structure of the MT5 Configuration Schema, keyed by Terminal name, with the `demo` Terminal.
+- **Never** — List Terminals, repeat a name as a field, or use the stored-only fields for now.
 
 ### Terminal Processes
 
@@ -354,7 +375,7 @@ Every obligation in the file, under the Principle it comes from.
 **Every Constant of the Package is published**
 
 - **Must** — Write out every Constant of the Package by its name and value in MT5 Service itself.
-- **Never** — Read a Constant from the Package at runtime, reach it through a bridge or handler, or make a Function accept a Constant's name.
+- **Never** — Read a Constant from the Package at runtime, reach it through a bridge or handler, guess a value, or make a Function accept a Constant's name.
 
 ### Review
 

@@ -34,8 +34,7 @@ External program  →  MT5 Interface REST API  →  MetaTrader 5 API  →  MetaT
 <!-------------------------- Constraints -->
 ### Constraints
 
-- The Target is deployed on a Windows server.
-- The MetaTrader 5 Python package runs only on Windows and requires the MetaTrader 5 terminal to be installed and running on the same machine.
+- Source generation, installation, and API startup work on any operating system. Where the MetaTrader 5 package or terminal is not available, every MetaTrader 5 Function fails with an error at runtime.
 - The Target has no database, no stored Entities, and no Presentation dashboard.
 
 <br><br>

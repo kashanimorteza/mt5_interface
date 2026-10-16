@@ -31,7 +31,7 @@ MT5 Service already holds every Function of the MetaTrader 5 package. MT5 Group 
 
 ### How It Works
 
-A request reaches an Endpoint; its Handler calls the same Function on its Function Group through Logic Interface and returns the result.
+A request reaches an Endpoint and names its Terminal in `terminal`; its Handler creates an MT5 Instance for that Terminal through Logic Interface, calls the same Function on its Function Group, and returns the result.
 
 <br>
 
@@ -74,7 +74,7 @@ One unit for every Function Group, placed directly inside the MT5 Group director
 The API surface of every Adapter. It meets these needs:
 
 1. **Complete** — exactly one Adapter for every Function Group of MT5 Service, exactly one Endpoint for every Function of that group, and one Constants Endpoint, changing when MT5 Service changes.
-2. **Unchanged** — every Parameter keeps the Function's name, requirement, and default, including the `terminal` Parameter that names the Terminal.
+2. **Unchanged** — every Parameter keeps the Function's name, requirement, and default. Every Function Endpoint adds one required Parameter, `terminal`, the name of the Terminal in MT5 Service's Terminal Configuration; the Constants Endpoint takes none.
 3. **Nothing else** — no Endpoint or Behavior beyond these is added.
 
 <!-------------------------- Documentation -->
@@ -168,7 +168,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Handlers only call their Function
 
-**Rule:** A Handler calls only its Function on its Function Group and returns its result.
+**Rule:** A Handler creates an MT5 Instance with the request's `terminal`, calls only its Function on that instance's Function Group, and returns its result.
 **Why:** MT5 Service stays the single owner of Behavior.
 **Boundary:** A Handler follows the Handler rule of the Group contract in the API Definition.
 
@@ -179,8 +179,8 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Rule:** Review establishes MT5 Group conformance through these observations, every one of them on every review:
 - There is exactly one Adapter for every Function Group of MT5 Service, and one Endpoint for every Function of that group.
 - One Constants Endpoint returns every Constant of MT5 Service by name and value.
-- Every Endpoint keeps its Function's Parameter names, requirements, and defaults.
-- Every Handler only calls its Function through Logic Interface.
+- Every Endpoint keeps its Function's Parameter names, requirements, and defaults, and every Function Endpoint adds only the required `terminal` Parameter.
+- Every Handler creates an MT5 Instance for the request's `terminal` and only calls its Function through Logic Interface.
 - No Adapter shares a base with another or produces Endpoints dynamically.
 - MT5 Group does not import the MetaTrader 5 package.
 **Why:** A fixed set of observations proves the same things on every review.
@@ -221,7 +221,7 @@ Every obligation in the file, under the Principle it comes from.
 
 **Handlers only call their Function**
 
-- **Must** — Call only the Function and return its result.
+- **Must** — Create an MT5 Instance for the request's `terminal`, call only the Function, and return its result.
 - **Never** — Add Behavior in a Handler.
 
 ### Review

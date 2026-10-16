@@ -132,6 +132,14 @@ Responsibility: Defines the conditional shape of the Database Component's runtim
 
 → [Read more about Database Configuration Schema](schema/database-configuration.yaml)
 
+#### MT5 Configuration Schema
+
+The structure of MT5 Service's runtime configuration file — general settings and every Terminal, keyed by its name, with its fields. It is conditional: it applies when the Implementation declares an MT5 Service, and an Implementation without one ignores it.
+
+Responsibility: Defines the exact shape of MT5 Service's `config.yaml` so that the file is always generated in the same structure and adding a Terminal is one edit in one file.
+
+→ [Read more about MT5 Configuration Schema](schema/mt5-configuration.yaml)
+
 ### Operational formats
 
 The stored structure and initial template of a generated record.
