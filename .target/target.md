@@ -20,10 +20,10 @@ A REST API through which external programs connect to MetaTrader 5 and perform i
 External program  →  MT5 Interface REST API  →  MetaTrader 5 API  →  MetaTrader 5 terminal
 ```
 
-- The MetaTrader 5 terminals the Target works with are listed in `terminal.config`. Each Terminal has a `name` and the `path` of its terminal executable.
+- The MetaTrader 5 terminals the Target works with are listed in `config.yaml`. Each Terminal has a `name` and the `path` of its terminal executable.
 - The Target implements every function of the official MetaTrader 5 Python package, as listed in its documentation, and exposes each one as a REST API endpoint.
 - An external program calls an endpoint and names the Terminal by its `name`.
-- MT5 Interface finds that Terminal's `path` in `terminal.config` and executes the function on MetaTrader 5 through that terminal.
+- MT5 Interface finds that Terminal's `path` in `config.yaml` and executes the function on MetaTrader 5 through that terminal.
 - MT5 Interface returns the function's result to the program.
 
 <!-------------------------- Scope -->
@@ -43,19 +43,7 @@ External program  →  MT5 Interface REST API  →  MetaTrader 5 API  →  MetaT
 <!--------------------------------------------------------------------------------- Configuration --->
 ## Configuration
 
-The Terminals are defined in `terminal.config`, a YAML configuration file owned by the MT5 Service in the Logic Layer. It holds one entry per Terminal and may hold any number of Terminals. Each entry has these fields:
-
-- `name` — Type: `string`; Required: `true`; Unique: `true`; Purpose: Identifies the terminal; every request names its Terminal by it.
-- `path` — Type: `string`; Required: `true`; Purpose: The local filesystem path of the MetaTrader 5 terminal executable.
-- `username` — Type: `string`; Required: `false`; Purpose: The username used to log in through the terminal.
-- `password` — Type: `string`; Required: `false`; Purpose: The password used to log in through the terminal.
-- `investor_password` — Type: `string`; Required: `false`; Purpose: The read-only investor password used to log in through the terminal.
-- `ip` — Type: `string`; Required: `false`; Purpose: The network address of the terminal.
-- `description` — Type: `string`; Required: `false`; Purpose: Describes the terminal.
-
-**Stored-only fields:** `username`, `password`, `investor_password`, and `ip` are stored as plain text, may be empty, and are not used by MT5 Service for now. `terminal.config` is kept in the repository as is.
-
-**Terminal selection:** The `terminal` parameter of every MT5 Service function is the Terminal's `name`. MT5 Service finds that Terminal in `terminal.config` and uses its `path` to reach the MetaTrader 5 terminal; a `name` not in the file is refused with an error. The Implementation rule that identifies a Terminal by its path does not apply to this Target.
+The Terminals are declared in `config.yaml`, the Terminal Configuration of the MT5 Service. Its structure, its fields, its sample `demo` Terminal, and Terminal selection by `name` are defined by the MT5 Service in Implementation.
 
 <br><br>
 
@@ -100,7 +88,7 @@ Defines the project's implementation phases. Phases are executed step by step in
 - **Target:** Logic
 - **Status:** Enabled
 - **Readiness:** Ready
-- **Goal:** Implement the MT5 Service in the Logic Layer, including `terminal.config` and Terminal selection by `name`.
+- **Goal:** Implement the MT5 Service in the Logic Layer, including `config.yaml` and Terminal selection by `name`.
 
 <!-------------------------- P2 -->
 ### P2 — API

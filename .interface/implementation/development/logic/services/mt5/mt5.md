@@ -31,7 +31,7 @@ External programs and other parts of the application need MetaTrader 5 without e
 
 ### How It Works
 
-A caller imports one Function Group from MT5 Service Interface and calls a function with its parameters; MT5 Service calls the same function of the package with those parameters and returns its result as plain data, or raises MT5 Error when the package reports a failure. Every call names its Terminal, and MT5 Service runs it in that Terminal's own process, so several Terminals work at the same time without affecting one another. Connection details, such as login, password, and server, are sent by the caller through the package's own connection Functions, such as `initialize` and `login`.
+A caller imports one Function Group from MT5 Service Interface and calls a function with its parameters; MT5 Service calls the same function of the package with those parameters and returns its result as plain data, or raises MT5 Error when the package reports a failure. Every call names its Terminal by the Terminal's `name` in Terminal Configuration; MT5 Service takes that Terminal's `path` from there and runs the call in that Terminal's own process, so several Terminals work at the same time without affecting one another. Connection details, such as login, password, and server, are sent by the caller through the package's own connection Functions, such as `initialize` and `login`.
 
 <br>
 
@@ -42,7 +42,8 @@ A caller imports one Function Group from MT5 Service Interface and calls a funct
 - **Package Documentation** — the official documentation of the Package, the only source for its Functions and their parameters.
 - **Function** — one function the Package offers.
 - **Function Group** — one of the groups of Functions this Definition names, realized as one class.
-- **Terminal** — one installed MetaTrader 5 terminal, identified by the path of its terminal file, the same path the Package's `initialize` takes.
+- **Terminal** — one installed MetaTrader 5 terminal, declared in Terminal Configuration and identified by its `name`; its `path` is the path of its terminal file, the same path the Package's `initialize` takes.
+- **Terminal Configuration** — the `config.yaml` file of MT5 Service, which declares every Terminal.
 - **Terminal Process** — the separate operating-system process in which MT5 Service runs the Package for one Terminal.
 - **Constants** — every named constant the Package defines, such as `TIMEFRAME_H1` or `ORDER_TYPE_BUY`, with its value.
 - **Plain Data** — a valid JSON value: made only of objects, arrays, strings, numbers, booleans, and null, so it is sent as JSON unchanged.
@@ -59,6 +60,7 @@ A caller imports one Function Group from MT5 Service Interface and calls a funct
 MT5 Service
 ├── Interface
 ├── Function Groups
+├── Configuration
 ├── Terminal Processes
 ├── Constants
 └── Documentation
@@ -99,6 +101,32 @@ One unit and one class for every Function Group, each holding one method for eve
 
 A Function of the Package Documentation that no Function Group above lists stops generation and is reported, so it is placed in a group by a change to this Definition, never by guess.
 
+<!-------------------------- Configuration -->
+### Configuration
+
+```text
+Configuration
+├── general
+└── terminals
+    └── one entry per Terminal
+```
+
+Terminal Configuration is one YAML file, `config.yaml`, in the MT5 Service directory. It has two sections:
+
+1. **`general`** — general settings of MT5 Service; it holds no setting yet and stays present for later ones.
+2. **`terminals`** — one entry for every Terminal; it may hold any number of Terminals. Every entry has these fields:
+   - `name` — `string`; required; unique; identifies the Terminal, and every call names its Terminal by it.
+   - `path` — `string`; required; the local filesystem path of the MetaTrader 5 terminal executable.
+   - `username` — `string`; optional; the username used to log in through the Terminal.
+   - `password` — `string`; optional; the password used to log in through the Terminal.
+   - `investor_password` — `string`; optional; the read-only investor password used to log in through the Terminal.
+   - `ip` — `string`; optional; the network address of the Terminal.
+   - `port` — `integer`; optional; the network port of the Terminal.
+   - `api_key` — `string`; optional; the API key of the Terminal.
+   - `description` — `string`; optional; describes the Terminal.
+
+The generated file holds one sample entry named `demo`, with every other field left empty, so it shows how a Terminal is added. `username`, `password`, `investor_password`, `ip`, `port`, and `api_key` are only stored, as plain text, may be empty, and are not used by MT5 Service for now.
+
 <!-------------------------- Terminal Processes -->
 ### Terminal Processes
 
@@ -112,7 +140,7 @@ The layer that runs the Package. Every Terminal has its own Terminal Process: th
 <!-------------------------- Constants -->
 ### Constants
 
-One group that holds every Constant of the Package under its own name with its value, and one method that returns them all as Plain Data, a dictionary from name to value. A caller reads a Constant's value from here and passes that value to a Function unchanged. The Constants are read from the Package itself, never listed by hand.
+One group that holds every Constant of the Package under its own name with its value, and one method that returns them all as Plain Data, a dictionary from name to value. A caller reads a Constant's value from here and passes that value to a Function unchanged. Every Constant is written out in MT5 Service itself, with its name and value taken from the Package, so the Constants are available without the Package; they are never read from the Package at runtime or reached through a bridge or handler to it.
 
 <!-------------------------- Documentation -->
 ### Documentation
@@ -129,7 +157,7 @@ The documentation of MT5 Service, in the file, location, and format MT5 Service 
 
 1. **Overview** — What MT5 Service is and why it exists, in one paragraph, with one simple example.
 2. **Interface** — Every Function Group with its Functions, each with one example, and how to read the Constants.
-3. **Use** — How a caller imports a Function Group and calls a Function.
+3. **Use** — How a caller imports a Function Group and calls a Function, and how a Terminal is added to Terminal Configuration.
 4. **Verify** — How to see that MT5 Service matches the Package Documentation.
 
 <!-------------------------- Directory Structure -->
@@ -141,6 +169,7 @@ Directory Structure
 ├── <group>
 ├── terminal
 ├── constants
+├── config.yaml
 └── README
 ```
 
@@ -161,7 +190,7 @@ The root of this tree is the MT5 Service directory, named in `settings` in MT5 S
 
 - **The Package's own behavior** — is not MT5 Service's, because MT5 Service represents the Package without redefining it.
 - **Trading decisions and strategies** — are not MT5 Service's, because it only runs the Functions a caller requests.
-- **Choosing an Account, Instance, or terminal, and storing connection details** — are not MT5 Service's, because the caller sends every connection detail; a separate connection layer may provide this later.
+- **Choosing an Account and using stored connection details** — are not MT5 Service's, because the caller chooses its Terminal by `name` and sends every connection detail through the Package's connection Functions; the connection fields of Terminal Configuration are only stored for now.
 - **Publishing Services from Logic's root** — is not MT5 Service's, because it owns only its own Interface.
 
 <br>
@@ -202,7 +231,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Every method mirrors its Function
 
-**Rule:** Every method takes exactly the parameters of its Function, with the same names, order, and defaults, plus one parameter only, `terminal`, the path of the Terminal it works with; every Function parameter is passed to the Package unchanged.
+**Rule:** Every method takes exactly the parameters of its Function, with the same names, order, and defaults, plus one parameter only, `terminal`, the `name` of the Terminal it works with in Terminal Configuration; every Function parameter is passed to the Package unchanged.
 **Why:** Whoever knows the Package already knows MT5 Service, and every caller decides for itself which terminal and Account to work with.
 **Boundary:** Apart from `terminal`, a method adds no parameter, default connection, or Account selection of its own. The Constants take no `terminal`.
 
@@ -211,6 +240,14 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Rule:** Every method returns its Function's result as Plain Data, a valid JSON value: a named tuple becomes a dictionary with the same field names, an array of records becomes a list of such dictionaries, and a collection becomes a list. When the Package returns its failure value, such as None or False, the method raises MT5 Error with the code and message of `last_error`.
 **Why:** Every caller, including API, receives data it can use and send directly, and never has to check for a silent failure value.
 **Boundary:** Conversion changes only the form of a result, never its values or field names.
+
+### Configuration
+
+#### Every Terminal is declared in Terminal Configuration
+
+**Rule:** Every Terminal is one entry of the `terminals` section of `config.yaml`, with the fields Configuration lists. MT5 Service finds a call's Terminal by its `name` and uses that entry's `path`; a `name` that is not in `config.yaml` is refused with MT5 Error. The generated file has a `general` section and one sample `demo` entry.
+**Why:** Callers name a Terminal instead of knowing where it is installed, and Terminals are added by editing one file.
+**Boundary:** `username`, `password`, `investor_password`, `ip`, `port`, and `api_key` are only stored and are not used by MT5 Service for now.
 
 ### Terminal Processes
 
@@ -232,8 +269,8 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Every Constant of the Package is published
 
-**Rule:** The Constants group holds every Constant the Package defines, under its own name and with its own value, read from the Package and never listed by hand.
-**Why:** A caller that cannot import the Package, such as an external program through API, still needs every value a Function accepts.
+**Rule:** The Constants group holds every Constant the Package defines, under its own name and with its own value, each written out in MT5 Service itself; no Constant is read from the Package at runtime or reached through a bridge or handler to it.
+**Why:** A caller that cannot import the Package, such as an external program through API, still needs every value a Function accepts, even where the Package is not installed.
 **Boundary:** Functions still take a Constant's value, never its name.
 
 ### Review
@@ -245,11 +282,12 @@ Every Principle below is mandatory and belongs to the category that owns it.
 - Every Function of the Package Documentation has exactly one method, with its exact name, in the class of the group this Definition lists it under.
 - Every Function Group sits in its own unit and is importable on its own.
 - Every method takes exactly its Function's parameters, with the same names, order, and defaults, plus only `terminal`, and passes them unchanged.
+- `config.yaml` exists in the MT5 Service directory with a `general` section and a `terminals` section holding the `demo` entry; every call finds its Terminal there by `name`, and an unknown `name` raises MT5 Error.
 - Every call runs in the Terminal Process of its Terminal; calls for one Terminal run one after another, and no call runs the Package in the caller's process.
 - No other part of the application imports the Package.
 - Every result is Plain Data, a valid JSON value, with the Package's field names and values, and every Package failure raises MT5 Error with the code and message of `last_error`.
 - Every method takes only JSON values as parameters and returns only a JSON value, and every date and time is a Timestamp.
-- The Constants group holds every Constant of the Package with its own name and value, and nothing else.
+- The Constants group holds every Constant of the Package with its own name and value, written out in MT5 Service, and nothing else; reading the Constants does not need the Package.
 - Loading the Interface opens no connection to MetaTrader 5.
 **Why:** A fixed set of observations proves the same things on every review.
 **Boundary:** Each observation states what is seen, never the command, tool, or code that observes it.
@@ -290,6 +328,13 @@ Every obligation in the file, under the Principle it comes from.
 - **Must** — Return every result as Plain Data, a valid JSON value, and raise MT5 Error with `last_error` on every Package failure.
 - **Never** — Return a Package failure value, or change a value or field name while converting.
 
+### Configuration
+
+**Every Terminal is declared in Terminal Configuration**
+
+- **Must** — Declare every Terminal in `config.yaml`, find it by `name`, use its `path`, and keep the `general` section and the `demo` entry.
+- **Never** — Accept an unknown `name` or use the stored-only fields for now.
+
 ### Terminal Processes
 
 **Every Terminal runs in its own process**
@@ -308,8 +353,8 @@ Every obligation in the file, under the Principle it comes from.
 
 **Every Constant of the Package is published**
 
-- **Must** — Publish every Constant of the Package by its name and value, read from the Package.
-- **Never** — List a Constant by hand or make a Function accept a Constant's name.
+- **Must** — Write out every Constant of the Package by its name and value in MT5 Service itself.
+- **Never** — Read a Constant from the Package at runtime, reach it through a bridge or handler, or make a Function accept a Constant's name.
 
 ### Review
 

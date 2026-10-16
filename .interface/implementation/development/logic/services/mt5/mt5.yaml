@@ -29,7 +29,7 @@ read_order:
 # <!--------------------------------------------------------------------------------- Content_Map -->
 content_map:
   settings: "The Logic owner, the MT5 Role, and the configurable Service name and directory."
-  architecture: "The entities of the Architecture tree — Interface with its contract version, Function Groups with their naming pattern, and Documentation with its file, location, and format."
+  architecture: "The entities of the Architecture tree — Interface with its contract version, Function Groups with their naming pattern, Configuration with its file, location, and format, and Documentation with its file, location, and format."
   development: "Development capabilities, the Package, and the selected language with its realization profile."
 
 # <!--------------------------------------------------------------------------------- Content -->
@@ -53,6 +53,12 @@ content:
         naming:
           group_file: <group>
           group_class: <Group>
+      configuration:
+        file: config.yaml
+        location: the MT5 Service directory
+        format: yaml
+        sections: [general, terminals]
+        sample_terminal: demo
       documentation:
         file: README.md
         location: the MT5 Service directory
