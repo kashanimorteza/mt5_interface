@@ -1,0 +1,264 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".config/state.yaml"
+  path_note: "Mutable Workflow position, Phase progress, and execution Log."
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: true
+  rule: "Apply the current State Component and the active operation's ownership rules."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read active, then the Phase selected by stable Target phase identifier, then the Log Entries by identifier."
+  selection: "A requested phase resolves to the phases entry keyed by that phase identifier; a Log Entry resolves by its identifier."
+  absence: "No matching phases entry means no progress is recorded for that phase."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - "active"
+  - "phases"
+  - "log"
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  active: "Current Workflow position."
+  phases: "Aggregate progress for each Target phase."
+  log: "Recorded Skill executions and their outcomes."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+  active:
+    mode: "reviewing"
+    phase: "P1"
+    mode_reason: "Review is examining phase P1."
+    set_by: "review"
+    set_at: "2026-10-16T01:59:00Z"
+  phases:
+    P1:
+      id: "P1"
+      planning: "completed"
+      development: "completed"
+      review: "not satisfied"
+      completed_at: null
+    P2:
+      id: "P2"
+      planning: "not started"
+      development: "not started"
+      review: "not started"
+      completed_at: null
+  log:
+    - id: "001"
+      skill: "configure"
+      phase: null
+      event: "configure"
+      outcome: "completed"
+      started_at: "2026-10-16T01:26:58Z"
+      completed_at: "2026-10-16T01:27:22Z"
+      duration: "24 seconds"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: []
+      report: "Generated Plan Config and State Config from their Schemas composed with the general YAML structure; both records were absent and now conform to their current Schemas. Phases remain empty for Phase reconciliation."
+      data:
+        records:
+          - file: ".config/plan.yaml"
+            schema: "agent-interface-plan 8.5"
+            action: "created"
+          - file: ".config/state.yaml"
+            schema: "agent-interface-state 13.1"
+            action: "created"
+        general_structure: "agent-interface-yaml 1.2"
+    - id: "002"
+      skill: "plan"
+      phase: "P1"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-16T01:30:16Z"
+      completed_at: "2026-10-16T01:32:35Z"
+      duration: "2:19"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: []
+      report: "Created the P1 (Logic) Plan with 6 Groups and 22 Tasks; no prior Plan or Logic Source existed, so nothing was preserved, changed, removed, or replaced. State phase records were reconciled for P1 and P2."
+      data:
+        selection:
+          requested: ["1"]
+          planned: ["P1"]
+          skipped: []
+        reconciliation:
+          prior_plan: "none"
+          added:
+            - {id: "P1-G1", reason: "Logic library foundation every Service needs."}
+            - {id: "P1-G1-T1", reason: "Logic must exist as an installable library before any Service."}
+            - {id: "P1-G2", reason: "MT5 Service foundation shared by every Function Group."}
+            - {id: "P1-G2-T1", reason: "MT5 Service needs its own boundary and the Package dependency."}
+            - {id: "P1-G2-T2", reason: "All failures surface through one MT5 Error."}
+            - {id: "P1-G2-T3", reason: "The MT5 Service Definition requires an unlisted Package Function to stop generation, so coverage is confirmed before Function Groups."}
+            - {id: "P1-G2-T4", reason: "Every Package Constant must be published."}
+            - {id: "P1-G3", reason: "Target requires Terminal configuration and Terminal selection by name."}
+            - {id: "P1-G3-T1", reason: "Target defines a Terminal configuration record owned by MT5 Service."}
+            - {id: "P1-G3-T2", reason: "Target marks name and path required and name unique."}
+            - {id: "P1-G3-T3", reason: "Target requires every call to name its Terminal and refuses an unknown name."}
+            - {id: "P1-G4", reason: "Shared Package execution path for every Function Group."}
+            - {id: "P1-G4-T1", reason: "Each Terminal runs in its own process."}
+            - {id: "P1-G4-T2", reason: "Every input is JSON and every time is a Timestamp."}
+            - {id: "P1-G4-T3", reason: "Every result is Plain Data and every failure is MT5 Error."}
+            - {id: "P1-G5", reason: "Every Package Function is implemented in its named Function Group."}
+            - {id: "P1-G5-T1", reason: "Connection Function Group."}
+            - {id: "P1-G5-T2", reason: "Symbols Function Group."}
+            - {id: "P1-G5-T3", reason: "MarketBook Function Group."}
+            - {id: "P1-G5-T4", reason: "MarketData Function Group."}
+            - {id: "P1-G5-T5", reason: "Orders Function Group."}
+            - {id: "P1-G5-T6", reason: "Positions Function Group."}
+            - {id: "P1-G5-T7", reason: "History Function Group."}
+            - {id: "P1-G6", reason: "Public surfaces and documentation of MT5 Service and Logic."}
+            - {id: "P1-G6-T1", reason: "MT5 Service Interface contract."}
+            - {id: "P1-G6-T2", reason: "MT5 Service documentation."}
+            - {id: "P1-G6-T3", reason: "Logic Interface contract, with MT5 as its only Service."}
+            - {id: "P1-G6-T4", reason: "Logic root documentation."}
+          changed: []
+          removed: []
+          replaced: []
+        understanding:
+          target_overrides_applied:
+            - "Logic has no Entity Service; the Logic Interface publishes MT5 as its only Service."
+            - "A Terminal is selected by its configured name, not by its path."
+        risks:
+          - "The Package runs only on Windows with a running terminal; Package-dependent work and acceptance (Constants read from the Package, Terminal Processes, Function Group behavior) cannot be observed on a non-Windows host."
+    - id: "003"
+      skill: "develop"
+      phase: "P1"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-16T01:38:32Z"
+      completed_at: "2026-10-16T01:47:30Z"
+      duration: "8:58"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P1-G1-T1"
+        - "P1-G2-T1"
+        - "P1-G2-T2"
+        - "P1-G2-T4"
+        - "P1-G3-T1"
+        - "P1-G3-T2"
+        - "P1-G3-T3"
+        - "P1-G4-T1"
+        - "P1-G4-T2"
+        - "P1-G4-T3"
+        - "P1-G5-T1"
+        - "P1-G5-T4"
+      report: "Developed all 22 P1 Tasks: the Logic library with the MT5 Service (seven Function Groups covering all 32 Package Functions, Constants, MT5Error, per-Terminal processes, terminal.config with name-based selection), both Interfaces, and their documentation. Package-dependent behavior was exercised against a scratch stub only; real MetaTrader5 behavior needs a Windows host."
+      data:
+        tasks_done: 22
+        component: "Logic"
+        verification_limits:
+          - "MetaTrader5 5.0.6231 ships only Windows wheels and is not installed on this Linux aarch64 host; Constants, Terminal Processes, and Function Groups were exercised with a scratch stub of the Package outside the repository."
+    - id: "004"
+      skill: "review"
+      phase: "P1"
+      event: "review"
+      outcome: "not satisfied"
+      started_at: "2026-10-16T01:59:00Z"
+      completed_at: "2026-10-16T02:03:16Z"
+      duration: "4:16"
+      token_usage:
+        input: null
+        output: null
+        total: null
+      skills_used: []
+      open_questions: []
+      blockers: ["B1"]
+      report: "P1 not satisfied. Both Component Review categories (Logic 5, MT5 Service 10) and 15 of 22 Task acceptances are established; technical checks pass. Finding F1 (version release date not a Timestamp) was resolved. Findings F2-F8 record missing evidence for the seven Function Group acceptances, which need a live MetaTrader 5 terminal on Windows; Blocker B1 requires that Human action."
+      data:
+        findings:
+          - id: "F1"
+            kind: "defect"
+            baseline: "MT5 Service Review observation: every method returns only a JSON value and every date and time is a Timestamp"
+            expected: "Connection.version returns the build release date as a Timestamp."
+            observed: "Connection.version returns the Package result through plain() unchanged; the Package Documentation (version) gives the third value as the build release date string, for example '25 Feb 2019', so the result carries a date as a string. The MT5 Service README example shows [500, 2007, \"25 Feb 2019\"]."
+            location: "logic/logic/services/mt5/connection.py (Connection.version); logic/logic/services/mt5/README.md (Connection table)"
+            state: "resolved"
+            resolution: "Connection.version now converts the documented release date format (day, abbreviated month, year) to a Timestamp at 00:00 UTC and raises MT5Error (-1) for a result it cannot read; the README example now shows [500, 2007, 1551052800]. Rechecked: with a stand-in returning (500, 2007, '25 Feb 2019') the method returned [500, 2007, 1551052800]; ruff format, ruff check, and ty check pass."
+          - id: "F2"
+            kind: "missing evidence"
+            baseline: "P1-G5-T1 acceptance"
+            expected: "Initializing a configured Terminal through Connection and then reading its terminal information returns that Terminal's data as Plain Data, and shutting it down ends its session."
+            observed: "Nothing observable shows this against the MetaTrader5 Package: the Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host; the Task Log evidence used a scratch stub."
+            location: "P1-G5-T1 Task Log; host platform linux aarch64"
+            state: "open"
+          - id: "F3"
+            kind: "missing evidence"
+            baseline: "P1-G5-T2 acceptance"
+            expected: "Querying a known symbol through Symbols on an initialized Terminal returns its information and latest tick as Plain Data."
+            observed: "No initialized MetaTrader 5 Terminal is available on this host; the Task Log evidence used a scratch stub."
+            location: "P1-G5-T2 Task Log; host platform linux aarch64"
+            state: "open"
+          - id: "F4"
+            kind: "missing evidence"
+            baseline: "P1-G5-T3 acceptance"
+            expected: "After subscribing to a symbol through MarketBook, reading its book returns a list of Plain Data entries, and releasing it ends the subscription."
+            observed: "No initialized MetaTrader 5 Terminal is available on this host; the Task Log evidence used a scratch stub."
+            location: "P1-G5-T3 Task Log; host platform linux aarch64"
+            state: "open"
+          - id: "F5"
+            kind: "missing evidence"
+            baseline: "P1-G5-T4 acceptance"
+            expected: "Requesting bars for a symbol over a Timestamp range through MarketData returns a list of mappings with the Package's field names and Timestamp times."
+            observed: "No initialized MetaTrader 5 Terminal is available on this host; the Task Log evidence used a scratch stub."
+            location: "P1-G5-T4 Task Log; host platform linux aarch64"
+            state: "open"
+          - id: "F6"
+            kind: "missing evidence"
+            baseline: "P1-G5-T5 acceptance"
+            expected: "Checking a trade request given as a JSON mapping through Orders returns the Package's check result as Plain Data."
+            observed: "No initialized MetaTrader 5 Terminal is available on this host; the Task Log evidence used a scratch stub."
+            location: "P1-G5-T5 Task Log; host platform linux aarch64"
+            state: "open"
+          - id: "F7"
+            kind: "missing evidence"
+            baseline: "P1-G5-T6 acceptance"
+            expected: "Reading positions through Positions on an initialized Terminal returns a list of Plain Data mappings, empty when none are open, and the count matches its length."
+            observed: "No initialized MetaTrader 5 Terminal is available on this host; the Task Log evidence used a scratch stub."
+            location: "P1-G5-T6 Task Log; host platform linux aarch64"
+            state: "open"
+          - id: "F8"
+            kind: "missing evidence"
+            baseline: "P1-G5-T7 acceptance"
+            expected: "Requesting deals over a Timestamp range through History returns a list of Plain Data mappings whose times are Timestamps."
+            observed: "No initialized MetaTrader 5 Terminal is available on this host; the Task Log evidence used a scratch stub."
+            location: "P1-G5-T7 Task Log; host platform linux aarch64"
+            state: "open"
+        blockers:
+          - id: "B1"
+            findings: ["F2", "F3", "F4", "F5", "F6", "F7", "F8"]
+            condition: "The Function Group acceptances require calling the MetaTrader5 Package against an initialized MetaTrader 5 terminal; the Package installs only on Windows and this host is Linux aarch64 with no terminal."
+            required_action: "Human: provide a Windows host with MetaTrader 5 installed and a terminal entry (for example a demo account) in terminal.config, then run Review for P1 there, or record the observed results of the seven Function Group acceptances from such a host."
+        established:
+          component_review:
+            logic: "All 5 observations hold: Logic Interface publishes exactly MT5 (the Target excludes the Entity Service listed in Logic Preferences) and nothing else; the entry is the identical MT5 Service Interface object; no Service imports Database Interface or Logic Interface; Service names and directories are unique."
+            mt5_service: "All 10 observations hold, with F1 resolved: Interface publishes exactly the 7 Function Groups, Constants, MT5Error; all 32 documented Functions have one method in their Definition group, matched against freshly fetched documentation; each group imports alone; parameters match documented names and order plus terminal first; calls run in per-Terminal processes, serialized per Terminal, never in the caller's process; only MT5 Service imports the Package; results are Plain Data and failures raise MT5Error with last_error; parameters are JSON and dates Timestamps; Constants equal the real Package's 223 constants; loading the Interface opens nothing."
+          task_acceptance_established: ["P1-G1-T1", "P1-G2-T1", "P1-G2-T2", "P1-G2-T3", "P1-G2-T4", "P1-G3-T1", "P1-G3-T2", "P1-G3-T3", "P1-G4-T1", "P1-G4-T2", "P1-G4-T3", "P1-G6-T1", "P1-G6-T2", "P1-G6-T3", "P1-G6-T4"]
+          task_acceptance_missing_evidence: ["P1-G5-T1", "P1-G5-T2", "P1-G5-T3", "P1-G5-T4", "P1-G5-T5", "P1-G5-T6", "P1-G5-T7"]
+          technical: "uv lock --check, ruff format --check, ruff check, ty check, and uv pip check pass; a frozen install into a fresh environment imports every unit with warnings as errors; two builds of wheel and sdist are byte-identical; the lock carries cp314 win_amd64 wheels for metatrader5 5.0.6231, numpy, and pyyaml."
+          testing_authority: "Logic and MT5 Service Preferences set testing false, so all verification was transient; no test artifact was added."
+        method:
+          - "Package-dependent conditions were observed with stand-ins kept outside the repository; the Constants stand-in was built from the real MetaTrader5 5.0.6231 wheel's constant definitions, read statically without executing the wheel."
+        review_observations:
+          - "Zero-diff regeneration could not be observed: Develop is not a re-runnable deterministic generator, and re-running it is another Operation's responsibility."
+          - "The MT5 Service README shows last_error returning [1, \"Success\"]; the Package Documentation names code 1 'generic success' but does not show that exact message. No Plan acceptance or Component observation covers example output values."
+          - "F1's conversion relies on the documented release date format, shown by the sample '25 Feb 2019'; a differently formatted date from the real Package would raise MT5Error rather than pass through."
