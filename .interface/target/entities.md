@@ -54,6 +54,7 @@ Entities
 - `user_id` — Type: `integer`; Nullable: `false`; Purpose: Identifies the user who owns this instance.
 - `name` — Type: `string`; Nullable: `false`; Purpose: The instance's display name.
 - `ip` — Type: `string`; Nullable: `true`; Purpose: Identifies the technical network address used to reach MetaTrader 5 when required.
+- `path` — Type: `string`; Nullable: `true`; Purpose: The local filesystem path of the MetaTrader 5 terminal executable used by this Instance when required.
 - `username` — Type: `string`; Nullable: `true`; Purpose: Defines the technical username used to establish the Instance connection when required.
 - `password` — Type: `string`; Nullable: `true`; Purpose: Defines the technical password used to establish the Instance connection when required.
 - `api_key` — Type: `string`; Nullable: `true`; Purpose: Defines the technical API credential used to establish the Instance connection when required.
@@ -72,7 +73,7 @@ Entities
 
 **Initial Data:**
 
-- `name`: `MetaTrader`; `user_id`: `1`; `ip`: `127.0.0.1`; `username`: `test`; `password`: Generate securely; `api_key`: Generate securely.
+- `name`: `MetaTrader`; `user_id`: `1`; `ip`: `127.0.0.1`; `path`: `C:\Program Files\FxPro Markets MT5\terminal64.exe`; `username`: `test`; `password`: Generate securely; `api_key`: Generate securely.
 
 <!-------------------------- Currency -->
 ### Currency

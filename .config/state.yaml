@@ -29,42 +29,42 @@ content_map:
 # <!--------------------------------------------------------------------------------- Content -->
 content:
   active:
-    mode: "reviewing"
-    phase: "P6"
-    mode_reason: "Review of P6 is not satisfied: Finding F2 under Blocker B-037-1 (no real MetaTrader5 package on this host)."
-    set_by: "my-interface-review"
-    set_at: "2026-10-14T12:28:49Z"
+    mode: "development"
+    phase: "P5"
+    mode_reason: "Develop Entry 062 developed the two replacement P5 Tasks."
+    set_by: "my-interface-develop"
+    set_at: "2026-10-15T23:18:26Z"
   phases:
     P1:
       id: "P1"
       planning: "completed"
       development: "completed"
       review: "satisfied"
-      completed_at: "2026-10-12T23:31:20Z"
+      completed_at: "2026-10-15T22:37:41Z"
     P2:
       id: "P2"
       planning: "completed"
       development: "completed"
       review: "satisfied"
-      completed_at: "2026-10-13T00:21:05Z"
+      completed_at: "2026-10-15T22:49:30Z"
     P3:
       id: "P3"
       planning: "completed"
       development: "completed"
       review: "satisfied"
-      completed_at: "2026-10-13T01:05:40Z"
+      completed_at: "2026-10-15T23:05:55Z"
     P4:
       id: "P4"
       planning: "completed"
       development: "completed"
       review: "satisfied"
-      completed_at: "2026-10-13T01:40:04Z"
+      completed_at: "2026-10-15T23:15:54Z"
     P5:
       id: "P5"
       planning: "completed"
       development: "completed"
       review: "satisfied"
-      completed_at: "2026-10-13T04:34:15Z"
+      completed_at: null
     P6:
       id: "P6"
       planning: "completed"
@@ -1671,3 +1671,509 @@ content:
           - "The F1 resolution changed logic/logic/services/mt5/terminal.py and both MT5 READMEs after commit e2d47d3; they are not committed."
           - "The generators that make regeneration reproducible, the downloaded Package Documentation, the locked wheel, and the stand-in packages live outside the project in session scratch space."
           - "Every API run used the live Database store only for read-only Entity reads; no Database file changed; no Terminal Process, socket, or cache directory was left."
+    - id: "043"
+      skill: "my-interface-implement"
+      phase: null
+      event: "implement"
+      outcome: "interrupted"
+      started_at: "2026-10-15T22:16:11Z"
+      completed_at: "2026-10-15T22:17:30Z"
+      duration: "1:19"
+      skills_used:
+        - name: "my-interface-implement"
+          report: "Read the Implement and State authorities and checked Config; interrupted by the Human before Plan was invoked."
+      open_questions: []
+      blockers: []
+      report: "Requested phases P1 and P2. Config records are present and structurally valid, so Configure was not needed. Interrupted by the Human before Plan, Develop, or Review was invoked for any phase. No Plan, Source, or phase progress changed; P1 and P2 progress is unchanged."
+      data:
+        phases_requested: ["P1", "P2"]
+        open_question_count: 0
+        blocker_count: 0
+    - id: "044"
+      skill: "my-interface-implement"
+      phase: null
+      event: "implement"
+      outcome: "completed"
+      started_at: "2026-10-15T22:21:10Z"
+      completed_at: "2026-10-15T22:49:30Z"
+      duration: "28:20"
+      skills_used:
+        - name: "my-interface-implement"
+          report: "Coordinated Plan, Develop, and Review for P1 and P2."
+        - name: "my-interface-plan"
+          report: "Entries 045 (P1) and 048 (P2)."
+        - name: "my-interface-develop"
+          report: "Entries 046 (P1) and 049 (P2)."
+        - name: "my-interface-review"
+          report: "Entries 047 (P1) and 050 (P2)."
+      open_questions: []
+      blockers: []
+      report: "P1 and P2 completed and satisfied after the Target's Instance gained a path Field and Initial Data value. P1: Plan 045 replaced 2 Tasks, Develop 046 added path to the Instance Entity and its documentation, Review 047 satisfied with no Finding. P2: Plan 048 replaced 3 Tasks, Develop 049 added the path value to the configured Initial Data, prepared the default Instance (instance Table with path, 17 records), and updated the documentation, Review 050 satisfied with no Finding. Aggregate Open Questions: 0 new; Blockers: 0. Nothing was committed."
+      data:
+        phases_requested: ["P1", "P2"]
+        config_check: "Plan Config and State Config present and structurally valid; Configure not needed."
+        outcomes:
+          P1: {plan: "045 completed", develop: "046 completed", review: "047 satisfied"}
+          P2: {plan: "048 completed", develop: "049 completed", review: "050 satisfied"}
+        open_question_count: 0
+        blocker_count: 0
+        notes:
+          - "Later phases consume Instance: Logic (P3) and API (P4) environments still hold the earlier Entity library, and Presentation (P5) forms and generated API types do not show path; they were outside this request."
+    - id: "045"
+      skill: "my-interface-plan"
+      parent_id: "044"
+      phase: "P1"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-15T22:25:16Z"
+      completed_at: "2026-10-15T22:31:35Z"
+      duration: "6:19"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the P1 Plan with the changed Target definition of Instance."
+      open_questions: []
+      blockers: []
+      report: "Requested phase P1 (Entity, enabled and ready). The Target definition of Instance now declares a path Field (nullable string, after ip) and Initial Data giving it a value; nothing else in the Entities definition changed. The realized Instance and the Component documentation were developed against the earlier definition, so two developed Tasks are replaced by new todo Tasks: P1-G3-T8 replaces P1-G3-T2 and P1-G5-T2 replaces P1-G5-T1. Every other P1 Task stays valid and is preserved. The Initial Data value stays outside P1, as recorded in OQ-002-1. P1 now holds 17 Tasks (15 done, 2 todo); Plan Config total is 115. Aggregate Planning progress for P1 stays completed."
+      data:
+        changes:
+          added:
+            - {id: "P1-G3-T8", reason: "Realize Instance from its current Target definition, which gained the path Field."}
+            - {id: "P1-G5-T2", reason: "The root documentation must describe the current Instance."}
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P1-G1-T1, P1-G2-T1 to P1-G2-T5", reason: "Library setup and Core contracts already support a nullable string Field; no change needed."}
+            - {id: "P1-G3-T1, P1-G3-T3 to P1-G3-T7", reason: "No other Entity definition changed; Account's Relation to Instance is unaffected by a new Instance Field."}
+            - {id: "P1-G4-T1", reason: "The Entity Exports and Collection are unchanged; under the Entity Definition a change in Entity meaning is not an Interface-structure change, so contract_version is not raised."}
+          replaced:
+            - {id: "P1-G3-T2", by: "P1-G3-T8", reason: "Developed against the earlier Instance definition."}
+            - {id: "P1-G5-T1", by: "P1-G5-T2", reason: "Documented the earlier Instance."}
+        notes:
+          - "Interface and Target Understanding was established from current sources this session; the Instance change was found by reading entities.md in full."
+          - "OQ-002-1 (Initial Data belongs to P2) still applies to the new path Initial Data value."
+    - id: "046"
+      skill: "my-interface-develop"
+      parent_id: "044"
+      phase: "P1"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-15T22:31:57Z"
+      completed_at: "2026-10-15T22:33:34Z"
+      duration: "1:37"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Developed the two todo P1 Tasks from Plan Entry 045 and marked the Tasks they replace as replaced."
+        - name: "sqlmodel"
+          report: "Task Skill of P1-G3-T8; the new Field follows the existing SQLModel table-model pattern of the Entity units."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P1-G3-T8"
+      report: "Developed P1-G3-T8 (Instance gains the nullable string path Field between ip and username, in its Declaration and table form) and P1-G5-T2 (the Instance Field table in the Entity documentation gains the path row), after marking P1-G3-T2 and P1-G5-T1 replaced. No other Entity, the Core, or the Interface changed. Entity passes ruff format, ruff check, and ty check, and all 12 documentation examples run. P1 now has 15 done and 2 replaced Tasks, none todo. P1 Development progress stays completed; completed_at is cleared because new development work reopened the phase until Review is satisfied again."
+      data:
+        tasks:
+          developed: ["P1-G3-T8", "P1-G5-T2"]
+          marked_replaced: ["P1-G3-T2", "P1-G5-T1"]
+        observations:
+          - "The Database Component consumes Instance and its stored instance table has no path column yet; carrying the change into storage and Initial Data is P2's work."
+    - id: "047"
+      skill: "my-interface-review"
+      parent_id: "044"
+      phase: "P1"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-15T22:34:26Z"
+      completed_at: "2026-10-15T22:37:41Z"
+      duration: "3:15"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P1 against its current Plan (15 done, 2 replaced Tasks) and the Entity Review category; transient verification, since testing is disabled."
+      open_questions: []
+      blockers: []
+      report: "P1 satisfied with no Finding. Every current Task acceptance (P1-G1-T1, P1-G2-T1 to T5, P1-G3-T1 and T3 to T8, P1-G4-T1, P1-G5-T2) and all 12 Entity Review observations were observed by independent transient checks: 200 of 200 behaviour checks, with the Target parsed from the current Entities definition and compared to every Declaration, including Instance's new path Field between ip and username. Technical: uv lock --check, uv sync --locked, uv pip check, compileall, ruff format --check, ruff check, and ty check pass; two builds give byte-identical wheel and sdist holding only the package; the wheel installs into an isolated environment and imports; all 12 README examples run and every Entity's README table regenerates identically from its Declaration. P1 Review progress is satisfied and completed_at is set."
+      data:
+        findings: {}
+        established:
+          plan_acceptance: "All current P1 acceptance criteria hold; replaced Tasks P1-G3-T2 and P1-G5-T1 were judged through their replacements."
+          review_category: "Interface publishes exactly its contract; one Export per Target Entity; Collection exact and in Target order; Relations resolve with compatible Types and no name collisions; every Declaration matches the Target in Fields, order, Types, nullability, defaults, descriptions, and metadata; immutable id and Boolean is_active; construction accepts valid values and rejects an unknown Field, a wrong Type, and a missing Required Field; JSON round trips are equal; decimal and datetime stay exact through JSON and storage; loading the Interface creates no instance or thread; an unknown Type is refused; table, column, pk/fk/uq names and the identity column take the Preferences' form."
+          instance_path: "path is a nullable, unmarked, mutable string between ip and username; an Instance builds with and without it, rejects a non-string path, round-trips it through JSON text, and stores and reads it back on a scratch SQLite engine."
+        observations:
+          - "Source-level zero-diff regeneration of agent-authored source still has no generator Review can run; OQ-004-1 applies unchanged, and the deterministic derived output (builds, README tables) was verified instead."
+          - "One early scratch check failed only because the scratch probe Entity declared a datetime as datetime rather than the AwareDatetime the Preferences select; the probe was corrected, and the check is not a Finding."
+          - "All checks ran on this Windows machine; build outputs, the isolated environment, and cache directories were created outside the project or removed afterwards."
+    - id: "048"
+      skill: "my-interface-plan"
+      parent_id: "044"
+      phase: "P2"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-15T22:38:09Z"
+      completed_at: "2026-10-15T22:41:49Z"
+      duration: "3:40"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the P2 Plan with the changed Instance definition and Initial Data."
+      open_questions: []
+      blockers: []
+      report: "Requested phase P2 (Database, enabled and ready); P1 has no open Blocker. The Target's Instance now has a path Field and its Initial Data record a path value. The Database Component reaches Fields only through the Entities, so its Core, Engine unit, Setup Operations, and Interface need no change, but three developed Tasks depend on the changed definition and are replaced by new todo Tasks: P2-G3-T5 replaces P2-G3-T2 (configured Initial Data), P2-G8-T3 replaces P2-G8-T2 (after-generation preparation of the default Instance), and P2-G9-T2 replaces P2-G9-T1 (documentation). Every other P2 Task stays valid and is preserved. P2 now holds 27 Tasks (24 done, 3 todo); Plan Config total is 118. Aggregate Planning progress for P2 stays completed."
+      data:
+        changes:
+          added:
+            - {id: "P2-G3-T5", reason: "The configured Initial Data must carry the Instance record's new path value."}
+            - {id: "P2-G8-T3", reason: "The default Instance must be prepared again so its storage reflects the current Entities and Initial Data."}
+            - {id: "P2-G9-T2", reason: "The documentation lists the Instance Initial Data record as it was."}
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P2-G1-T1, P2-G2-T1 to T3, P2-G3-T1, P2-G3-T3, P2-G3-T4", reason: "Packaging, values, Engines, Instances, and Configuration loading do not depend on any one Entity's Fields."}
+            - {id: "P2-G4-T1 to T3, P2-G5-T1 to T5", reason: "Routing and the Engine unit work from each Entity's Declaration, so a new nullable string Field needs no change."}
+            - {id: "P2-G6-T1 to T3, P2-G7-T1, P2-G7-T2, P2-G8-T1", reason: "Setup Operations, the Interface, and the entry points build from the Entity Collection and the Configuration and are unchanged."}
+          replaced:
+            - {id: "P2-G3-T2", by: "P2-G3-T5", reason: "Copied the earlier Initial Data."}
+            - {id: "P2-G8-T2", by: "P2-G8-T3", reason: "Prepared the default Instance from the earlier Entities and Initial Data."}
+            - {id: "P2-G9-T1", by: "P2-G9-T2", reason: "Documented the earlier Initial Data."}
+        notes:
+          - "Under the Database Definition, create_tables stops on a difference with an existing Table and never alters it, and changing the structure of existing Tables is outside Database; Develop owns no data migration. If the default Instance already holds an instance Table without the path column, P2-G8-T3 cannot succeed by itself and needs a Human decision about that existing store."
+          - "OQ-002-1 still applies: Initial Data is carried by P2, not P1."
+    - id: "049"
+      skill: "my-interface-develop"
+      parent_id: "044"
+      phase: "P2"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-15T22:42:18Z"
+      completed_at: "2026-10-15T22:45:27Z"
+      duration: "3:09"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Developed the three todo P2 Tasks from Plan Entry 048 and marked the Tasks they replace as replaced."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P2-G3-T5"
+      report: "Developed P2-G3-T5 (the configured Instance Initial Data record gains the Target path value), P2-G8-T3 (prepare ran on the default Instance: 7 Tables with the instance path column, 17 records inserted, a second run inserts nothing), and P2-G9-T2 (the README Initial Data table shows the path value), after marking P2-G3-T2, P2-G8-T2, and P2-G9-T1 replaced. Core, the Engine unit, the Setup Operations, the entry points, and the Interface did not change. Database passes uv lock --check, ruff format --check, ruff check, and ty check, and all 15 README examples run. P2 now has 24 done and 3 replaced Tasks, none todo. P2 Development progress stays completed; completed_at is cleared because new development work reopened the phase until Review is satisfied again."
+      data:
+        tasks:
+          developed: ["P2-G3-T5", "P2-G8-T3", "P2-G9-T2"]
+          marked_replaced: ["P2-G3-T2", "P2-G8-T2", "P2-G9-T1"]
+        observations:
+          - "The default Instance's store did not exist on this machine before this run (it is excluded from version control), so the Plan Entry 048 note about an existing instance Table without the path column did not arise; prepare created the store fresh."
+          - "The Database environment's installed copy of the Entity library was refreshed so it carries the current Instance; the lock file did not change."
+          - "Logic and API consume Database and Entity through their own environments; those environments still hold the earlier Entity library until they are refreshed, which belongs to their own phases."
+    - id: "050"
+      skill: "my-interface-review"
+      parent_id: "044"
+      phase: "P2"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-15T22:46:01Z"
+      completed_at: "2026-10-15T22:49:30Z"
+      duration: "3:29"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P2 against its current Plan (24 done, 3 replaced Tasks) and the Database Review category; transient verification, since testing is disabled."
+      open_questions: []
+      blockers: []
+      report: "P2 satisfied with no Finding. All 12 Database Review observations and the current Task acceptances were observed by independent transient checks on an isolated scratch copy of the Component (78 of 78), plus a read-only check of the real default Instance store: the configured Initial Data equals the Target's in values and Field order, with the Instance record's path value and every non-concrete value empty; create_tables builds exactly the seven Entity Tables, including the instance path column, and stops without altering anything when an existing instance Table lacks it; prepare stops in that case and inserts nothing; Initial Data inserts 17 records once and none on repeat; Entity Operations, query vocabulary, aggregates, and native commands behave as planned, including filtering and updating the path Field. The three entry points exit 0, and prepare exits 1 naming the Setup Operation and Instance when the default Instance is inactive. Technical: uv lock --check, uv sync --locked, uv pip check, compileall, ruff format --check, ruff check, and ty check pass; two builds are byte-identical; all 15 README examples run on a fresh copy. The real store holds exactly the seven Tables, the instance path column, all 17 records, and the Target path value. P2 Review progress is satisfied and completed_at is set."
+      data:
+        findings: {}
+        established:
+          review_category: "Interface publishes exactly the six groups and every __init__ is empty; every Operation and Setup Operation signature equals the Preferences' parameter lists with instance last and optional; enumerations, forms, results, and error classes match the Preferences; DatabaseInstance holds only SQLITE; calls without an Instance run on the default; Entity, Field, operator, and Instance strings are refused; create_tables uses only the Entities and stops on a differing Table; returned Entities are built by their own construction and a contract-breaking row raises DeclarationMismatchError; prepare stops when create_tables fails; non-concrete Initial Data values are empty strings; missing records return null; loading the Interface creates no file or thread."
+          plan_acceptance: "Every current P2 acceptance holds, including P2-G3-T5 (configured Instance record carries the Target path in Target order and every record validates through its Entity), P2-G8-T3 (real default Instance store), and P2-G9-T2 (documentation lists the path value and its examples run)."
+        observations:
+          - "Two review-side checks were first written beyond the Plan and corrected: one expected Configuration loading to validate Initial Data records against their Entities, which P2-G3-T4 does not require (P2-G6-T2 does, and that was observed); the other was a copy command the interface guard blocked, replaced by copying named Component items only. Neither is a Finding."
+          - "Source-level zero-diff regeneration of agent-authored source has no generator Review can run (as in OQ-004-1); derived output was verified instead: byte-identical builds and README examples."
+          - "All behaviour checks ran on scratch copies outside the project; the real store was opened read-only and is unchanged by this review."
+    - id: "051"
+      skill: "my-interface-implement"
+      phase: null
+      event: "implement"
+      outcome: "in progress"
+      started_at: "2026-10-15T23:00:30Z"
+      report: "Coordinating Plan, Develop, and Review for P3, P4, then P5."
+      data:
+        phases_requested: ["P3", "P4", "P5"]
+        config_check: "Plan Config and State Config present and structurally valid (both parsed after Entry 050); Configure not needed."
+    - id: "052"
+      skill: "my-interface-plan"
+      parent_id: "051"
+      phase: "P3"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-15T23:00:47Z"
+      completed_at: "2026-10-15T23:01:45Z"
+      duration: "58 seconds"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the P3 Plan with the Instance path change."
+      open_questions: []
+      blockers: []
+      report: "Requested phase P3 (Logic, enabled and ready); P1 and P2 have no open Blocker. The Logic Target is unchanged; the only change reaching P3 is the Entity Component's Instance gaining the path Field. Entity Service, its Base, Child Services, Interface, and documentation are built from the Entity Collection and Database Interface without naming any Field, so every existing Task stays valid and is preserved. One Task was added: P3-G1-T2 brings Logic's isolated environment up to the current Entity library, because the copy it installed earlier still exposes Instance without path (observed). P3 now holds 9 Tasks (8 done, 1 todo); Plan Config total is 119. Aggregate Planning progress for P3 stays completed."
+      data:
+        changes:
+          added:
+            - {id: "P3-G1-T2", reason: "Logic's environment still holds the previous Entity library; the Entity dependency is a non-editable local path at an unchanged version."}
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P3-G1-T1, P3-G2-T1, P3-G2-T2, P3-G3-T1, P3-G4-T1, P3-G5-T1, P3-G6-T1, P3-G6-T2", reason: "They derive from the Entity Collection and Database Interface, not from any Entity's Fields; no Logic documentation names an Instance Field."}
+          replaced: []
+        notes:
+          - "Logic's later Services (MT5 Service, P6) are not affected by the Instance change and are outside this phase."
+    - id: "053"
+      skill: "my-interface-develop"
+      parent_id: "051"
+      phase: "P3"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-15T23:02:10Z"
+      completed_at: "2026-10-15T23:02:34Z"
+      duration: "24 seconds"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Developed P3-G1-T2."
+      open_questions: []
+      blockers: []
+      report: "Developed P3-G1-T2: Logic's environment now holds the current Entity library (only entity was reinstalled; the lock file is unchanged), so Instance exposes path and Entity Service lists the stored Instance with its path value. No Logic source changed. P3 now has 9 done Tasks. P3 Development progress stays completed; completed_at is cleared because new development work reopened the phase until Review is satisfied again."
+      data:
+        tasks:
+          developed: ["P3-G1-T2"]
+          marked_replaced: []
+    - id: "054"
+      skill: "my-interface-review"
+      parent_id: "051"
+      phase: "P3"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-15T23:02:57Z"
+      completed_at: "2026-10-15T23:05:55Z"
+      duration: "2:58"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P3 against its current Plan (9 done Tasks) and the Logic and Entity Service Review categories; transient verification, since testing is disabled."
+      open_questions: []
+      blockers: []
+      report: "P3 satisfied with no Finding. All 5 Logic and 9 Entity Service Review observations and the current Task acceptances were observed by independent transient checks against a prepared scratch copy of the Database store (43 of 43): Logic Interface publishes exactly Entity and MT5, each the identical Service Interface; only Entity Service imports Database Interface and no Service imports Logic Interface; Entity Service publishes exactly its five names with identical Entity and Database objects; Base holds the twelve Actions in Database's order with Database's parameters, written out; Actions return Database's results and errors, refuse another Entity's instance before any Database call, and use the one held Database object; every Child binds its Entity in its own unit. P3-G1-T2: Logic's environment exposes Instance with path, and Entity Service lists and updates the stored path. Technical: uv lock --check, uv sync --locked, uv pip check, compileall, ruff format --check, ruff check, and ty check pass; two builds are byte-identical; all 11 Entity Service README examples and the Logic README's Entity examples run. P3 Review progress is satisfied and completed_at is set."
+      data:
+        findings: {}
+        observations:
+          - "The Logic README's MT5 example (third Python example) failed with MT5Error -10003 because it names the default terminal path C:\\Program Files\\MetaTrader 5\\terminal64.exe, which this machine does not have (its terminal is the FxPro one). That example documents the MT5 Service, which P6 owns and whose Review is open under B-037-1; it is not judged here."
+          - "Two review-side checks were first written wrongly and corrected: a call spy that logged attribute access instead of calls, and a rerun on a scratch store a previous run had changed. Neither is a Finding."
+          - "All behaviour checks ran on scratch copies of the Database store; the real store was not used by this review."
+    - id: "055"
+      skill: "my-interface-plan"
+      parent_id: "051"
+      phase: "P4"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-15T23:06:35Z"
+      completed_at: "2026-10-15T23:07:13Z"
+      duration: "38 seconds"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the P4 Plan with the Instance path change."
+      open_questions: []
+      blockers: []
+      report: "Requested phase P4 (API, enabled and ready); P1 to P3 have no open Blocker. The API Target is unchanged; Entity Group's Adapters, Endpoints, error handling, Bootstrap, and documentation derive from Entity Service and the Entity Collection without naming any Instance Field, so every existing Task stays valid and is preserved. One Task was added: P4-G1-T2 brings API's isolated environment up to the current Entity library, because the copy it installed earlier still exposes Instance without path (observed). P4 now holds 11 Tasks (10 done, 1 todo); Plan Config total is 120. Aggregate Planning progress for P4 stays completed."
+      data:
+        changes:
+          added:
+            - {id: "P4-G1-T2", reason: "API's environment still holds the previous Entity library at an unchanged version."}
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P4-G1-T1, P4-G2-T1, P4-G3-T1, P4-G3-T2, P4-G4-T1, P4-G4-T2, P4-G5-T1, P4-G5-T2, P4-G6-T1, P4-G6-T2", reason: "They derive from Entity Service and the Entity Collection, not from any Entity's Fields; no API source or documentation names an Instance Field."}
+          replaced: []
+    - id: "056"
+      skill: "my-interface-develop"
+      parent_id: "051"
+      phase: "P4"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-15T23:07:37Z"
+      completed_at: "2026-10-15T23:08:43Z"
+      duration: "1:06"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Developed P4-G1-T2."
+        - name: "fastapi"
+          report: "Task Skill of P4-G1-T2; guided exercising the Bootstrap app in-process and reading its served description."
+      open_questions: []
+      blockers: []
+      report: "Developed P4-G1-T2: API's environment now holds the current Entity library (only entity was reinstalled; the lock file is unchanged), and the API app lists the stored Instance with its path value. No API source changed. The served description describes Entity bodies as generic objects, so it lists no Instance Field; that part of the Task's acceptance does not describe the existing design and is left for Review to judge. P4 now has 11 done Tasks. P4 Development progress stays completed; completed_at is cleared because new development work reopened the phase until Review is satisfied again."
+      data:
+        tasks:
+          developed: ["P4-G1-T2"]
+          marked_replaced: []
+        observations:
+          - "API's configured host (192.168.252.2) is not an address of this machine (its addresses are 172.18.0.1 and 192.168.1.100), so 'uv run api' cannot bind here; the app was exercised in-process instead. The host comes from API's generated runtime Configuration, which this run did not change."
+          - "API's installed Logic library is the copy from its earlier sync; the MT5 terminal changes made in Logic during this session reach API only when its Logic copy is refreshed, which belongs to P6."
+    - id: "057"
+      skill: "my-interface-review"
+      parent_id: "051"
+      phase: "P4"
+      event: "review"
+      outcome: "not satisfied"
+      started_at: "2026-10-15T23:10:17Z"
+      completed_at: "2026-10-15T23:13:33Z"
+      duration: "3:16"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Reviewed P4 against its current Plan (11 done Tasks) and the API and Entity Group Review categories; transient verification, since testing is disabled."
+        - name: "fastapi"
+          report: "Guided exercising the Bootstrap app in-process and reading its served description."
+      open_questions:
+        - "OQ-057-1"
+      blockers: []
+      report: "P4 not satisfied: one Finding, F1, is open. Everything else holds: 120 of 121 independent transient checks pass, run in-process on the app Bootstrap builds against a prepared scratch copy of the Database store. All 12 API and 6 Entity Group observations hold, and P4-G1-T2's environment work holds: API's environment exposes Instance with path, and the API lists and adds Instances with their path. Technical: uv lock --check, uv sync --locked, uv pip check, compileall, ruff format --check, ruff check, and ty check pass; two builds are byte-identical. F1: P4-G1-T2's acceptance also requires the machine-readable description to show path among the Instance Fields, but Entity Group's Endpoints describe every Entity body as a generic JSON object with no Field list, so no Instance Field is shown. Review cannot resolve this without changing Entity Group's realization beyond any current Task, so it is left open as OQ-057-1 for Planning. P4 Review progress is not satisfied."
+      data:
+        findings:
+          F1:
+            state: "open"
+            open_question: "OQ-057-1"
+            baseline: "P4-G1-T2 acceptance: the running API's machine-readable description shows path among the Instance Fields."
+            expected: "The Instance Endpoints' description lists the Instance Fields, including path."
+            observed: "The Instance add and update request bodies are described as {'type': 'object', 'additionalProperties': true, 'title': 'Instance'}, with no properties; every Entity's body is described the same way, so no Field of any Entity appears in the description. The API Definition's non-simple Parameter rule fixes how an Entity travels (a JSON object of its Fields), not that its Fields are listed in the description."
+            location: "API served description: the request-body schemas of the entity/instance add and update Endpoints; Entity Group's Adapters take the Entity body through a generic dependency."
+        open_questions:
+          OQ-057-1:
+            question: "Should P4-G1-T2's acceptance require the API description to list Instance Fields?"
+            context: "Plan Entry 055 wrote that clause, but neither the API Definition nor Entity Group's realized design lists any Entity's Fields in the description; satisfying it would change how every Entity Endpoint is described, which no current Task plans."
+            current_choice: "Keep the existing generic description; Planning corrects P4-G1-T2's acceptance to what the current design delivers."
+        established:
+          api: "Every Endpoint lies beneath its Group segment and nothing else is served; Method-and-Path combinations are unique; Entity Endpoints follow the verb table by leading verb, the Path shapes, and the placement rule; an unknown Field name answers Problem Details InvalidInputError 422; a missing record answers null; the URL Key is 32 characters; docs and redoc are served with x-tagGroups sections Entity and MT5 covering every tag; the runtime Configuration holds every Structure value; Bootstrap reads only config.yaml."
+          entity_group: "One Adapter per Entity Service Child and nothing else; each Adapter binds its own Child through Logic Interface and has exactly one explicit Endpoint per Action with no class, loop, or shared base; each Endpoint keeps its Action's Parameter names and required Parameters, and its Handler is only one call of its Action with every Parameter; Adapters import only Logic Interface and API's own endpoints for the application."
+          instance_path: "API's environment exposes Instance with path; listing returns the stored path; adding an Instance with a path through the API stores it."
+        observations:
+          - "Several review-side checks were first written wrongly and corrected before judging: an unsupported route attribute, a verb lookup on the whole operation name instead of its leading verb, a substring that matched the logic.interface import, a handler-signature comparison that ignored FastAPI dependencies, and a GET on the list Endpoint that API serves as POST. None is a Finding."
+          - "API's configured host is not an address of this machine, so the server could not be started here; the same app was exercised in-process. The README's curl examples need a running server and were not run."
+          - "All behaviour checks ran on a scratch copy of the Database store; the real store was not used. The URL Key was masked in every recorded output."
+    - id: "058"
+      skill: "my-interface-plan"
+      parent_id: "051"
+      phase: "P4"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-15T23:14:12Z"
+      completed_at: "2026-10-15T23:14:40Z"
+      duration: "28 seconds"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Corrected P4-G1-T2's acceptance through a replacement Task."
+      open_questions: []
+      blockers: []
+      report: "Replanned P4 after Review Entry 057 (Finding F1, OQ-057-1). Understanding is unchanged since Plan Entry 055. P4-G1-T2's acceptance required the API description to list Instance Fields, which neither the API Definition nor Entity Group's realized design provides, so the clause was a planning error rather than newly required work. P4-G1-T2 is done and cannot be rewritten, so P4-G1-T3 replaces it with the same activity and an acceptance limited to what the current design delivers. P4 now holds 12 Tasks (11 done, 1 todo); Plan Config total is 121. Aggregate Planning progress for P4 stays completed. OQ-057-1 is answered by this current choice: the description stays generic."
+      data:
+        changes:
+          added:
+            - {id: "P4-G1-T3", reason: "Same activity as P4-G1-T2 with its acceptance corrected (no description Field listing)."}
+          changed: []
+          removed: []
+          preserved:
+            - {id: "every other P4 Task", reason: "Unaffected by the correction."}
+          replaced:
+            - {id: "P4-G1-T2", by: "P4-G1-T3", reason: "Its acceptance contained a clause no current authority requires (Finding F1 of Review Entry 057)."}
+    - id: "059"
+      skill: "my-interface-develop"
+      parent_id: "051"
+      phase: "P4"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-15T23:14:56Z"
+      completed_at: "2026-10-15T23:15:06Z"
+      duration: "10 seconds"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Developed P4-G1-T3 after marking P4-G1-T2 replaced."
+        - name: "fastapi"
+          report: "Task Skill of P4-G1-T3; guided exercising the Instance Endpoints in-process."
+      open_questions: []
+      blockers: []
+      report: "Marked P4-G1-T2 replaced and developed P4-G1-T3: API's environment already held the current Entity library, so nothing changed; the Instance Endpoints were observed to return and store path. P4 now has 11 done and 1 replaced Task. P4 Development progress stays completed."
+      data:
+        tasks:
+          developed: ["P4-G1-T3"]
+          marked_replaced: ["P4-G1-T2"]
+    - id: "060"
+      skill: "my-interface-review"
+      parent_id: "051"
+      phase: "P4"
+      event: "review"
+      outcome: "satisfied"
+      started_at: "2026-10-15T23:15:42Z"
+      completed_at: "2026-10-15T23:15:54Z"
+      duration: "12 seconds"
+      skills_used:
+        - name: "my-interface-review"
+          report: "Re-reviewed P4 against its corrected Plan (11 done, 1 replaced Task) and the API and Entity Group Review categories."
+        - name: "fastapi"
+          report: "Guided exercising the Bootstrap app in-process."
+      open_questions: []
+      blockers: []
+      report: "P4 satisfied with no open Finding. Review Entry 057's Finding F1 is resolved by Planning: Plan Entry 058 replaced P4-G1-T2 with P4-G1-T3, whose acceptance no longer asks the description to list Instance Fields, and Develop Entry 059 marked P4-G1-T2 replaced; OQ-057-1 is answered by that choice (the description stays generic). All 121 independent transient checks pass on a fresh prepared scratch copy of the Database store: every API and Entity Group observation, and P4-G1-T3 (API's environment exposes the current Instance; its Endpoints return the stored path and store a sent path). uv lock --check, uv sync --locked, ruff format --check, ruff check, and ty check pass; API source is unchanged since Entry 057, whose byte-identical builds and compile check still apply. P4 Review progress is satisfied and completed_at is set."
+      data:
+        findings:
+          F1_of_057:
+            state: "resolved"
+            resolution: "Resolved by Planning, not by changing the implementation: P4-G1-T3 replaces P4-G1-T2 with an acceptance limited to what the current design delivers; recheck: the Instance Endpoints return and store path."
+        observations:
+          - "API's configured host is not an address of this machine, so the server was not started here; the same app was exercised in-process."
+    - id: "061"
+      skill: "my-interface-plan"
+      parent_id: "051"
+      phase: "P5"
+      event: "plan"
+      outcome: "completed"
+      started_at: "2026-10-15T23:16:20Z"
+      completed_at: "2026-10-15T23:17:07Z"
+      duration: "47 seconds"
+      skills_used:
+        - name: "my-interface-plan"
+          report: "Reconciled the P5 Plan with the Instance path change."
+      open_questions: []
+      blockers: []
+      report: "Requested phase P5 (Presentation, enabled and ready); P1 to P4 have no open Blocker. The Presentation Target is unchanged; the Instance Declaration gained path. Presentation reads Entities through its generated Entity metadata and shows Fields through Field Labels, and both were generated before path existed (observed: neither holds path), so two developed Tasks are replaced: P5-G2-T2 replaces P5-G2-T1 (Entity metadata) and P5-G8-T2 replaces P5-G8-T1 (Field Labels). Pages, forms, tables, Data Provider, Navigation, and documentation derive from the metadata and labels at run time, and the generated API types follow API's description, which describes Entity bodies generically and did not change, so every other Task is preserved. P5 now holds 27 Tasks (21 done, 4 replaced, 2 todo); Plan Config total is 123. Aggregate Planning progress for P5 stays completed."
+      data:
+        changes:
+          added:
+            - {id: "P5-G2-T2", reason: "The Entity metadata must carry Instance's path Field."}
+            - {id: "P5-G8-T2", reason: "Instance's path Field needs a Field Label in each language."}
+          changed: []
+          removed: []
+          preserved:
+            - {id: "P5-G1-T1, P5-G3-T1, P5-G3-T2, P5-G4-T1 to T6, P5-G5-T3, P5-G5-T5 to T8, P5-G6-T1 to T4, P5-G7-T2", reason: "They read the metadata and labels at run time, or follow API's unchanged description; none lists Instance Fields."}
+          replaced:
+            - {id: "P5-G2-T1", by: "P5-G2-T2", reason: "Generated from the earlier Instance Declaration."}
+            - {id: "P5-G8-T1", by: "P5-G8-T2", reason: "Generated labels for the earlier set of Fields."}
+    - id: "062"
+      skill: "my-interface-develop"
+      parent_id: "051"
+      phase: "P5"
+      event: "develop"
+      outcome: "completed"
+      started_at: "2026-10-15T23:17:34Z"
+      completed_at: "2026-10-15T23:18:26Z"
+      duration: "52 seconds"
+      skills_used:
+        - name: "my-interface-develop"
+          report: "Developed P5-G2-T2 and P5-G8-T2 after marking P5-G2-T1 and P5-G8-T1 replaced."
+      open_questions: []
+      blockers: []
+      decisions:
+        - "P5-G2-T2"
+        - "P5-G8-T2"
+      report: "Developed P5-G2-T2 (the Instance entry of the generated Entity metadata gains path; the whole metadata equals the current Declarations) and P5-G8-T2 (Field Labels Path and مسیر; 56 labels per language, one per Field), after marking P5-G2-T1 and P5-G8-T1 replaced. Pages, forms, tables, and filters read the metadata and labels at run time, so they now offer path without other changes. npm run typecheck and npm run build pass. P5 now has 21 done and 6 replaced Tasks. P5 Development progress stays completed; completed_at is cleared because new development work reopened the phase until Review is satisfied again."
+      data:
+        tasks:
+          developed: ["P5-G2-T2", "P5-G8-T2"]
+          marked_replaced: ["P5-G2-T1", "P5-G8-T1"]
+        observations:
+          - "The earlier scratch generators for metadata and labels are not available in this session; the new output was written in their exact form and verified against the current Declarations."
+    - id: "063"
+      skill: "my-interface-review"
+      parent_id: "051"
+      phase: "P5"
+      event: "review"
+      outcome: "in progress"
+      started_at: "2026-10-15T23:19:23Z"
+      report: "Reviewing P5."

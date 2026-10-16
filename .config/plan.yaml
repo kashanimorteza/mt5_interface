@@ -26,7 +26,7 @@ content_map:
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
-  task_count: 113
+  task_count: 123
   plans:
     P1:
       id: "P1"
@@ -35,7 +35,7 @@ content:
       target: "Entity"
       does: "The Entity Component exists as the reusable, project-internal Entity library that defines and publishes every Target Entity with its Fields, relationships, and rules."
       constraints: []
-      task_count: 15
+      task_count: 17
       groups:
         P1-G1:
           id: "P1-G1"
@@ -186,7 +186,7 @@ content:
           area: "Entity units, one per Target Entity"
           does: "Every Target Entity exists as its own Entity whose Declaration matches its Target definition, which constructs, validates, and round-trips through JSON text on the shared Core, and whose Relations each resolve to another Entity of the Component."
           constraints: []
-          task_count: 7
+          task_count: 8
           tasks:
             P1-G3-T1:
               id: "P1-G3-T1"
@@ -223,11 +223,12 @@ content:
                 - "P1-G2-T5"
                 - "P1-G3-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-12T23:17:48Z", by: "003", event: "claimed", note: "Dependencies P1-G2-T5 and P1-G3-T1 are done."}
                 - {at: "2026-10-12T23:18:29Z", by: "003", event: "done", note: "Realized from its Target definition (entity/entity/entity/instance.py); it loads, and its table is instance with uq_instance_user_id_name and fk_instance_user_id."}
                 - {at: "2026-10-12T23:18:29Z", by: "003", event: "decision", note: "Unset: which Target credential Fields carry which Sensitivity Marker. Chosen: password is marked password and api_key is marked sensitive; the technical username and ip are unmarked. Why: the Target declares password and api_key as credentials. The same mapping is applied to User and Account."}
+                - {at: "2026-10-15T22:32:10Z", by: "046", event: "replaced", note: "Replaced by P1-G3-T8 (Plan Entry 045), which realizes Instance from its current Target definition with the path Field."}
             P1-G3-T3:
               id: "P1-G3-T3"
               source_id: "002"
@@ -331,6 +332,30 @@ content:
               log:
                 - {at: "2026-10-12T23:18:29Z", by: "003", event: "claimed", note: "Dependencies P1-G2-T5, P1-G3-T2, P1-G3-T3, P1-G3-T4, and P1-G3-T6 are done."}
                 - {at: "2026-10-12T23:19:19Z", by: "003", event: "done", note: "Realized Account (entity/entity/entity/account.py); its table is account with uq_account_name, uq_account_group_id_broker_id_instance_id, and four foreign keys to account_group, broker, instance, and currency. Observed: a 29-digit balance keeps its exact value through JSON text and SQLite storage, and a marked password is replaced in validation messages."}
+            P1-G3-T8:
+              id: "P1-G3-T8"
+              source_id: "045"
+              title: "Realize the Instance Entity from its current Target definition"
+              description: "Bring the Instance Entity into agreement with its current Target definition, which now declares a path Field for the MetaTrader 5 terminal executable, so Instance again holds exactly the Fields, order, and metadata the Target declares."
+              reason: "The Target definition of Instance changed after P1-G3-T2 was developed, so the realized Instance no longer matches it."
+              inputs:
+                - "The current Target definition of Instance"
+                - "The realized Instance Entity"
+              skills:
+                - "sqlmodel"
+              replaces: "P1-G3-T2"
+              expected_result: "An Instance Entity matching its current Target definition, including the path Field in its Target position."
+              acceptance: "Instance's Declaration matches its current Target definition in every Field, order, Type, nullability, default, and metadata, including path as a nullable string between ip and username; an Instance constructs with and without a path, rejects a non-string path, and round-trips through JSON text with path intact; its ownership Relation resolves to User."
+              depends_on:
+                - "P1-G2-T5"
+                - "P1-G3-T1"
+              constraints:
+                - "No Entity other than Instance changes."
+              status: "done"
+              log:
+                - {at: "2026-10-15T22:32:10Z", by: "046", event: "claimed", note: "Dependencies P1-G2-T5 and P1-G3-T1 are done; P1-G3-T2 marked replaced first."}
+                - {at: "2026-10-15T22:32:50Z", by: "046", event: "done", note: "Added the path Field Declaration (string, nullable, no default, Target description) between ip and username in entity/entity/entity/instance.py, and the matching path column on the Instance type. Observed: the Declaration's Fields are id, user_id, name, ip, path, username, password, api_key, is_active, description; the instance table has the same columns in that order; an Instance builds with and without path (omitted path is None), a non-string path is rejected (string_type), and an Instance with a path round-trips through JSON text unchanged; the only Relation is user_id to User. No other Entity unit changed. ruff format --check, ruff check, and ty check pass."}
+                - {at: "2026-10-15T22:32:50Z", by: "046", event: "decision", note: "Unset: whether path carries a Sensitivity Marker. Chosen: no marker. Why: the Target declares only password and api_key as Instance credentials, matching the earlier mapping that leaves ip and username unmarked."}
         P1-G4:
           id: "P1-G4"
           title: "Interface publication"
@@ -371,7 +396,7 @@ content:
           area: "Component root documentation"
           does: "A consumer can understand, set up, use, and verify the Entity library from its documentation alone."
           constraints: []
-          task_count: 1
+          task_count: 2
           tasks:
             P1-G5-T1:
               id: "P1-G5-T1"
@@ -387,10 +412,31 @@ content:
               depends_on:
                 - "P1-G4-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-12T23:20:00Z", by: "003", event: "claimed", note: "Dependency P1-G4-T1 is done."}
                 - {at: "2026-10-12T23:21:44Z", by: "003", event: "done", note: "Wrote the root documentation (entity/README.md): Overview, Interface (every Entity in Target order with its Field table generated from its Declaration, and its Entity Metadata), Declaration, Foundation, Setup, Use, Verify, and Troubleshooting. Observed: all 12 Python examples run and print what the text states; only placeholder credentials are used. The Component's cache directories created by checks during this execution (.ruff_cache, __pycache__) were removed."}
+                - {at: "2026-10-15T22:33:00Z", by: "046", event: "replaced", note: "Replaced by P1-G5-T2 (Plan Entry 045), which brings the documentation up to date with the current Instance."}
+            P1-G5-T2:
+              id: "P1-G5-T2"
+              source_id: "045"
+              title: "Bring the Entity documentation up to date with the current Instance"
+              description: "Update the Component's root documentation so its description of Instance, its Field table, and every example that involves Instance reflect the current Instance Entity, with nothing describing the earlier Instance left behind."
+              reason: "The documentation describes Instance as it was before its Target definition gained the path Field."
+              inputs:
+                - "The realized Instance Entity from its current Target definition"
+                - "The existing root documentation"
+              skills: []
+              replaces: "P1-G5-T1"
+              expected_result: "Root documentation that describes the current Entity Component, including the current Instance, completely and accurately."
+              acceptance: "The documentation keeps its sections in the required order, lists Instance with a Field table that matches its current Declaration including path, every example still works as written against the published Interface, and it contains no real credential or secret."
+              depends_on:
+                - "P1-G3-T8"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-15T22:33:00Z", by: "046", event: "claimed", note: "Dependency P1-G3-T8 is done; P1-G5-T1 marked replaced first."}
+                - {at: "2026-10-15T22:33:34Z", by: "046", event: "done", note: "Added the path row (string, nullable, no default, unmarked, mutable, Target description) between ip and username in the Instance Field table of entity/README.md; no other section described the earlier Instance. Observed: the Instance table's Field names equal its Declaration's Fields in order; all 12 Python examples run without error; sections keep their order; only placeholder credentials appear. Cache directories created by the checks were removed."}
     P2:
       id: "P2"
       title: "Database"
@@ -398,7 +444,7 @@ content:
       target: "Database"
       does: "The Database Component exists as the reusable, project-internal Database library that stores every Entity the Entity Component publishes on a selected active Instance through its one published Interface, and prepares that storage with every Target-defined Initial Data record."
       constraints: []
-      task_count: 24
+      task_count: 27
       groups:
         P2-G1:
           id: "P2-G1"
@@ -503,7 +549,7 @@ content:
           area: "Database Configuration, its loading, and Instance selection"
           does: "Database has a complete, Schema-conformant Configuration holding every Target Initial Data record, loads and validates it before any connection, and offers exactly its active Instances as Database Instance members."
           constraints: []
-          task_count: 4
+          task_count: 5
           tasks:
             P2-G3-T1:
               id: "P2-G3-T1"
@@ -541,11 +587,12 @@ content:
               depends_on:
                 - "P2-G3-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-12T23:57:59Z", by: "006", event: "claimed", note: "Dependency P2-G3-T1 is done."}
                 - {at: "2026-10-12T23:58:57Z", by: "006", event: "done", note: "Filled initial_data in database/config.yaml with all 17 Target Initial Data records (User 1, Instance 1, Currency 8, Broker 1, Asset 4, Account Group 1, Account 1), one entry per Entity in Target order, each record's Fields in the Target's order and with its concrete Target values unchanged. Every 'Generate securely' value (User password and api_key, Instance password and api_key, Account password) is an empty string; no record omitted."}
                 - {at: "2026-10-12T23:58:57Z", by: "006", event: "decision", note: "Unset: the public Entity identity in initial_data. Chosen: the Entity's logical Declaration name (User, Account Group, ...). Why: it is the Entity's public name, read from the Entity Collection at load."}
+                - {at: "2026-10-15T22:42:40Z", by: "049", event: "replaced", note: "Replaced by P2-G3-T5 (Plan Entry 048), which brings the configured Initial Data up to date with the Instance record's path value."}
             P2-G3-T3:
               id: "P2-G3-T3"
               source_id: "005"
@@ -595,6 +642,27 @@ content:
                 - {at: "2026-10-13T00:00:20Z", by: "006", event: "decision", note: "Unset: how DatabaseInstance membership is reconciled with the Configuration. Chosen: a member naming no configured Instance, or an active Instance with no member or no Engine unit, fails loading; a member whose Instance is configured inactive is refused at call time with InactiveInstanceError. Why: an unresolved selection must fail before any connection, and an inactive selection has its own error kind."}
                 - {at: "2026-10-13T00:00:20Z", by: "006", event: "decision", note: "Unset: whether the default order Field is checked at load. Chosen: it must be a Field of every Entity in the Entity Collection. Why: it fails before any call instead of on one Entity later."}
                 - {at: "2026-10-13T00:00:20Z", by: "006", event: "decision", note: "Unset: Configuration exactness. Chosen: sections, settings, Engine entries, and Instance entries must hold exactly their Schema keys in Schema order. Why: one fixed shape; anything else is an invalid Configuration."}
+            P2-G3-T5:
+              id: "P2-G3-T5"
+              source_id: "048"
+              title: "Bring the configured Initial Data up to date with the current Target"
+              description: "Update the Configuration's shared Initial Data collection so it agrees with the Target's current Initial Data, which now gives the Instance record a path value, leaving every record the Target did not change exactly as it is."
+              reason: "The collection was copied from the Target before the Instance record gained its path value, and the Initial Data Setup Operation reads only this collection."
+              inputs:
+                - "The Target's current Initial Data for every Entity"
+                - "The existing configured Initial Data collection"
+              skills: []
+              replaces: "P2-G3-T2"
+              expected_result: "A shared Initial Data collection equal to the Target's current Initial Data, including the Instance record's path value."
+              acceptance: "The configured Instance record carries the Target's path value unchanged in the Target's Field order; every Target Initial Data record is present exactly once with its concrete values unchanged and every non-concrete value an empty string; the Configuration still loads, and its Initial Data validates through each record's Entity."
+              depends_on:
+                - "P2-G3-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-15T22:42:40Z", by: "049", event: "claimed", note: "Dependency P2-G3-T1 is done; P2-G3-T2 marked replaced first."}
+                - {at: "2026-10-15T22:43:20Z", by: "049", event: "done", note: "Added path between ip and username in the Instance record of initial_data in database/config.yaml, with the Target's value unchanged; no other record changed. Refreshed the Database environment's installed Entity library (uv sync --reinstall-package entity) so the Configuration validates against the current Instance; uv.lock is unchanged (uv lock --check passes). Observed: the Configuration loads and its Instance record reads name, user_id, ip, path, username, password, api_key with path equal to the Target value; 17 records remain."}
+                - {at: "2026-10-15T22:43:20Z", by: "049", event: "decision", note: "Unset: how a value with backslashes is written in the double-quoted YAML Configuration. Chosen: a double-quoted string with each backslash escaped, matching the file's quoting of every other value. Why: it keeps one quoting style, and the loaded value equals the Target's value exactly."}
         P2-G4:
           id: "P2-G4"
           title: "Core routing"
@@ -941,7 +1009,7 @@ content:
           area: "Entry Points and after-generation preparation"
           does: "A person can run each Setup Operation by hand on the default Instance, and the default Instance is prepared once generation completes."
           constraints: []
-          task_count: 2
+          task_count: 3
           tasks:
             P2-G8-T1:
               id: "P2-G8-T1"
@@ -976,10 +1044,33 @@ content:
               depends_on:
                 - "P2-G8-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-13T00:08:13Z", by: "006", event: "claimed", note: "Dependency P2-G8-T1 is done."}
                 - {at: "2026-10-13T00:08:24Z", by: "006", event: "done", note: "After generation, removed the store left by the -I attempt in P2-G8-T1 (db/application.db, Database's own runtime file) and ran the prepare entry point as generation's after-generation step, from /tmp with uv run --project database, because Database Preferences enable it with fail_on_error. Observed: exit 0, SetupResult(prepare, SQLITE, True, None, '... 7 Entity Tables ... 17 Initial Data records inserted, 0 already present.'); db/application.db exists beneath the storage root; it holds exactly the tables account, account_group, asset, broker, currency, instance, user and the counts User 1, Instance 1, Currency 8, Broker 1, Asset 4, Account Group 1, Account 1; the inactive PostgreSQL Instance was not touched. The store is excluded from version control by the existing root ignore entry *.db."}
+                - {at: "2026-10-15T22:43:30Z", by: "049", event: "replaced", note: "Replaced by P2-G8-T3 (Plan Entry 048), which prepares the default Instance from the current Entities and Initial Data."}
+            P2-G8-T3:
+              id: "P2-G8-T3"
+              source_id: "048"
+              title: "Prepare the default Instance after this generation"
+              description: "Run the Prepare Setup Operation on the default Instance once this regeneration is complete, the same way its entry point runs it, so the default Instance reflects the current Entities and the current configured Initial Data."
+              reason: "The Instance Entity gained a Field and the configured Initial Data changed, so the default Instance prepared by P2-G8-T2 no longer reflects the generated Component."
+              inputs:
+                - "The Prepare entry point"
+                - "The current Entity Collection"
+                - "The up-to-date configured Initial Data"
+              skills: []
+              replaces: "P2-G8-T2"
+              expected_result: "The default Instance's storage holds the current Entities' Tables, including Instance's path column, and every configured Initial Data record."
+              acceptance: "The default Instance's storage exists beneath the Database-owned storage root and holds exactly the current Entities' Tables, the Instance Table with its path column, and every configured Initial Data record including the Instance record's path value; no other Instance is touched; a failing preparation identifies the Instance and the Setup Operation and leaves the stored Tables and records as they were."
+              depends_on:
+                - "P2-G8-T1"
+                - "P2-G3-T5"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-15T22:43:30Z", by: "049", event: "claimed", note: "Dependencies P2-G8-T1 and P2-G3-T5 are done; P2-G8-T2 marked replaced first. On this machine the default Instance had no store yet (db/ absent; the store is not under version control), so no existing Table or record stood in the way."}
+                - {at: "2026-10-15T22:44:00Z", by: "049", event: "done", note: "Ran the prepare entry point as the after-generation step, from the session scratch directory with uv run --project database, because Database Preferences enable it with fail_on_error. Observed: exit 0 and SetupResult(prepare, SQLITE, True, None, 'All 7 Entity Tables are present and match their Entities. 17 Initial Data records inserted, 0 already present.'); db/application.db exists beneath the storage root with exactly the tables account, account_group, asset, broker, currency, instance, user; the instance Table's columns are id, user_id, name, ip, path, username, password, api_key, is_active, description; counts User 1, Instance 1, Currency 8, Broker 1, Asset 4, Account Group 1, Account 1; the stored Instance has the Target path value. A second run exits 0 with 0 inserted and 17 already present. The inactive PostgreSQL Instance was not touched."}
         P2-G9:
           id: "P2-G9"
           title: "Documentation"
@@ -987,7 +1078,7 @@ content:
           area: "Component root documentation"
           does: "A consumer can understand, set up, use, prepare, and verify the Database library from its documentation alone."
           constraints: []
-          task_count: 1
+          task_count: 2
           tasks:
             P2-G9-T1:
               id: "P2-G9-T1"
@@ -1007,11 +1098,34 @@ content:
                 - "P2-G8-T1"
                 - "P2-G8-T2"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-13T00:08:24Z", by: "006", event: "claimed", note: "Dependencies P2-G7-T2, P2-G8-T1, and P2-G8-T2 are done."}
                 - {at: "2026-10-13T00:11:59Z", by: "006", event: "done", note: "Wrote database/README.md with Overview, Interface (each of the six groups with every Operation and parameter, every enumeration member, defaults, Results, and errors, each with an example), Instances, Setup, Use, Setup Operations, Initial Data (all 17 records listed, inserted unchanged without security-based omission), Verify, and Troubleshooting; ruff formats its code blocks. Observed: all 15 Python examples run in fresh interpreters through the published Interface and print exactly what the text states; the Verify steps (uv sync --locked, ruff format --check, ruff check, ty check, scripts/prepare.py, the file check, and the Python check) pass; the store was restored afterwards from a copy taken before the examples ran, because the truncate example renumbers Assets; only placeholder and empty credentials appear. Cache directories created by these checks (__pycache__, .ruff_cache) were removed."}
                 - {at: "2026-10-13T00:11:59Z", by: "006", event: "decision", note: "Unset: how consumers depend on Database. Chosen: documented as an editable local path dependency. Why: Database finds config.yaml and its storage in its own Component directory; a copied installation fails loading with ConfigurationError rather than resolving storage elsewhere."}
+                - {at: "2026-10-15T22:44:05Z", by: "049", event: "replaced", note: "Replaced by P2-G9-T2 (Plan Entry 048), which brings the documentation up to date with the current Initial Data."}
+            P2-G9-T2:
+              id: "P2-G9-T2"
+              source_id: "048"
+              title: "Bring the Database documentation up to date with the current Initial Data"
+              description: "Update the Component's root documentation so its list of configured Initial Data records, and every example or statement that shows the Instance record or Instance storage, reflect the current configured Initial Data and the current Instance Entity, with nothing describing the earlier state left behind."
+              reason: "The documentation lists the Instance Initial Data record as it was before it gained its path value."
+              inputs:
+                - "The up-to-date configured Initial Data"
+                - "The prepared default Instance"
+                - "The existing root documentation"
+              skills: []
+              replaces: "P2-G9-T1"
+              expected_result: "Root documentation that describes the current Database Component, including the current Initial Data, completely and accurately."
+              acceptance: "The documentation keeps its required sections in order, lists every configured Initial Data record with the Instance record's path value, every example still works as written through the published Interface, and it exposes no connection credential or Engine internal."
+              depends_on:
+                - "P2-G3-T5"
+                - "P2-G8-T3"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-15T22:44:05Z", by: "049", event: "claimed", note: "Dependencies P2-G3-T5 and P2-G8-T3 are done; P2-G9-T1 marked replaced first."}
+                - {at: "2026-10-15T22:44:38Z", by: "049", event: "done", note: "Added the path value to the Instance row of the Initial Data table in database/README.md; no other statement or example described the Instance record or Instance storage, and the record count (17) is unchanged. Observed: all 15 Python examples run without error through the published Interface; ruff format --check, ruff check, and ty check pass; only placeholder and empty credentials appear. The store was copied before the examples ran and restored afterwards (byte-identical), because the truncate example renumbers Assets; cache directories created by the checks were removed."}
     P3:
       id: "P3"
       title: "Logic"
@@ -1019,7 +1133,7 @@ content:
       target: "Logic"
       does: "The Logic Component exists as the reusable, project-internal Logic library whose Interface publishes its Entity Service, through which every Entity's stored records are reached by one Child Service per Entity working only through Database Interface."
       constraints: []
-      task_count: 8
+      task_count: 9
       groups:
         P3-G1:
           id: "P3-G1"
@@ -1028,7 +1142,7 @@ content:
           area: "Component packaging and environment"
           does: "The Logic library exists as a project-internal package whose environment resolves the Entity and Database libraries, ready to receive its Services."
           constraints: []
-          task_count: 1
+          task_count: 2
           tasks:
             P3-G1-T1:
               id: "P3-G1-T1"
@@ -1050,6 +1164,25 @@ content:
                 - {at: "2026-10-13T00:58:04Z", by: "009", event: "done", note: "Created the Logic library at logic/ (pyproject.toml, empty logic/__init__.py, logic/services/__init__.py, logic/services/entity/__init__.py, placeholder README.md). uv sync created logic/.venv (covered by the root ignore entry .venv/) and logic/uv.lock. Resolved: database 0.1.0 (editable local path ../database), entity 0.1.0 (local path ../entity), and transitively sqlmodel 0.0.48, sqlalchemy 2.1.4, pydantic 2.14.1, pyyaml 6.0.3; dev group ruff 0.17.0, ty 0.0.86. Observed from the filesystem root: logic, entity.interface, and database.interface import; a read-only count through Database returns the 8 Currencies of Database's default store, whose Component root resolves to the repository's database directory; nothing installed outside the project."}
                 - {at: "2026-10-13T00:58:04Z", by: "009", event: "decision", note: "Unset: how Logic depends on its two providers. Chosen: database as an editable local path dependency and entity as a local path dependency, with no third-party dependency of Logic's own. Why: Database locates its Configuration and storage in its own Component directory (its documented consumer form); Logic imports only the two Interfaces."}
                 - {at: "2026-10-13T00:58:04Z", by: "009", event: "decision", note: "Unset: build backend and Python floor. Chosen: uv_build with the package at the Component root and requires-python >=3.14. Why: matches the Entity and Database Components."}
+            P3-G1-T2:
+              id: "P3-G1-T2"
+              source_id: "052"
+              title: "Bring the Logic environment up to the current Entity library"
+              description: "Make Logic's isolated environment hold the current Entity library, whose Instance now has the path Field, so every Service reaches the Entities as the Entity Component currently publishes them."
+              reason: "The Entity library changed without a new version, so the copy Logic's environment installed earlier still holds the previous Instance."
+              inputs:
+                - "The current Entity library and its published Interface"
+                - "The established Logic library and its environment"
+              skills: []
+              expected_result: "Logic's environment exposes the current Entities, including Instance with its path Field, with its declared dependencies still resolving to the same recorded versions."
+              acceptance: "From Logic's environment, the Instance the Entity Interface publishes has the same Fields in the same order as the Entity Component's current Instance, including path; listing Instances through Entity Service returns the stored Instance with its stored path value; every declared dependency still resolves to its recorded concrete version; nothing is installed outside the project."
+              depends_on:
+                - "P3-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-15T23:02:15Z", by: "053", event: "claimed", note: "Dependency P3-G1-T1 is done."}
+                - {at: "2026-10-15T23:02:34Z", by: "053", event: "done", note: "Ran uv sync --locked --reinstall-package entity in logic/, which reinstalled only entity 0.1.0 from ../entity into logic/.venv; logic/uv.lock is byte-identical before and after and uv lock --check passes. Observed from the filesystem root through Logic's environment: the published Instance's Fields are id, user_id, name, ip, path, username, password, api_key, is_active, description; Entity.Service.Instance().list() returns the stored MetaTrader Instance as an Entity.Entity.Instance with its stored path value. No Logic source changed; nothing installed outside the project."}
         P3-G2:
           id: "P3-G2"
           title: "Entity Service Base"
@@ -1238,7 +1371,7 @@ content:
       target: "API"
       does: "The API Component exists as the project's executable network boundary, serving Entity Group beneath its segment of the configured Base URL, with one Adapter per Entity and one Endpoint per Action of Entity Service, reached only through Logic Interface."
       constraints: []
-      task_count: 10
+      task_count: 12
       groups:
         P4-G1:
           id: "P4-G1"
@@ -1247,7 +1380,7 @@ content:
           area: "Component packaging and environment"
           does: "The API Component exists as a project-internal executable package whose environment resolves its selected API package and the Logic library."
           constraints: []
-          task_count: 1
+          task_count: 3
           tasks:
             P4-G1-T1:
               id: "P4-G1-T1"
@@ -1268,6 +1401,48 @@ content:
                 - {at: "2026-10-13T01:20:33Z", by: "013", event: "claimed", note: "No dependencies; claimed by Develop."}
                 - {at: "2026-10-13T01:20:51Z", by: "013", event: "done", note: "Created the API Component at api/ (pyproject.toml, empty api/__init__.py, api/groups/__init__.py, api/groups/entity/__init__.py, placeholder README.md). uv sync created api/.venv (covered by the root ignore entry .venv/) and api/uv.lock. Resolved: fastapi[standard] 0.143.0 (with uvicorn 0.54.0, fastapi-cli 0.0.32, httpx 0.28.1), logic 0.1.0 (local path ../logic), and through Logic's own sources database 0.1.0 (editable ../database) and entity 0.1.0; dev group ruff 0.17.0, ty 0.0.86. Observed from the filesystem root: api and logic.interface import; Entity.Service.Currency().count() returns 8 from Database's default store, whose Component root resolves to the repository's database directory (read only); nothing installed outside the project."}
                 - {at: "2026-10-13T01:20:51Z", by: "013", event: "decision", note: "Unset: how API depends on the application. Chosen: logic as a local path dependency only, with fastapi[standard] as the selected API package at a lower bound of its resolved version. Why: Development declares only the api-to-logic Connection; uv applies Logic's own sources, so Database stays editable and keeps its own Configuration and storage."}
+            P4-G1-T2:
+              id: "P4-G1-T2"
+              source_id: "055"
+              title: "Bring the API environment up to the current Entity library"
+              description: "Make API's isolated environment hold the current Entity library, whose Instance now has the path Field, so Entity Group serves Instance as the Entity Component currently publishes it."
+              reason: "The Entity library changed without a new version, so the copy API's environment installed earlier still holds the previous Instance, and the Instance Endpoints and their description follow that copy."
+              inputs:
+                - "The current Entity library and its published Interface"
+                - "The established API package and its environment"
+              skills:
+                - "fastapi"
+              expected_result: "API's environment exposes the current Entities, including Instance with its path Field, with its declared dependencies still resolving to the same recorded versions."
+              acceptance: "From API's environment, the Instance the Entity Interface publishes has the same Fields in the same order as the Entity Component's current Instance, including path; the running API lists the stored Instance with its stored path value, and its machine-readable description shows path among the Instance Fields; every declared dependency still resolves to its recorded concrete version; nothing is installed outside the project."
+              depends_on:
+                - "P4-G1-T1"
+              constraints: []
+              status: "replaced"
+              log:
+                - {at: "2026-10-15T23:07:45Z", by: "056", event: "claimed", note: "Dependency P4-G1-T1 is done."}
+                - {at: "2026-10-15T23:08:43Z", by: "056", event: "done", note: "Ran uv sync --locked --reinstall-package entity in api/, which reinstalled only entity 0.1.0 from ../entity into api/.venv; api/uv.lock is byte-identical before and after and uv lock --check passes. Observed: from API's environment the published Instance's Fields are id, user_id, name, ip, path, username, password, api_key, is_active, description. The app Bootstrap builds, exercised in-process through FastAPI's TestClient (the configured host 192.168.252.2 is not an address of this machine, so the server cannot bind here), serves 12 Instance Endpoints, and its list Endpoint answers 200 with the stored MetaTrader Instance and its stored path value. Its machine-readable description models every Entity body, Instance included, as a generic JSON object with no Field list (the existing Entity Group design), so it lists no Instance Field at all; making it list Fields would change Entity Group's Adapters, which is outside this Task. No API source changed; nothing installed outside the project; cache directories removed."}
+                - {at: "2026-10-15T23:14:56Z", by: "059", event: "replaced", note: "Replaced by P4-G1-T3 (Plan Entry 058), which keeps the activity with a corrected acceptance."}
+            P4-G1-T3:
+              id: "P4-G1-T3"
+              source_id: "058"
+              title: "Serve the current Instance from an up-to-date API environment"
+              description: "Make API's isolated environment hold the current Entity library, whose Instance now has the path Field, so Entity Group's Instance Endpoints read and store path as the Entity Component currently defines it."
+              reason: "P4-G1-T2's acceptance asked the description to list Instance Fields, which the current Entity Group design does not do for any Entity; this Task keeps the same activity with an acceptance limited to what the design delivers."
+              inputs:
+                - "The current Entity library and its published Interface"
+                - "The established API package and its environment"
+              skills:
+                - "fastapi"
+              replaces: "P4-G1-T2"
+              expected_result: "API's environment exposes the current Entities, including Instance with its path Field, and the Instance Endpoints carry path, with every declared dependency still resolving to its recorded version."
+              acceptance: "From API's environment, the Instance the Entity Interface publishes has the same Fields in the same order as the Entity Component's current Instance, including path; the API's Instance Endpoints return a stored Instance with its stored path value and store a path sent with a new Instance; every declared dependency still resolves to its recorded concrete version; nothing is installed outside the project."
+              depends_on:
+                - "P4-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-15T23:14:56Z", by: "059", event: "claimed", note: "Dependency P4-G1-T1 is done; P4-G1-T2 marked replaced first."}
+                - {at: "2026-10-15T23:15:06Z", by: "059", event: "done", note: "API's environment already held the current Entity library from the reinstall recorded under P4-G1-T2; nothing needed changing. Observed: uv lock --check passes; the published Instance's Fields are id, user_id, name, ip, path, username, password, api_key, is_active, description; the app Bootstrap builds, exercised in-process against a prepared scratch copy of the Database store, answers the Instance list Endpoint with 200 and the stored path, and its add Endpoint answers 200 and returns the path sent with the new Instance. No API source changed; cache directories removed."}
         P4-G2:
           id: "P4-G2"
           title: "Runtime Configuration"
@@ -1511,7 +1686,7 @@ content:
       target: "Presentation"
       does: "The Presentation Component exists as the web dashboard with a menu and navigation, giving every Entity one page through which its records are listed, viewed, searched, filtered, ordered, added, edited, enabled, disabled, and deleted, reaching the application only through API."
       constraints: []
-      task_count: 25
+      task_count: 27
       groups:
         P5-G1:
           id: "P5-G1"
@@ -1551,7 +1726,7 @@ content:
           area: "Generated Entity metadata"
           does: "Presentation holds one generated description of every Entity of the Entity Collection that all its parts read at run time instead of Entity itself."
           constraints: []
-          task_count: 1
+          task_count: 2
           tasks:
             P5-G2-T1:
               id: "P5-G2-T1"
@@ -1567,12 +1742,34 @@ content:
               depends_on:
                 - "P5-G1-T1"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-13T01:55:12Z", by: "019", event: "claimed", note: "Dependency P5-G1-T1 is done."}
                 - {at: "2026-10-13T01:55:26Z", by: "019", event: "done", note: "Generated presentation/navigation/resources.config.ts with the scratch generator gen_metadata.py from the Entity Collection and Declarations (read through entity.interface at generation only): typed EntityMeta entries in Collection order, each with the Entity's logical name, API resource (its Adapter segment), route, record label Field, description, ordered Fields (type, description, nullable, required, sensitive, immutable, generated, size, relation to the related Entity's resource), and an empty dependsOn; plus entityOf(resource). Observed: 7 Entities with labels user:name, instance:name, currency:code, broker:name, asset:symbol, account_group:name, account:name; tsc passes; generating again gives an identical file; the file imports nothing from Entity, so nothing reads Entity at run time."}
                 - {at: "2026-10-13T01:55:26Z", by: "019", event: "decision", note: "Unset: which Field names a record where it is shown or chosen. Chosen: the name Field when the Entity declares one, otherwise its first non-sensitive string Field that takes part in a uniqueness constraint (Currency code, Asset symbol). Why: the profile shows the related record's name instead of its id, and not every Entity declares a name."}
                 - {at: "2026-10-13T01:55:26Z", by: "019", event: "decision", note: "Unset: where the generated metadata unit lives. Chosen: navigation/resources.config.ts, the name the profile gives it, beside Navigation, which derives the menu and routes from it. Why: the metadata is not an Architecture part of its own."}
+                - {at: "2026-10-15T23:17:40Z", by: "062", event: "replaced", note: "Replaced by P5-G2-T2 (Plan Entry 061), which regenerates the metadata from the current Declarations."}
+            P5-G2-T2:
+              id: "P5-G2-T2"
+              source_id: "061"
+              title: "Regenerate the Entity metadata from the current Entity Declarations"
+              description: "Generate the Entity metadata again from the current Entity Collection and Declarations, so the Instance entry carries its new path Field with the Declaration's properties and every other entry stays as it is."
+              reason: "The Instance Declaration gained the path Field after the metadata was generated, so Instance's page, forms, and table do not offer it."
+              inputs:
+                - "The current Entity Collection and Declarations the Entity Interface publishes"
+                - "The existing generated Entity metadata"
+              skills: []
+              replaces: "P5-G2-T1"
+              expected_result: "Entity metadata that matches the current Declarations, with path in the Instance entry."
+              acceptance: "The Instance entry lists path between ip and username as a nullable, non-required, non-sensitive, mutable, non-generated string with its Declaration's description; every other Entity entry and Field is unchanged; generating again gives an identical result; nothing at run time reads Entity itself."
+              depends_on:
+                - "P5-G1-T1"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-15T23:17:40Z", by: "062", event: "claimed", note: "Dependency P5-G1-T1 is done; P5-G2-T1 marked replaced first."}
+                - {at: "2026-10-15T23:18:26Z", by: "062", event: "done", note: "Added the path Field entry (type string, the Declaration's description, nullable true, required false, sensitive false, immutable false, generated false, size null, relation null) between ip and username in the Instance entry of presentation/navigation/resources.config.ts; no other entry changed. Observed: parsing the metadata and comparing it with the current Entity Collection gives 7 entries whose names and every Field's name, type, description, nullability, requirement, sensitivity, immutability, generation, and size equal the Declarations, in order; npm run typecheck and npm run build pass (dist removed afterwards); the file still imports nothing from Entity."}
+                - {at: "2026-10-15T23:18:26Z", by: "062", event: "decision", note: "Unset: how to regenerate without the earlier generator, which lived in another session's scratch space. Chosen: write the one new Field entry in the generator's exact output form and prove equality of the whole metadata with the current Declarations. Why: the result must be what generation from the current Declarations yields, and the full comparison shows it is."}
         P5-G3:
           id: "P5-G3"
           title: "API Access"
@@ -2093,7 +2290,7 @@ content:
           area: "Field Labels in the language resources"
           does: "Every Field of every Entity has a Field Label in each language that the dashboard shows and a person can edit."
           constraints: []
-          task_count: 1
+          task_count: 2
           tasks:
             P5-G8-T1:
               id: "P5-G8-T1"
@@ -2111,12 +2308,35 @@ content:
                 - "P5-G2-T1"
                 - "P5-G4-T2"
               constraints: []
-              status: "done"
+              status: "replaced"
               log:
                 - {at: "2026-10-13T03:21:27Z", by: "025", event: "claimed", note: "Dependencies P5-G2-T1 and P5-G4-T2 are done."}
                 - {at: "2026-10-13T03:22:35Z", by: "025", event: "done", note: "Rewrote the scratch generator gen_locales.py: it keeps generating each Entity's name and page titles, removes the description-based labels an earlier generation had placed under each Entity's own section, and writes Field Labels under fields.<entity>.<exact Field name> in i18n/en.json and i18n/fa.json, adding a readable default only where a label is missing (English from the Field name, such as is_active as Active, base_currency_id as Base Currency, api_key as API Key; Persian from a table of Field-name translations, falling back to the English default). Observed: both languages hold 55 Field Labels, one per Field of the seven Entities; on a copy where one English label was edited and another deleted, generating again kept the edited label and restored the deleted one with its default; generating the project's resources again leaves them byte-identical."}
                 - {at: "2026-10-13T03:22:35Z", by: "025", event: "decision", note: "Unset: the readable default for a Field Label. Chosen: in English, the Field name's words capitalized, without a leading is or a trailing id, with ID, API, and IP in capitals; in Persian, a short translation of the Field name. Why: the Preferences give is_active as Active as the example and ask for a readable default in every language."}
                 - {at: "2026-10-13T03:22:35Z", by: "025", event: "decision", note: "Unset: what happens to the description-based labels an earlier generation wrote. Chosen: they are removed as the Component's own obsolete output, since no part reads them any more. Why: generation removes its own obsolete output and keeps only the current Field Labels."}
+                - {at: "2026-10-15T23:17:40Z", by: "062", event: "replaced", note: "Replaced by P5-G8-T2 (Plan Entry 061), which adds the labels for Instance's path Field."}
+            P5-G8-T2:
+              id: "P5-G8-T2"
+              source_id: "061"
+              title: "Provide the Field Labels for the Instance path Field"
+              description: "Generate the Field Labels again from the current Entity metadata, so each language gains a readable default label for Instance's path Field while every existing label, including any edited by hand, stays unchanged."
+              reason: "The Instance path Field has no Field Label in either language, so the dashboard would show its raw name."
+              inputs:
+                - "The regenerated Entity metadata"
+                - "The language resources"
+              skills: []
+              replaces: "P5-G8-T1"
+              expected_result: "Language resources holding a Field Label for every current Field in both languages, including Instance's path."
+              acceptance: "Each language holds exactly one label for every Field of every current Entity, now including Instance's path with a readable default in that language; every label that existed before is byte-for-byte unchanged; generating again leaves the resources identical."
+              depends_on:
+                - "P5-G2-T2"
+                - "P5-G4-T2"
+              constraints: []
+              status: "done"
+              log:
+                - {at: "2026-10-15T23:18:00Z", by: "062", event: "claimed", note: "Dependencies P5-G2-T2 and P5-G4-T2 are done; P5-G8-T1 marked replaced first."}
+                - {at: "2026-10-15T23:18:26Z", by: "062", event: "done", note: "Added fields.instance.path between ip and username in presentation/i18n/en.json (Path) and presentation/i18n/fa.json (مسیر); no existing label changed. Observed: each language holds 56 Field Labels, exactly one per Field of the current metadata, none missing or extra; npm run typecheck and npm run build pass."}
+                - {at: "2026-10-15T23:18:26Z", by: "062", event: "decision", note: "Unset: the readable default labels for path. Chosen: Path in English (the Field name capitalized, as the earlier rule gives) and مسیر in Persian (its direct translation). Why: they follow the default-label rule recorded under P5-G8-T1; the earlier generator was not available, so the labels were written in its output form."}
     P6:
       id: "P6"
       title: "MT5"

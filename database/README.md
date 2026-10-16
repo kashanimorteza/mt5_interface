@@ -365,7 +365,7 @@ The Initial Data is the `initial_data` collection of `config.yaml`, copied from 
 | Entity | Records |
 |---|---|
 | User | `name` Admin, `username` admin, `password` and `api_key` empty |
-| Instance | `name` MetaTrader, `user_id` 1, `ip` 127.0.0.1, `username` test, `password` and `api_key` empty |
+| Instance | `name` MetaTrader, `user_id` 1, `ip` 127.0.0.1, `path` C:\Program Files\FxPro Markets MT5\terminal64.exe, `username` test, `password` and `api_key` empty |
 | Currency | `user_id` 1 for each: USD `$` United States 2; EUR `€` Eurozone 2; GBP `£` United Kingdom 2; JPY `¥` Japan 0; CHF `CHF` Switzerland 2; CAD `C$` Canada 2; AUD `A$` Australia 2; NZD `NZ$` New Zealand 2 (`code`, `symbol`, `country`, `decimal_digits`) |
 | Broker | `name` FxPro, `user_id` 1 |
 | Asset | `broker_id` 1 for each: EUR/USD Currency 0.0001 5; EUR/GBP Currency 0.001 5; XAU/USD Commodity 0.01 2; USOil Commodity 0.01 3 (`symbol`, `category`, `point_size`, `digits`) |

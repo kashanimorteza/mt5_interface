@@ -65,6 +65,7 @@ initial_data:
       - name: "MetaTrader"
         user_id: 1
         ip: "127.0.0.1"
+        path: "C:\\Program Files\\FxPro Markets MT5\\terminal64.exe"
         username: "test"
         password: ""
         api_key: ""

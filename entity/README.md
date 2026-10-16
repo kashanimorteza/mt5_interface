@@ -66,6 +66,7 @@ Defines a user-owned connection instance through which the system accesses MetaT
 | `user_id` | integer | no | — | — | — | no | — | Identifies the user who owns this instance. |
 | `name` | string | no | — | — | — | no | — | The instance's display name. |
 | `ip` | string | yes | — | — | — | no | — | Identifies the technical network address used to reach MetaTrader 5 when required. |
+| `path` | string | yes | — | — | — | no | — | The local filesystem path of the MetaTrader 5 terminal executable used by this Instance when required. |
 | `username` | string | yes | — | — | — | no | — | Defines the technical username used to establish the Instance connection when required. |
 | `password` | string | yes | — | — | password | no | — | Defines the technical password used to establish the Instance connection when required. |
 | `api_key` | string | yes | — | — | sensitive | no | — | Defines the technical API credential used to establish the Instance connection when required. |

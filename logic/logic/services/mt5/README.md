@@ -127,7 +127,7 @@ REQUEST = {
 
 Connection.initialize(T, T, login=12345678, password=PASSWORD, server=SERVER)
 Connection.login(T, 12345678, password=PASSWORD, server=SERVER)  # True
-Connection.shutdown(T)  # None; the Terminal Process ends
+Connection.shutdown(T)  # True; the Terminal Process ends
 Connection.version(T)  # [500, <build>, '<release date>']
 Connection.last_error(T)  # [1, 'Success']
 Connection.account_info(T)["balance"]

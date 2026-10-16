@@ -188,6 +188,18 @@ export const entities: readonly EntityMeta[] = [
         "relation": null
       },
       {
+        "name": "path",
+        "type": "string",
+        "description": "The local filesystem path of the MetaTrader 5 terminal executable used by this Instance when required.",
+        "nullable": true,
+        "required": false,
+        "sensitive": false,
+        "immutable": false,
+        "generated": false,
+        "size": null,
+        "relation": null
+      },
+      {
         "name": "username",
         "type": "string",
         "description": "Defines the technical username used to establish the Instance connection when required.",

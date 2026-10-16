@@ -181,6 +181,7 @@
       "user_id": "User",
       "name": "Name",
       "ip": "IP",
+      "path": "Path",
       "username": "Username",
       "password": "Password",
       "api_key": "API Key",

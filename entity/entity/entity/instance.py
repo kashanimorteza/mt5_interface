@@ -49,6 +49,15 @@ DECLARATION = Declaration(
             ),
         ),
         FieldDeclaration(
+            name="path",
+            type=FieldType.STRING,
+            nullable=True,
+            description=(
+                "The local filesystem path of the MetaTrader 5 terminal executable used "
+                "by this Instance when required."
+            ),
+        ),
+        FieldDeclaration(
             name="username",
             type=FieldType.STRING,
             nullable=True,
@@ -110,6 +119,7 @@ class Instance(Foundation, table=True):
     user_id: int = _storage.column(DECLARATION, "user_id")
     name: str = _storage.column(DECLARATION, "name")
     ip: str | None = _storage.column(DECLARATION, "ip")
+    path: str | None = _storage.column(DECLARATION, "path")
     username: str | None = _storage.column(DECLARATION, "username")
     password: str | None = _storage.column(DECLARATION, "password")
     api_key: str | None = _storage.column(DECLARATION, "api_key")

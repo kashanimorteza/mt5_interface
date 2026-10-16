@@ -181,6 +181,7 @@
       "user_id": "کاربر",
       "name": "نام",
       "ip": "IP",
+      "path": "مسیر",
       "username": "نام کاربری",
       "password": "گذرواژه",
       "api_key": "کلید API",

@@ -217,7 +217,7 @@ def _serve(address: str, authkey: bytes, ready: Connection) -> None:
         return
     with listener:
         try:
-            import MetaTrader5 as mt5  # ty: ignore[unresolved-import] - installed on Windows only
+            import MetaTrader5 as mt5  # installed on Windows only
         except ImportError as error:
             ready.send(("unavailable", f"{type(error).__name__}: {error}"))
             return
@@ -258,6 +258,11 @@ def _request(terminal: str, message: tuple) -> tuple:
         connection = Client(_address(terminal), authkey=_authkey())
     except FileNotFoundError, ConnectionRefusedError:
         raise _Absent from None
+    except multiprocessing.AuthenticationError:
+        raise MT5Error(
+            _INTERNAL_FAIL_CONNECT,
+            "Another program serves this Terminal's address with a different key",
+        ) from None
     with connection:
         connection.send(message)
         try:
@@ -302,6 +307,11 @@ def _start(terminal: str) -> None:
         _OWNED[terminal] = process
         return
     process.join()
+    if state == "taken":
+        raise MT5Error(
+            _INTERNAL_FAIL_CONNECT,
+            "Another program already serves this Terminal's address",
+        )
     if state == "unavailable":
         raise MT5Error(
             _INTERNAL_FAIL_INIT, f"The MetaTrader5 package cannot be loaded ({detail})"
