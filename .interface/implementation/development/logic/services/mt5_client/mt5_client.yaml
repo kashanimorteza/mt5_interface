@@ -1,0 +1,111 @@
+# <!--------------------------------------------------------------------------------- Meta -->
+meta:
+  path: ".interface/implementation/development/logic/services/mt5_client/mt5_client.yaml"
+  path_note: "The Preferences layer of MT5 Client inside the Logic Component."
+  purpose: "Identity and the defaults Client Configuration is generated with, the published name and Interface contract version, the physical names of every part, the HTTP package and language realization, and the documentation of MT5 Client."
+  standard: "Agent Project Interface"
+  version: "1.0"
+  updated: "2026-10-17"
+
+# <!--------------------------------------------------------------------------------- Policy -->
+policy:
+  agent_may_edit: false
+  rule: "This file is human-owned. Operations read it without writing resolved MT5 Client choices back into it."
+  changed_by: "The human, directly."
+  precedence: "Explicit Target meaning and every applicable MT5 Client and Logic Principle take precedence over this file."
+
+# <!--------------------------------------------------------------------------------- Resolution -->
+resolution:
+  consumption: "Read the content sections in read_order."
+  selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
+  version_resolution: "Resolve latest-compatible to a concrete compatible stable version of the HTTP package when it is added; an explicit concrete version is preserved."
+  matching: "An entry here applies to the MT5 Client of the Logic Component. An explicit Target value replaces the matching entry here, and a more specific entry governs over a general one."
+
+# <!--------------------------------------------------------------------------------- Read_Order -->
+read_order:
+  - settings
+  - interface
+  - architecture
+  - development
+  - documentation
+
+# <!--------------------------------------------------------------------------------- Content_Map -->
+content_map:
+  settings: "The Logic owner, the MT5 Client Role, the configurable Service name and directory, and the defaults Client Configuration is generated with."
+  interface: "The Interface contract version, the one published name of the Client Entry, and the names under which it carries MT5 Service's Constants and MT5 Error."
+  architecture: "The physical names of every part of the Architecture tree, the Function Group naming pattern, and the Client Configuration file with its format and Schema."
+  development: "Development capabilities, the HTTP package, and the selected language with its realization profile."
+  documentation: "The documentation file, its location and format, and its sections in order."
+
+# <!--------------------------------------------------------------------------------- Content -->
+content:
+
+  # <!-------------------------------------------- settings -->
+  settings:
+    component:
+      role: logic
+    service:
+      role: mt5_client
+      name: MT5Client
+      directory: mt5_client
+    configuration:
+      defaults:
+        client:
+          url: "<the url of the API Component's runtime Configuration>"
+          request_timeout: 60
+
+  # <!-------------------------------------------- interface -->
+  interface:
+    contract_version: '1.0'
+    published:
+      entry: MT5Client
+    carried_by_entry:
+      constants: Constants
+      error: Error
+
+  # <!-------------------------------------------- architecture -->
+  architecture:
+    interface: interface
+    service: service
+    function_groups:
+      naming:
+        group_file: <group>
+    transport: transport
+    configuration:
+      file: config.yaml
+      format: yaml
+      structure: .interface/foundation/schema/mt5-client-configuration.yaml
+
+  # <!-------------------------------------------- development -->
+  development:
+    capabilities:
+      testing: false
+      error_handling: false
+      logging: false
+    http:
+      name: HTTPX
+      package: httpx
+      version: latest-compatible
+      documentation: "https://www.python-httpx.org/"
+    language:
+      selected: "python"
+      options:
+        python:
+          identifier_case: "snake_case"
+          interface_file: "The Interface is the interface file at the MT5 Client directory (logic/services/mt5_client/interface.py); every __init__.py stays empty and publishes nothing."
+          service: "One file, service.py, directly in the MT5 Client directory, holding the Client Entry as a class named MT5Client; MT5 Service's Constants and Error are class attributes of it, MT5Client.Constants and MT5Client.Error, the identical objects MT5 Service publishes."
+          group: "One file per Function Group directly in the MT5 Client directory, holding one class with one explicitly written method per Function, each with the exact signature of the same method of MT5 Service."
+          group_class: <Group>
+          transport: "One file, transport.py, holding one shared httpx.Client, opened on first use and closed when the program ends, that posts every request as a JSON body and maps every answer to a result or MT5 Error."
+
+  # <!-------------------------------------------- documentation -->
+  documentation:
+    file: README.md
+    location: the MT5 Client directory
+    format: markdown
+    sections:
+      - overview: "What MT5 Client is and why it exists, in one paragraph, with one simple example."
+      - interface: "How to create a Client Instance, the Function Groups it offers, and how to read the Constants and catch MT5 Error."
+      - configuration: "How to set the API Address and the Request Timeout."
+      - use: "How a program written for MT5 Service switches to MT5 Client."
+      - verify: "How to see that MT5 Client offers every Function of MT5 Service."

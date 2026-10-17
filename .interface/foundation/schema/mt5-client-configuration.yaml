@@ -1,0 +1,38 @@
+schema:
+  id: "agent-interface-mt5-client-configuration"
+  version: "1.0"
+  purpose: "The independent structure of MT5 Client config.yaml: the address of the remote API and how long a request waits for it."
+  kind: "Structure standard"
+  applies_when: "The Implementation declares an MT5 Client in the Logic Component."
+  generates: "<mt5 client directory>/config.yaml"
+
+# <!--------------------------------------------------------------------------------- Structure -->
+structure:
+
+  client:
+    required: true
+    purpose: "How MT5 Client reaches the remote API."
+    fields:
+      url:
+        required: true
+        type: "string"
+        purpose: "The Base URL of the remote API, including its URL Key; the default comes from MT5 Client Preferences."
+        value: "<API Base URL>"
+      request_timeout:
+        required: true
+        type: "integer"
+        purpose: "The number of seconds a request waits for the API to answer before it fails with MT5 Error; the default comes from MT5 Client Preferences."
+        value: "<positive whole seconds>"
+
+# <!--------------------------------------------------------------------------------- Rules -->
+rules:
+  structure_only: "config.yaml is generated and read only in this structure: the client section and nothing else at the top level, and client holds exactly the fields it lists."
+  no_comments: "config.yaml holds no comments of any kind; every explanation of its fields lives in this Schema."
+  url_integrity: "url is an absolute http or https URL."
+  request_timeout_integrity: "request_timeout is a positive whole number of seconds."
+
+# <!--------------------------------------------------------------------------------- Example -->
+example: |
+  client:
+    url: "http://127.0.0.1:8000/example-path-key"
+    request_timeout: 60

@@ -140,6 +140,14 @@ Responsibility: Defines the exact shape of MT5 Service's `config.yaml` so that t
 
 → [Read more about MT5 Configuration Schema](schema/mt5-configuration.yaml)
 
+#### MT5 Client Configuration Schema
+
+The structure of MT5 Client's runtime configuration file — the address of the remote API and the request timeout. It is conditional: it applies when the Implementation declares an MT5 Client, and an Implementation without one ignores it.
+
+Responsibility: Defines the exact shape of MT5 Client's `config.yaml` so that the API a program talks to is changed by one edit in one file.
+
+→ [Read more about MT5 Client Configuration Schema](schema/mt5-client-configuration.yaml)
+
 ### Operational formats
 
 The stored structure and initial template of a generated record.

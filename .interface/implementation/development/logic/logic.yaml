@@ -4,7 +4,7 @@ meta:
   path_note: "The Preferences layer of the Logic Component."
   purpose: "Identity, the entities of architecture with the Interface contract version, Service list, and documentation, and the language profile for Logic."
   standard: "Agent Project Interface"
-  version: "20.0"
+  version: "21.0"
   updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
@@ -55,6 +55,9 @@ content:
         mt5:
           definition: services/mt5/mt5.md
           preferences: services/mt5/mt5.yaml
+        mt5_client:
+          definition: services/mt5_client/mt5_client.md
+          preferences: services/mt5_client/mt5_client.yaml
       documentation:
         file: README.md
         location: the Component root

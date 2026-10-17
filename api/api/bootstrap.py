@@ -9,7 +9,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from api import problems
+from api import endpoints
 from api.groups.mt5 import (
     connection,
     constants,
@@ -44,7 +44,7 @@ class API(FastAPI):
         """Describe every Endpoint, with one tag per Adapter and one tag group per Group."""
         schema = super().openapi()
         schema.setdefault("components", {}).setdefault("schemas", {}).update(
-            problems.components()
+            endpoints.components()
         )
         schema["x-tagGroups"] = [
             {"name": name, "tags": [tag for router in routers for tag in router.tags]}
@@ -72,7 +72,7 @@ app = API(
     swagger_ui_oauth2_redirect_url=None,
     generate_unique_id_function=operation_id,
 )
-problems.install(app)
+endpoints.install(app)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -84,7 +84,7 @@ app.add_middleware(
 for name, routers in GROUPS.items():
     for router in routers:
         app.include_router(
-            router, prefix=f"{base}/{name}", responses=problems.RESPONSES
+            router, prefix=f"{base}/{name}", responses=endpoints.RESPONSES
         )
 
 
