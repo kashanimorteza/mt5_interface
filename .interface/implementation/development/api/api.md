@@ -89,6 +89,7 @@ The shared contract through which every Group states what it serves, with its ve
 - **Endpoints** — one Endpoint for every operation of the Adapter's member; an operation added or removed adds or removes its Endpoint.
 - **Parameters** — the operation's parameters, with the same names, requirements, structures, and defaults and with types the source publishes, plus any selector the Group states that the source needs to reach the member's operation.
 - **Handler** — calls the same operation through the source and returns its result and errors unchanged.
+- **Documentation** — a one-line description of every Parameter, one example request for every Endpoint, and a link to the external documentation of every operation whose source has one.
 
 #### Entity Group — `entity/`
 
@@ -158,6 +159,16 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Rule:** When the selected API package can publish interactive documentation of the served Endpoints, API always enables it, with one section per Group and, within it, one section per Adapter holding all of that Adapter's Endpoints.
 **Why:** Every client can discover and try every Endpoint without reading source.
 **Boundary:** The documentation shows only what the Groups serve.
+
+#### The API description is enough to use API without its source
+
+**Rule:** The published API description holds everything a client needs to call every Endpoint without reading source:
+- an overview of API, taken from the description in the runtime Configuration;
+- for every Endpoint, its summary, a one-line description of every Parameter, one example request, and the external documentation link its Group states;
+- every error response in the shape API actually sends, Problem Details, under every status the error table can produce;
+- a stable operation identifier, `<group>_<adapter>_<operation>`, that never contains the URL Key.
+**Why:** A client, whether a person or an agent, can understand API and generate its own client from the description alone.
+**Boundary:** The description documents only what API serves; it adds no Endpoint, and the URL Key appears only in the address it is served at.
 
 #### URL Key follows its setting
 
@@ -282,6 +293,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 - When a served Group's source keeps its state in one process, the runtime Configuration sets one worker process.
 - When the key setting is on, the Base URL carries a non-empty URL Key.
 - When the package offers interactive documentation, it is served, lists every Endpoint, and has one section per Group and per Adapter.
+- The API description holds the overview, every Parameter's description, one example request and the external documentation link of every Endpoint, every error response as Problem Details, and operation identifiers without the URL Key.
 - The runtime Configuration holds every value the API Configuration Structure defines and follows its rules.
 - Bootstrap reads no Definition or Preferences file at runtime.
 **Why:** A fixed set of observations proves the same things on every review, so a result is never judged by a different standard from one run to the next.
@@ -305,6 +317,11 @@ Every obligation in the file, under the Principle it comes from.
 
 - **Must** — Enable the package's interactive documentation whenever the package offers it, sectioned by Group and Adapter.
 - **Never** — Show anything in it that the Groups do not serve.
+
+**The API description is enough to use API without its source**
+
+- **Must** — Publish the overview, every Parameter's description, one example request and the external documentation link of every Endpoint, every error response as Problem Details, and a stable operation identifier.
+- **Never** — Put the URL Key into an operation identifier, or document anything API does not serve.
 
 **URL Key follows its setting**
 

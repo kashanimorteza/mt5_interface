@@ -7,6 +7,7 @@ import uvicorn
 import yaml
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.routing import APIRoute
 
 from api import problems
 from api.groups.mt5 import (
@@ -42,6 +43,9 @@ class API(FastAPI):
     def openapi(self) -> dict[str, Any]:
         """Describe every Endpoint, with one tag per Adapter and one tag group per Group."""
         schema = super().openapi()
+        schema.setdefault("components", {}).setdefault("schemas", {}).update(
+            problems.components()
+        )
         schema["x-tagGroups"] = [
             {"name": name, "tags": [tag for router in routers for tag in router.tags]}
             for name, routers in GROUPS.items()
@@ -52,6 +56,13 @@ class API(FastAPI):
 config: dict[str, Any] = yaml.safe_load(CONFIG.read_text())
 base = f"/{config['key']}" if config["key"] else ""
 
+
+def operation_id(route: APIRoute) -> str:
+    """Name every operation <group>_<adapter>_<operation>, never with the URL Key."""
+    path = route.path_format.removeprefix(base)
+    return "_".join(part for part in path.strip("/").split("/")).lower()
+
+
 app = API(
     title=config["title"],
     description=config["description"],
@@ -59,6 +70,7 @@ app = API(
     redoc_url=f"{base}/redoc",
     openapi_url=f"{base}/openapi.json",
     swagger_ui_oauth2_redirect_url=None,
+    generate_unique_id_function=operation_id,
 )
 problems.install(app)
 app.add_middleware(
@@ -71,7 +83,9 @@ app.add_middleware(
 
 for name, routers in GROUPS.items():
     for router in routers:
-        app.include_router(router, prefix=f"{base}/{name}")
+        app.include_router(
+            router, prefix=f"{base}/{name}", responses=problems.RESPONSES
+        )
 
 
 def main() -> None:

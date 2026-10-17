@@ -47,7 +47,7 @@ uv run api
 
 ## Use
 
-A client reaches a Group at `<url>/<Group>` and an Endpoint at `<url>/<Group>/<adapter>/<operation>`. Every MT5 Endpoint is `POST` with its Parameters as one JSON object in the request body; see the [MT5 Group documentation](api/groups/mt5/README.md). Every error is Problem Details (`application/problem+json`) with `type` set to the error's class name: `RequestValidationError` with status `422` for a request that does not match the Endpoint's Parameters, and `MT5Error` for a failure MT5 Service reports, with status `422` for invalid input (code `-2`, such as an unknown Terminal), `504` for a Terminal that did not answer in time (code `-10005`), and `500` otherwise.
+A client reaches a Group at `<url>/<Group>` and an Endpoint at `<url>/<Group>/<adapter>/<operation>`. The machine-readable API description is served at `<url>/openapi.json` (OpenAPI 3.1). It holds an overview of the API, every Endpoint with a description and an example for each Parameter, a link to the official documentation of its MetaTrader 5 function, every error response as Problem Details, and stable operation names such as `mt5_market_data_copy_rates_from`, so a person or an agent can use the API, or generate a client for it, from that file alone. Every MT5 Endpoint is `POST` with its Parameters as one JSON object in the request body; see the [MT5 Group documentation](api/groups/mt5/README.md). Every error is Problem Details (`application/problem+json`) with `type` set to the error's class name: `RequestValidationError` with status `422` for a request that does not match the Endpoint's Parameters, and `MT5Error` for a failure MT5 Service reports, with status `422` for invalid input (code `-2`, such as an unknown Terminal), `504` for a Terminal that did not answer in time (code `-10005`), and `500` otherwise.
 
 ## Verify
 
@@ -60,6 +60,6 @@ Start API and open `<url>/docs` or `<url>/redoc`. The documentation holds exactl
 - **`422` `MT5Error` "Terminal '…' is not in config.yaml"** — the `terminal` name is not declared in MT5 Service's `config.yaml`. Add it there under its name.
 - **`422` `MT5Error` "Terminal '…' has no path in config.yaml"** — the Terminal is declared without the `path` of its terminal executable, as the sample `demo` Terminal is. Fill in `path`.
 - **`500` `MT5Error` on every MetaTrader 5 call although the Terminal is configured** — the MetaTrader 5 package is not available on this host; it installs only on Windows.
-- **`500` `MT5Error` "Terminal '…' is not initialized; call initialize first" after a successful `initialize`** — `workers` in `config.yaml` is above `1`, so a later request reached another worker process. Keep `workers` at `1`, because MT5 Service keeps every Terminal in one process.
+- **`500` `MT5Error` "Terminal '…' is not initialized" after a successful `initialize`** — `workers` in `config.yaml` is above `1`, so a later request reached another worker process. Keep `workers` at `1`, because MT5 Service keeps every Terminal in one process.
 - **`504` `MT5Error` "Terminal '…' did not answer … within N seconds"** — the Terminal did not answer within `call_timeout` of MT5 Service's `config.yaml`; its process was ended, so call `initialize` again.
 - **API does not start: address already in use** — another process holds `port`. Stop it, or change `port`, `url`, and `documentation` in `config.yaml`.

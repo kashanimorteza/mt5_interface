@@ -8,7 +8,7 @@ Logic is the reusable library that holds the Behavior of MT5 Interface in its Se
 from logic.interface import MT5
 
 demo = MT5("demo")
-demo.Connection.initialize()
+print(demo.Connection.terminal_info())
 ```
 
 ## Interface
@@ -41,9 +41,7 @@ Import a Service from the Logic Interface and use what it publishes. For MT5, cr
 from logic.interface import MT5
 
 demo = MT5("demo")
-demo.Connection.initialize()
 bars = demo.MarketData.copy_rates_from_pos("EURUSD", MT5.Constants.TIMEFRAME_H1, 0, 10)
-demo.Connection.shutdown()
 ```
 
 ## Verify
@@ -62,5 +60,5 @@ prints `['MT5']`, and `L.MT5` is the `MT5` class of MT5 Service itself, because 
 - **`MT5.Error (-2) Terminal 'X' has no path in config.yaml`** — fill in that Terminal's `path`, as for the sample `demo` entry.
 - **`MT5.Error (-2) config.yaml is invalid: ...`** — fix every listed problem: keep exactly the `general` and `terminals` sections; `terminals` maps each Terminal's name to its fields, never a list; every Terminal lists exactly the documented fields; `port` is an integer and every other field is a string (quote numeric passwords), or left empty.
 - **`MT5.Error (-2) config.yaml repeats a key at line N`** — two Terminals share a name, or one Terminal repeats a field; keep each once.
-- **`MT5.Error (-1) Terminal 'X' is not initialized`** — call `Connection.initialize()` on an MT5 instance of that Terminal first; `shutdown` ends its process for every instance of that Terminal.
+- **`MT5.Error (-1) Terminal 'X' is not initialized`** — no Terminal Process is running for that Terminal; its `Connection.initialize()` starts one, and its `shutdown` ends it for every instance of that Terminal.
 - **`MT5.Error (-10005) Terminal 'X' did not answer ... within N seconds`** — the Terminal did not answer within `call_timeout` of the `general` section of `logic/services/mt5/config.yaml`; its process was ended, so call `Connection.initialize()` again, or raise `call_timeout`.

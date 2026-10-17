@@ -408,7 +408,7 @@ def call(
             if function != "initialize":
                 raise MT5Error(
                     GENERIC_FAIL,
-                    f"Terminal '{terminal}' is not initialized; call initialize first",
+                    f"Terminal '{terminal}' is not initialized",
                 )
             running = _start(terminal)
             with _registry:

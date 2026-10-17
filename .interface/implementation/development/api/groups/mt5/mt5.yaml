@@ -4,7 +4,7 @@ meta:
   path_note: "The Preferences layer of MT5 Group inside the API Component."
   purpose: "Role, name, directory, the physical names of every part with the Adapter naming pattern, and the documentation of MT5 Group."
   standard: "Agent Project Interface"
-  version: "2.0"
+  version: "3.0"
   updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
@@ -30,7 +30,7 @@ read_order:
 # <!--------------------------------------------------------------------------------- Content_Map -->
 content_map:
   settings: "MT5 Group's role, configurable name, and directory."
-  architecture: "The physical names of every part of the Architecture tree and the Adapter naming pattern."
+  architecture: "The physical names of every part of the Architecture tree, the Adapter naming pattern, and the pattern of every Function's documentation link."
   documentation: "The documentation file, its location and format, and its sections in order."
 
 # <!--------------------------------------------------------------------------------- Content -->
@@ -47,6 +47,7 @@ content:
   architecture:
     adapters:
       naming: <group>
+    documentation_link: "https://www.mql5.com/en/docs/python_metatrader5/mt5<function without underscores>_py"
     constants: constants
 
   # <!-------------------------------------------- documentation -->

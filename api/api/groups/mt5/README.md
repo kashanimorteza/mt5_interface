@@ -98,11 +98,9 @@ Returns every Constant of MT5 Service as one JSON object from name to value, suc
 ## Use
 
 1. Add the Terminal to MT5 Service's `config.yaml` under its name with the `path` of its terminal executable; the sample `demo` Terminal shows the fields.
-2. Start the session: `POST <url>/MT5/connection/initialize` with `{"terminal": "<name>"}` and, when needed, the account's `login`, `password`, and `server`.
-3. Call any other Endpoint with the same `terminal` and the Function's Parameters, reading Constant values from `POST <url>/MT5/constants/all` where a Parameter needs one.
-4. End the session: `POST <url>/MT5/connection/shutdown` with `{"terminal": "<name>"}`.
+2. Call any Endpoint with that `terminal` and the Function's Parameters, reading Constant values from `POST <url>/MT5/constants/all` where a Parameter needs one.
 
-Every request is independent: the Endpoint creates an MT5 instance for the named Terminal on each call, and MT5 Service keeps the Terminal's process between calls inside each API worker process; see the API documentation's Troubleshooting when `workers` is above 1. A failure, such as a Terminal name that is not in `config.yaml` or a call before `initialize`, returns Problem Details with `type` `MT5Error` and the code and message MT5 Service raised in `detail`.
+Every request is independent: the Endpoint creates an MT5 instance for the named Terminal on each call, and MT5 Service keeps the Terminal's process between calls inside each API worker process; see the API documentation's Troubleshooting when `workers` is above 1. A failure, such as a Terminal name that is not in `config.yaml`, returns Problem Details with `type` `MT5Error` and the code and message MT5 Service raised in `detail`.
 
 ## Verify
 

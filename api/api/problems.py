@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, JsonValue
 from starlette.exceptions import HTTPException
 
 INVALID_INPUT = 422
@@ -18,6 +19,44 @@ STATUS_BY_CODE: dict[str, dict[int, int]] = {
     "MT5Error": {-2: INVALID_INPUT, -10005: 504},
 }
 """The status of every error the error table names by its name and code."""
+
+
+class Problem(BaseModel):
+    """RFC 9457 Problem Details, the shape of every error API sends."""
+
+    type: str
+    title: str
+    status: int
+    detail: JsonValue
+
+
+PROBLEM_SCHEMA = {"$ref": "#/components/schemas/Problem"}
+"""The reference to Problem Details, declared for every error response."""
+
+
+def components() -> dict[str, object]:
+    """Return the schema of Problem Details and the schemas it refers to, for the API description."""
+    schema = Problem.model_json_schema(ref_template="#/components/schemas/{model}")
+    found: dict[str, object] = dict(schema.pop("$defs", {}))
+    found["Problem"] = schema
+    return found
+
+
+RESPONSES: dict[int | str, dict[str, object]] = {
+    INVALID_INPUT: {
+        "description": "Invalid input: the request does not match the Endpoint's Parameters, or the source refused it, such as an unknown Terminal (MT5Error code -2).",
+        "content": {"application/problem+json": {"schema": PROBLEM_SCHEMA}},
+    },
+    504: {
+        "description": "The Terminal did not answer within its call timeout (MT5Error code -10005).",
+        "content": {"application/problem+json": {"schema": PROBLEM_SCHEMA}},
+    },
+    UNNAMED: {
+        "description": "Any other failure the source reports, with its code and message in detail.",
+        "content": {"application/problem+json": {"schema": PROBLEM_SCHEMA}},
+    },
+}
+"""Every error response, as Problem Details, under every status the error table can produce."""
 
 
 def status_of(error: Exception) -> int:

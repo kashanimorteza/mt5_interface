@@ -140,6 +140,12 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Why:** A client calls each Function as MT5 Service defines it and names its Terminal once per request.
 **Boundary:** No other Parameter is added, removed, or renamed.
 
+#### Every Endpoint is documented from the Package Documentation
+
+**Rule:** Every Function Endpoint states, as its Group contract Documentation, the description of its Function and of each of its Parameters from the Package Documentation, one example request, and a link to that Function's page in the Package Documentation. The Terminal Parameter is described as the name of a Terminal in MT5 Service's Terminal Configuration, a Parameter that takes a date as a Timestamp in whole seconds since 1970-01-01 UTC, and a Parameter that takes a Constant as a value read from the Constants Endpoint.
+**Why:** A client that knows only the API description understands every Function as MetaTrader 5 defines it.
+**Boundary:** The documentation describes the Function; it never changes a Parameter or adds a rule of its own.
+
 #### Handlers only call their Function
 
 **Rule:** A Handler creates an MT5 Instance with the request's Terminal Parameter, calls only its Function on that instance's Function Group, and returns its result. Creating the MT5 Instance is how the Handler reaches its Function through the Group's selector; it is not an added initialization.
@@ -159,6 +165,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 - Every Handler creates an MT5 Instance for the request's Terminal Parameter and only calls its Function through Logic Interface.
 - No Adapter shares a base with another or produces Endpoints dynamically.
 - MT5 Group does not import the package MT5 Service uses.
+- Every Function Endpoint states its Function's and Parameters' descriptions, one example request, and a link to its Function's page in the Package Documentation.
 **Why:** A fixed set of observations proves the same things on every review.
 **Boundary:** Each observation states what is seen, never the command, tool, or code that observes it.
 
@@ -205,6 +212,11 @@ Every obligation in the file, under the Principle it comes from.
 
 - **Must** — Keep every Function's Parameters unchanged and add only the required Terminal Parameter.
 - **Never** — Add, remove, or rename any other Parameter, or give the Constants Endpoint a Parameter.
+
+**Every Endpoint is documented from the Package Documentation**
+
+- **Must** — Give every Function Endpoint its Function's and Parameters' descriptions, one example request, and a link to its Function's page.
+- **Never** — Change a Parameter or add a rule through the documentation.
 
 **Handlers only call their Function**
 

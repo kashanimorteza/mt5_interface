@@ -1,5 +1,5 @@
-title: "Target API"
-description: ""
+title: "MT5 Interface API"
+description: "REST API over MetaTrader 5. Every Endpoint of the MT5 Group calls the MetaTrader 5 Python function of the same name, with the same parameters, on the Terminal named in terminal, a Terminal declared in MT5 Service's config.yaml; the Constants Endpoint needs no Terminal. Every date and time is a Timestamp, whole seconds since 1970-01-01 UTC. A parameter that takes an enumerated value, such as a timeframe or an order type, takes the number the Constants Endpoint gives for it. Every result is JSON. Every error is RFC 9457 Problem Details: 422 for invalid input, 504 when a Terminal does not answer in time, and 500 for any other failure. Each Endpoint links to the official documentation of its function."
 key: "nqNQ0795kpuLDcb9mts0NvdeD0SvJ-Fw"
 host: "127.0.0.1"
 port: 8000

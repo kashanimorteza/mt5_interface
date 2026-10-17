@@ -1,6 +1,6 @@
 schema:
   id: "agent-interface-api-configuration"
-  version: "4.3"
+  version: "4.4"
   purpose: "The independent structure of API config.yaml: identity, network address, URL Key, and runtime workers."
   kind: "Structure standard"
   applies_when: "The Implementation declares an API Component."
@@ -16,7 +16,7 @@ structure:
 
   description:
     required: true
-    purpose: "The description presented by the running API."
+    purpose: "The description presented by the running API and placed at the head of its published API description: what API serves and how a client calls it."
     value: "<API description or empty>"
 
   key:

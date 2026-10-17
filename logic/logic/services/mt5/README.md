@@ -144,21 +144,18 @@ Every constant is written out in MT5 Service with the name and value the package
 
    Every Terminal lists all of these fields. `username`, `password`, `investor_password`, `ip`, `api_key`, and `description` are strings and `port` is an integer; all of them may be left empty. `username`, `password`, `investor_password`, `ip`, `port`, and `api_key` are only stored, as plain text, and are not used by MT5 Service for now. The `general` section holds `call_timeout`, the number of seconds a call waits for its Terminal to answer; a call not answered in time raises `MT5.Error` and ends that Terminal's process, so it must be initialized again. Any other section or field, a missing field, a repeated name, or a value of the wrong type makes creating an MT5 instance and every call fail with `MT5.Error` (`-2`) naming each problem. A Terminal whose `path` is empty is refused when a call goes to it. The file is read once and read again only when it changes, so an edit takes effect without a restart.
 
-2. Create an MT5 instance for each Terminal you use and initialize it before any other call:
+2. Create an MT5 instance for each Terminal you use and call its Functions:
 
    ```python
    from logic.services.mt5.interface import MT5
 
    live = MT5("live")
-   live.Connection.initialize()
    try:
        bars = live.MarketData.copy_rates_from_pos(
            "EURUSD", MT5.Constants.TIMEFRAME_H1, 0, 10
        )
    except MT5.Error as error:
        print(error.code, error.message)
-   finally:
-       live.Connection.shutdown()
    ```
 
 Each Terminal runs in its own process: calls for one Terminal run one after another, also when they come from several MT5 instances of that Terminal, and calls for different Terminals run at the same time. Starting one Terminal never holds back calls for another. When the program ends normally, every running Terminal is shut down. Use MT5 Service from only one process of a program: a server that runs several worker processes uses it from only one of them, so each Terminal has one process. Where the package is not installed, MT5 Service still installs and loads, and every call to a Terminal raises `MT5.Error`.
@@ -170,4 +167,4 @@ Compare the Function Groups with the [package documentation](https://www.mql5.co
 - every function in the documentation's function list appears exactly once in the Interface tables above, under its group, and each group of an MT5 instance has exactly those methods;
 - each method's parameters match the function's documented call signature in name, order, and default;
 - `MT5.Constants.all()` holds exactly the constants the package defines, with the same names and values, on any machine;
-- on a Windows machine with MetaTrader 5 installed and a Terminal in `config.yaml`, `MT5("<name>").Connection.initialize()` followed by `.Connection.terminal_info()` on the same instance returns that Terminal's data.
+- on a Windows machine with MetaTrader 5 installed and a Terminal in `config.yaml`, `MT5("<name>").Connection.terminal_info()` returns that Terminal's data once its Terminal Process is running.
