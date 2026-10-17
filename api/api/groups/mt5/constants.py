@@ -3,7 +3,11 @@
 from fastapi import APIRouter
 from logic.interface import MT5
 
-router = APIRouter(prefix="/constants", tags=["MT5 · Constants"])
+from api.endpoints import PlainRoute
+
+router = APIRouter(
+    prefix="/constants", tags=["MT5 · Constants"], route_class=PlainRoute
+)
 
 
 @router.post("/all")

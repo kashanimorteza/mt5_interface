@@ -1,5 +1,6 @@
 """Terminal Processes of MT5 Service: the Terminals, MT5 Error, and the process that runs the Package."""
 
+import atexit
 import math
 import multiprocessing
 import threading
@@ -14,13 +15,17 @@ from typing import Any
 import yaml
 from yaml.constructor import ConstructorError
 
+from logic.services.mt5.constants import Constants
+
 type JSON = dict[str, JSON] | list[JSON] | str | int | float | bool | None
 
-GENERIC_FAIL = -1
-INVALID_PARAMS = -2
+GENERIC_FAIL = Constants.RES_E_FAIL
+INVALID_PARAMS = Constants.RES_E_INVALID_PARAMS
+TIMEOUT = Constants.RES_E_INTERNAL_FAIL_TIMEOUT
 
 CONFIG = Path(__file__).with_name("config.yaml")
 SECTIONS = ("general", "terminals")
+GENERAL: dict[str, type] = {"call_timeout": int}
 FIELDS: dict[str, type] = {
     "path": str,
     "username": str,
@@ -47,17 +52,28 @@ class MT5Error(Exception):
 
 @dataclass(frozen=True)
 class Terminal:
-    """One MetaTrader 5 terminal declared in config.yaml; an empty field is None."""
+    """One MetaTrader 5 terminal declared in config.yaml; an empty field is None.
+
+    Secret fields are left out of its representation, so they never reach a message or a log.
+    """
 
     name: str
     path: str | None = None
     username: str | None = None
-    password: str | None = None
-    investor_password: str | None = None
+    password: str | None = field(default=None, repr=False)
+    investor_password: str | None = field(default=None, repr=False)
     ip: str | None = None
     port: int | None = None
-    api_key: str | None = None
+    api_key: str | None = field(default=None, repr=False)
     description: str | None = None
+
+
+@dataclass(frozen=True)
+class Configuration:
+    """Terminal Configuration as read from config.yaml."""
+
+    call_timeout: int
+    terminals: dict[str, Terminal]
 
 
 REPEATED_KEY = "found a repeated key"
@@ -98,7 +114,7 @@ def _entry_problems(label: str, entry: dict[object, object]) -> list[str]:
     return problems
 
 
-def load_terminals() -> dict[str, Terminal]:
+def _read() -> Configuration:
     """Read config.yaml, refusing it with every problem found when it is invalid."""
     try:
         text = CONFIG.read_text(encoding="utf-8")
@@ -129,11 +145,19 @@ def load_terminals() -> dict[str, Terminal]:
     if unknown:
         problems.append(f"unknown sections: {', '.join(unknown)}")
     general = document.get("general")
-    if general is not None and not isinstance(general, dict):
+    if not isinstance(general, dict):
         problems.append("the section 'general' must be a mapping")
-    elif general:
-        settings = ", ".join(sorted(str(key) for key in general))
-        problems.append(f"the section 'general' has unknown settings: {settings}")
+        general = {}
+    unknown_settings = sorted(str(key) for key in general if key not in GENERAL)
+    if unknown_settings:
+        problems.append(
+            f"the section 'general' has unknown settings: {', '.join(unknown_settings)}"
+        )
+    timeout = general.get("call_timeout")
+    if not isinstance(timeout, int) or isinstance(timeout, bool) or timeout <= 0:
+        problems.append(
+            "the setting 'call_timeout' must be a positive whole number of seconds"
+        )
     entries = document.get("terminals")
     if entries is None:
         entries = {}
@@ -161,7 +185,33 @@ def load_terminals() -> dict[str, Terminal]:
             key: None if value == "" else value for key, value in entry.items()
         }
         terminals[name] = Terminal(name, **values)
-    return terminals
+    assert isinstance(timeout, int)
+    return Configuration(timeout, terminals)
+
+
+_cache: tuple[tuple[int, int], Configuration] | None = None
+_cache_lock = threading.Lock()
+
+
+def configuration() -> Configuration:
+    """Return Terminal Configuration, reading config.yaml again only when it has changed."""
+    global _cache
+    try:
+        status = CONFIG.stat()
+    except OSError as error:
+        raise MT5Error(
+            GENERIC_FAIL, f"config.yaml cannot be read: {error.strerror}"
+        ) from None
+    stamp = (status.st_mtime_ns, status.st_size)
+    with _cache_lock:
+        if _cache is None or _cache[0] != stamp:
+            _cache = (stamp, _read())
+        return _cache[1]
+
+
+def load_terminals() -> dict[str, Terminal]:
+    """Return every Terminal of Terminal Configuration by its name."""
+    return configuration().terminals
 
 
 def find(terminal: object) -> Terminal:
@@ -233,7 +283,9 @@ def plain(value: Any) -> JSON:
         return [plain(item) for item in value]
     if isinstance(value, dict):
         return {str(key): plain(item) for key, item in value.items()}
-    if value is None or isinstance(value, str | bool | int | float):
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if value is None or isinstance(value, str | bool | int):
         return value
     raise MT5Error(
         GENERIC_FAIL,
@@ -276,10 +328,15 @@ def _serve(pipe: Connection) -> None:
             function, args, kwargs = pipe.recv()
         except EOFError:
             return
-        if package is None:
-            pipe.send(("error", GENERIC_FAIL, unavailable))
-        else:
-            pipe.send(_run(package, function, args, kwargs))
+        outcome = (
+            ("error", GENERIC_FAIL, unavailable)
+            if package is None
+            else _run(package, function, args, kwargs)
+        )
+        try:
+            pipe.send(outcome)
+        except OSError:
+            return
         if function == "shutdown":
             return
 
@@ -288,12 +345,18 @@ def _serve(pipe: Connection) -> None:
 class _Process:
     process: BaseProcess
     pipe: Connection
-    lock: threading.Lock = field(default_factory=threading.Lock)
 
 
 _context = multiprocessing.get_context("spawn")
 _processes: dict[str, _Process] = {}
+_locks: dict[str, threading.Lock] = {}
 _registry = threading.Lock()
+
+
+def _lock(terminal: str) -> threading.Lock:
+    """Return the lock that serializes everything for one Terminal, creating it once."""
+    with _registry:
+        return _locks.setdefault(terminal, threading.Lock())
 
 
 def _start(terminal: str) -> _Process:
@@ -306,12 +369,14 @@ def _start(terminal: str) -> _Process:
     return _Process(process, pipe)
 
 
-def _stop(terminal: str, running: _Process) -> None:
+def _stop(terminal: str, running: _Process, force: bool = False) -> None:
+    """Remove a Terminal Process from the registry and end it, at once when it is forced."""
     with _registry:
         if _processes.get(terminal) is running:
             del _processes[terminal]
     running.pipe.close()
-    running.process.join(timeout=5)
+    if not force:
+        running.process.join(timeout=5)
     if running.process.is_alive():
         running.process.terminate()
         running.process.join()
@@ -326,35 +391,62 @@ def call(
     """Run one Function of the Package in the Terminal Process of the named Terminal.
 
     `positional` holds the Function's unnamed parameters in order; `named` holds its named parameters,
-    of which those left as None are not sent, so the Package applies its own defaults.
+    of which those left as None are not sent, so the Package applies its own defaults. A call that is
+    not answered within the Call Timeout raises MT5 Error and ends the Terminal Process.
     """
     resolve(terminal)
+    timeout = configuration().call_timeout
     positional = positional or {}
     named = {name: value for name, value in (named or {}).items() if value is not None}
     for name, value in {**positional, **named}.items():
         check_json(name, value)
     started = False
-    with _registry:
-        running = _processes.get(terminal)
+    with _lock(terminal):
+        with _registry:
+            running = _processes.get(terminal)
         if running is None:
             if function != "initialize":
                 raise MT5Error(
                     GENERIC_FAIL,
                     f"Terminal '{terminal}' is not initialized; call initialize first",
                 )
-            running = _processes[terminal] = _start(terminal)
+            running = _start(terminal)
+            with _registry:
+                _processes[terminal] = running
             started = True
-    with running.lock:
         try:
             running.pipe.send((function, list(positional.values()), named))
+            if not running.pipe.poll(timeout):
+                _stop(terminal, running, force=True)
+                raise MT5Error(
+                    TIMEOUT,
+                    f"Terminal '{terminal}' did not answer {function} within {timeout} seconds",
+                )
             outcome = running.pipe.recv()
         except EOFError, OSError:
             _stop(terminal, running)
             raise MT5Error(
                 GENERIC_FAIL, f"The process of Terminal '{terminal}' ended unexpectedly"
             ) from None
-    if function == "shutdown" or (started and outcome[0] == "error"):
-        _stop(terminal, running)
+        if function == "shutdown" or (started and outcome[0] == "error"):
+            _stop(terminal, running)
     if outcome[0] == "error":
         raise MT5Error(outcome[1], outcome[2])
     return outcome[1]
+
+
+def _shutdown_all() -> None:
+    """Shut down every running Terminal when the Owner Process ends normally."""
+    with _registry:
+        running = list(_processes)
+    for terminal in running:
+        try:
+            call(terminal, "shutdown")
+        except MT5Error:
+            with _registry:
+                leftover = _processes.get(terminal)
+            if leftover is not None:
+                _stop(terminal, leftover)
+
+
+atexit.register(_shutdown_all)

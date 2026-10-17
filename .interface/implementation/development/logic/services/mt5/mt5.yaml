@@ -2,10 +2,10 @@
 meta:
   path: ".interface/implementation/development/logic/services/mt5/mt5.yaml"
   path_note: "The Preferences layer of MT5 Service inside the Logic Component."
-  purpose: "Name, directory, the entities of architecture with the Interface contract, naming patterns, the Package, and documentation, and the language profile for MT5 Service."
+  purpose: "Identity, the published names and Interface contract version, the physical names of every part, the Package and language realization, and the documentation of MT5 Service."
   standard: "Agent Project Interface"
-  version: "1.0"
-  updated: "2026-10-16"
+  version: "4.0"
+  updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
 policy:
@@ -18,19 +18,24 @@ policy:
 resolution:
   consumption: "Read the content sections in read_order."
   selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
-  version_resolution: "Resolve latest-compatible to a concrete compatible stable version of the Package when it is added."
+  version_resolution: "Resolve latest-compatible to a concrete compatible stable version of the Package when it is added; an explicit concrete version is preserved."
+  matching: "An entry here applies to the MT5 Service of the Logic Component. An explicit Target value replaces the matching entry here, and a more specific entry governs over a general one."
 
 # <!--------------------------------------------------------------------------------- Read_Order -->
 read_order:
   - settings
+  - interface
   - architecture
   - development
+  - documentation
 
 # <!--------------------------------------------------------------------------------- Content_Map -->
 content_map:
-  settings: "The Logic owner, the MT5 Role, and the configurable Service name and directory."
-  architecture: "The entities of the Architecture tree — Interface with its contract version and service class, Function Groups with their naming pattern, Configuration with its file, location, format, and structure, and Documentation with its file, location, and format."
+  settings: "The Logic owner, the MT5 Role, the configurable Service name and directory, and the defaults Terminal Configuration is generated with."
+  interface: "The Interface contract version, the one published name of the MT5 Entry, and the names under which it carries the Constants and MT5 Error."
+  architecture: "The physical names of every part of the Architecture tree, the Function Group naming pattern, and the Terminal Configuration file with its format and Schema."
   development: "Development capabilities, the Package, and the selected language with its realization profile."
+  documentation: "The documentation file, its location and format, and its sections in order."
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
@@ -43,26 +48,33 @@ content:
       role: mt5
       name: MT5
       directory: mt5
+    configuration:
+      defaults:
+        general:
+          call_timeout: 60
+
+  # <!-------------------------------------------- interface -->
+  interface:
+    contract_version: '3.0'
+    published:
+      entry: MT5
+    carried_by_entry:
+      constants: Constants
+      error: Error
 
   # <!-------------------------------------------- architecture -->
   architecture:
-    entities:
-      interface:
-        contract_version: '2.0'
-        service_class: MT5
-      function_groups:
-        naming:
-          group_file: <group>
-          group_class: <Group>
-      configuration:
-        file: config.yaml
-        location: the MT5 Service directory
-        format: yaml
-        structure: .interface/foundation/schema/mt5-configuration.yaml
-      documentation:
-        file: README.md
-        location: the MT5 Service directory
-        format: markdown
+    interface: interface
+    service: service
+    function_groups:
+      naming:
+        group_file: <group>
+    terminal: terminal
+    constants: constants
+    configuration:
+      file: config.yaml
+      format: yaml
+      structure: .interface/foundation/schema/mt5-configuration.yaml
 
   # <!-------------------------------------------- development -->
   development:
@@ -81,5 +93,17 @@ content:
         python:
           identifier_case: "snake_case"
           interface_file: "The Interface is the interface file at the MT5 Service directory (logic/services/mt5/interface.py); every __init__.py stays empty and publishes nothing."
-          service: "One file, service.py, directly in the MT5 Service directory, holding the MT5 class."
+          service: "One file, service.py, directly in the MT5 Service directory, holding the MT5 Entry as a class; the Constants and MT5 Error are class attributes of it, MT5.Constants and MT5.Error, so they are reached without creating an instance."
           group: "One file per Function Group directly in the MT5 Service directory, holding one class with one explicitly written method per Function."
+          group_class: <Group>
+
+  # <!-------------------------------------------- documentation -->
+  documentation:
+    file: README.md
+    location: the MT5 Service directory
+    format: markdown
+    sections:
+      - overview: "What MT5 Service is and why it exists, in one paragraph, with one simple example."
+      - interface: "How to create an MT5 Instance, every Function Group with its Functions, each with one example, and how to read the Constants."
+      - use: "How a caller creates MT5 Instances and calls a Function through them, and how a Terminal is added to Terminal Configuration."
+      - verify: "How to see that MT5 Service matches the Package Documentation."

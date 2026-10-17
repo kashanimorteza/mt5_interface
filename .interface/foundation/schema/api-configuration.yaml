@@ -1,6 +1,6 @@
 schema:
   id: "agent-interface-api-configuration"
-  version: "4.2"
+  version: "4.3"
   purpose: "The independent structure of API config.yaml: identity, network address, URL Key, and runtime workers."
   kind: "Structure standard"
   applies_when: "The Implementation declares an API Component."
@@ -72,6 +72,6 @@ example: |
   key: "example-path-key"
   host: "127.0.0.1"
   port: 8000
-  workers: 2
+  workers: 1
   transport_protocol: "HTTP"
   url: "http://127.0.0.1:8000/example-path-key"

@@ -6,7 +6,11 @@ from fastapi import APIRouter, Body
 from logic.interface import MT5
 from pydantic import JsonValue
 
-router = APIRouter(prefix="/market_book", tags=["MT5 · MarketBook"])
+from api.endpoints import PlainRoute
+
+router = APIRouter(
+    prefix="/market_book", tags=["MT5 · MarketBook"], route_class=PlainRoute
+)
 
 
 @router.post("/market_book_add")
@@ -15,7 +19,7 @@ def market_book_add(
     symbol: Annotated[str, Body(embed=True)],
 ) -> JsonValue:
     """Subscribe to Market Depth change events for a symbol."""
-    return MT5.MT5(terminal).MarketBook.market_book_add(symbol=symbol)
+    return MT5(terminal).MarketBook.market_book_add(symbol=symbol)
 
 
 @router.post("/market_book_get")
@@ -24,7 +28,7 @@ def market_book_get(
     symbol: Annotated[str, Body(embed=True)],
 ) -> JsonValue:
     """Return the Market Depth entries of a symbol."""
-    return MT5.MT5(terminal).MarketBook.market_book_get(symbol=symbol)
+    return MT5(terminal).MarketBook.market_book_get(symbol=symbol)
 
 
 @router.post("/market_book_release")
@@ -33,4 +37,4 @@ def market_book_release(
     symbol: Annotated[str, Body(embed=True)],
 ) -> JsonValue:
     """Cancel the Market Depth subscription of a symbol."""
-    return MT5.MT5(terminal).MarketBook.market_book_release(symbol=symbol)
+    return MT5(terminal).MarketBook.market_book_release(symbol=symbol)

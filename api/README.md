@@ -21,7 +21,7 @@ API reads every runtime value from `config.yaml` in this directory and from nowh
 | `key` | The URL Key: an opaque path segment placed before every Group segment; empty omits it. It was generated once and is kept; it changes only the address and is not authentication. |
 | `host` | The host or IP address API binds to. |
 | `port` | The port API binds to. |
-| `workers` | The number of API worker processes. |
+| `workers` | The number of API worker processes; `1`, because MT5 Service keeps every Terminal in one process. |
 | `transport_protocol` | The transport protocol of the address, `HTTP`. |
 | `url` | The Base URL, formed as `<transport_protocol>://<host>:<port>/<key>`, written in lower case and without `/<key>` when `key` is empty. |
 | `documentation` | The interactive documentation addresses, `<url>/docs` and `<url>/redoc`. |
@@ -47,7 +47,7 @@ uv run api
 
 ## Use
 
-A client reaches a Group at `<url>/<Group>` and an Endpoint at `<url>/<Group>/<adapter>/<operation>`. Every MT5 Endpoint is `POST` with its Parameters as one JSON object in the request body; see the [MT5 Group documentation](api/groups/mt5/README.md). Every error is Problem Details (`application/problem+json`) with `type` set to the error's class name: `RequestValidationError` with status `422` for a request that does not match the Endpoint's Parameters, and `MT5Error` with status `500` for a failure MT5 Service reports.
+A client reaches a Group at `<url>/<Group>` and an Endpoint at `<url>/<Group>/<adapter>/<operation>`. Every MT5 Endpoint is `POST` with its Parameters as one JSON object in the request body; see the [MT5 Group documentation](api/groups/mt5/README.md). Every error is Problem Details (`application/problem+json`) with `type` set to the error's class name: `RequestValidationError` with status `422` for a request that does not match the Endpoint's Parameters, and `MT5Error` for a failure MT5 Service reports, with status `422` for invalid input (code `-2`, such as an unknown Terminal), `504` for a Terminal that did not answer in time (code `-10005`), and `500` otherwise.
 
 ## Verify
 
@@ -57,8 +57,9 @@ Start API and open `<url>/docs` or `<url>/redoc`. The documentation holds exactl
 
 - **`404` for every request** — the path lacks the URL Key or uses a different one. Use `url` from `config.yaml` as the start of every address.
 - **`422` `RequestValidationError`** — a required Parameter is missing, has the wrong type, or the body is not a JSON object. The `detail` lists each problem with its location.
-- **`500` `MT5Error` "Terminal '…' is not in config.yaml"** — the `terminal` name is not declared in MT5 Service's `config.yaml`. Add it there under its name.
-- **`500` `MT5Error` "Terminal '…' has no path in config.yaml"** — the Terminal is declared without the `path` of its terminal executable, as the sample `demo` Terminal is. Fill in `path`.
+- **`422` `MT5Error` "Terminal '…' is not in config.yaml"** — the `terminal` name is not declared in MT5 Service's `config.yaml`. Add it there under its name.
+- **`422` `MT5Error` "Terminal '…' has no path in config.yaml"** — the Terminal is declared without the `path` of its terminal executable, as the sample `demo` Terminal is. Fill in `path`.
 - **`500` `MT5Error` on every MetaTrader 5 call although the Terminal is configured** — the MetaTrader 5 package is not available on this host; it installs only on Windows.
-- **`500` `MT5Error` "Terminal '…' is not initialized; call initialize first" after a successful `initialize`** — with `workers` above 1, each worker process keeps its own Terminal Processes, so a later request can reach a worker where `initialize` has not run. Set `workers` to `1` to keep every request for a Terminal in one process.
+- **`500` `MT5Error` "Terminal '…' is not initialized; call initialize first" after a successful `initialize`** — `workers` in `config.yaml` is above `1`, so a later request reached another worker process. Keep `workers` at `1`, because MT5 Service keeps every Terminal in one process.
+- **`504` `MT5Error` "Terminal '…' did not answer … within N seconds"** — the Terminal did not answer within `call_timeout` of MT5 Service's `config.yaml`; its process was ended, so call `initialize` again.
 - **API does not start: address already in use** — another process holds `port`. Stop it, or change `port`, `url`, and `documentation` in `config.yaml`.

@@ -4,8 +4,8 @@ meta:
   path_note: "The Preferences layer of the Logic Component."
   purpose: "Identity, the entities of architecture with the Interface contract version, Service list, and documentation, and the language profile for Logic."
   standard: "Agent Project Interface"
-  version: "19.0"
-  updated: "2026-10-09"
+  version: "20.0"
+  updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
 policy:
@@ -47,7 +47,7 @@ content:
   architecture:
     entities:
       interface:
-        contract_version: '1.1'
+        contract_version: '2.0'
       services:
         entity:
           definition: services/entity/entity.md
@@ -72,4 +72,4 @@ content:
         python:
           identifier_case: "snake_case"
           interface_file: "The Interface is the interface file at the package root (logic/interface.py); every __init__.py stays empty and publishes nothing."
-          interface: "For every listed Service, `from logic.services.<directory> import interface as <Name>`, then `__all__` with every Name. The interface file holds nothing else and performs no check, because conformance belongs to Review."
+          interface: "For every listed Service whose Service Interface publishes exactly one name, `from logic.services.<directory>.interface import <published>`, adding `as <Name>` only when the two names differ; for every other Service, `from logic.services.<directory> import interface as <Name>`; then `__all__` with every Name. The interface file holds nothing else and performs no check, because conformance belongs to Review."

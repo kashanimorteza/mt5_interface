@@ -25,13 +25,15 @@ API is the executable Development Component that serves every Group through one 
 
 API is the one running network boundary of the application: it serves every Group beneath its own URL segment and has no Endpoint of its own.
 
+API owns no capability of its own: everything served beneath a Group's segment belongs to that Group, and API neither authenticates requests nor authorizes capabilities.
+
 ### Purpose
 
-Clients need one address for every capability area, while each area keeps its own API surface.
+Clients need one address for every capability area, while each area keeps its own API surface. Without one shared boundary, every area would run its own server, address, configuration, and documentation, and every client would have to track each one separately.
 
 ### How It Works
 
-Bootstrap reads the runtime Configuration, creates the API, registers every Group beneath its segment, and starts serving.
+Bootstrap reads the runtime Configuration, creates the API, registers every Group beneath its segment, and starts serving. A request reaches an Endpoint of a Group; its Handler calls the same operation through that Group's source and returns the result or error, which API sends back in its common form.
 
 <br>
 
@@ -45,9 +47,10 @@ Bootstrap reads the runtime Configuration, creates the API, registers every Grou
 - **Base URL** — the address formed from transport protocol, host, port, and the optional URL Key, before any Group segment.
 - **Endpoint** — one HTTP Method, Path, Parameters, and Handler that a Group needs for one of its operations.
 - **Parameter** — one operation input placed in Path, Query, or Body.
+- **Handler** — the part of an Endpoint that calls its operation through the Group's source and returns the result.
 - **URL Key** — an optional opaque path segment placed before every Group segment; it is not request authentication.
-- **Interface contract** — the versioned public surface of API, stated in its Groups section, with its version in API Preferences.
-- **Group contract** — the versioned contract, stated in API's Groups section, through which every Group states what it serves.
+- **Interface contract** — the versioned public surface of API, described in its Groups part, with its version in API Preferences.
+- **Group contract** — the versioned contract, described in API's Groups part, through which every Group states what it serves.
 - **API Configuration Structure** — the versioned structure of API's runtime Configuration.
 
 <br>
@@ -56,37 +59,25 @@ Bootstrap reads the runtime Configuration, creates the API, registers every Grou
 ## Architecture
 
 ```text
-API
-├── Bootstrap
-├── Groups
-├── Endpoints
-├── Configuration
-└── Documentation
+api/
+├── <package>/
+│   ├── bootstrap
+│   ├── groups/
+│   │   └── <group>/
+│   └── endpoints
+├── config
+└── README
 ```
 
-Every entity below is declared in `architecture` in API Preferences, which also own the language, realization, and documentation choices; these selections realize the responsibilities below without changing them.
+The root is the Component directory. Bootstrap, Groups, and Endpoints sit inside the package directory. Every physical name, the Group list, the Endpoint tables, the configuration defaults, and the language realization are API's technical choices and live in API Preferences.
 
-<!-------------------------- Bootstrap -->
-### Bootstrap
+### Bootstrap — `bootstrap`
 
 The single composition and execution point of API.
 
-<!-------------------------- Groups -->
-### Groups
+### Groups — `groups/`
 
-```text
-Groups
-├── Entity Group
-└── MT5 Group
-```
-
-The container of every Group's executable realization. Every Group is served at `<base_url>/<group segment>`, where the Base URL is `<transport_protocol>://<host>:<port>[/<key>]` from the runtime Configuration. API's Interface contract is these needs, with `contract_version` in API Preferences:
-
-1. **Complete** — every Group listed in API Preferences is registered beneath the URL segment of its configured name after the Base URL, changing when the list changes; each Group's name comes from that Group's own Preferences.
-2. **Unchanged** — every Group serves its own Endpoints exactly; API adds no Endpoint, wrapper, or behavior to them.
-3. **Nothing else** — API has no Endpoint of its own.
-4. **One Group contract** — every Group states what it serves through the Group contract below, and API realizes every Group from it the same way.
-5. **Versioned** — changing this structure requires raising `contract_version` and a consumer review; a change in the Group list flows through without one.
+The container of every Group's executable realization, one directory per Group. Every Group is served at `<base_url>/<group segment>`, where the Base URL is `<transport_protocol>://<host>:<port>[/<key>]` from the runtime Configuration. API's Interface contract, with its version in API Preferences, is the Base URL, the registration of every listed Group beneath the segment of its configured name, and the Group contract through which every Group is realized.
 
 #### Group contract
 
@@ -94,75 +85,36 @@ The shared contract through which every Group states what it serves, with its ve
 
 - **Group** — the fixed role the Group's Preferences declare, and the configurable name that sets its URL segment.
 - **Source** — the one published Interface the Group serves and what it takes from it, found from that Interface's own Preferences.
-- **Adapters** — one Adapter for every member of the collection the source publishes, named from its member by the Adapter pattern in the Group's Preferences and bound permanently to it; a caller never supplies it, and a member added or removed adds or removes its Adapter.
-- **Endpoints** — one Endpoint for every operation of the Adapter's member; an operation added or removed adds or removes its Endpoint. The Group never states an Endpoint's identity; API derives it.
-- **Parameters** — exactly the operation's parameters: the same names, requirements, structures, and defaults, with types the source publishes.
+- **Adapters** — one Adapter for every member of the collection the source publishes, named from its member by the Adapter pattern in the Group's Preferences and bound permanently to it; a member added or removed adds or removes its Adapter.
+- **Endpoints** — one Endpoint for every operation of the Adapter's member; an operation added or removed adds or removes its Endpoint.
+- **Parameters** — the operation's parameters, with the same names, requirements, structures, and defaults and with types the source publishes, plus any selector the Group states that the source needs to reach the member's operation.
 - **Handler** — calls the same operation through the source and returns its result and errors unchanged.
 
-No Handler adds a decision, semantic validation, initialization, wrapper, other call, retry, or alternate path. A Group states no Method, Path, placement, protocol, or technology; API owns every one. A change in what a source publishes flows through without a version change.
-
-#### Entity Group
+#### Entity Group — `entity/`
 
 Entity Service as HTTP.
 
 → [Definition of Entity Group](groups/entity/entity.md)<br>
 → [Preferences of Entity Group](groups/entity/entity.yaml)
 
-#### MT5 Group
+#### MT5 Group — `mt5/`
 
 One Adapter for every Function Group of MT5 Service, and one Endpoint for every Function.
 
 → [Definition of MT5 Group](groups/mt5/mt5.md)<br>
 → [Preferences of MT5 Group](groups/mt5/mt5.yaml)
 
-<!-------------------------- Endpoints -->
-### Endpoints
+### Endpoints — `endpoints`
 
-The common HTTP rules every Group's Endpoints follow. The operations of each Group's source decide which Endpoints exist; API realizes them by these rules. Every Endpoint is served at `<base_url>/<group segment>/<adapter segment><endpoint path>`.
+The common HTTP rules every Group's Endpoints follow: Method, Path, Parameter placement, the form of non-simple values, and the form of errors. The operations of each Group's source decide which Endpoints exist; API realizes them by these rules. Every Endpoint is served at `<base_url>/<group segment>/<adapter segment><endpoint path>`.
 
-<!-------------------------- Configuration -->
-### Configuration
+### Configuration — `config`
 
 The runtime values that identify and run the API, in the shape the [API Configuration Structure](../../../foundation/schema/api-configuration.yaml) defines.
 
-<!-------------------------- Documentation -->
-### Documentation
+### Documentation — `README`
 
-```text
-Documentation
-├── Overview
-├── Configuration
-├── Groups
-├── Setup
-├── Use
-├── Verify
-└── Troubleshooting
-```
-
-The root documentation, in the file, location, and format API Preferences name. Its sections, in this order:
-
-1. **Overview** — What API is, in one paragraph, with one request example.
-2. **Configuration** — Every runtime Configuration value and how the Base URL is formed from it.
-3. **Groups** — Every Group beneath its URL segment, with a link to its own documentation; never a copy of its Endpoints.
-4. **Setup** — How to install and start API.
-5. **Use** — How a client reaches a Group.
-6. **Verify** — How to see that every listed Group is served beneath its segment and nothing else is.
-7. **Troubleshooting** — Real problems a client can meet and how to fix them.
-
-<!-------------------------- Directory Structure -->
-### Directory Structure
-
-```text
-Directory Structure
-├── api/
-│   ├── bootstrap
-│   └── groups/
-│       └── entity/
-├── config
-└── README
-```
-
-The root of this tree is the Component directory; it and the package directory take their names from `settings` in API Preferences. Each Group has its own directory under `groups/`, named in `settings` of that Group's Preferences.
+The root documentation of API. Its file, location, format, and sections are set in API Preferences.
 
 <br>
 
@@ -184,7 +136,7 @@ The root of this tree is the Component directory; it and the package directory t
 <!--------------------------------------------------------------------------------- Authority --->
 ## Authority
 
-Every Principle in this file is mandatory for API. API Preferences provide configurable defaults and conventions but can never weaken a Principle. Explicit Target meaning retains its authority.
+Every Principle in this file is mandatory for API. API Preferences can never override a Principle, and a project may only add stricter rules, never looser ones.
 
 <br>
 
@@ -229,9 +181,19 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### API Interface conforms to the Interface contract
 
-**Rule:** Every realization of API's public surface conforms to the versioned Interface contract, which fixes the Base URL, every Group registration, and what API never serves.
+**Rule:** Every realization of API's public surface conforms to the versioned Interface contract:
+- every Group listed in API Preferences is registered beneath the URL segment of its configured name after the Base URL, and the registration changes when the list changes; each Group's name comes from that Group's own Preferences;
+- every Group serves its own Endpoints exactly, and API adds no Endpoint, wrapper, or behavior to them;
+- API has no Endpoint of its own;
+- every Group states what it serves through the Group contract, and API realizes every Group from it the same way.
 **Why:** Every client depends on one exact address structure instead of reinterpreting each realization.
-**Boundary:** Changing the structure itself requires raising `contract_version`.
+**Boundary:** Changing the structure itself requires raising the Interface contract version and a consumer review; a change in the Group list flows through without one.
+
+#### Every Group is realized from the Group contract
+
+**Rule:** Every Group states its role and name, its source, its Adapters, its Endpoints, its Parameters, and its Handler as the Group contract describes. A caller never supplies an Adapter's member. API derives every Endpoint's identity; a Group states no Method, Path, placement, protocol, or technology. A Handler calls the same operation through the source and returns its result and errors unchanged, adding no decision, semantic validation, initialization, wrapper, other call, retry, or alternate path.
+**Why:** Every Group is served the same way, and its source stays the single owner of Behavior.
+**Boundary:** A change in what a source publishes flows through without a version change; changing the Group contract's structure requires raising the Group contract version.
 
 #### Public identities are valid and unique
 
@@ -263,15 +225,21 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Non-simple Parameters travel by one rule
 
-**Rule:** A Parameter whose type is a published class travels as a JSON object of its fields and is built from that class; a reference to a field of the bound class travels as the field's name and resolves to it, an unknown name failing with the source's invalid-input error; every other value type the source publishes travels in the form the value table in API Preferences gives it.
+**Rule:** A Parameter whose type is a structured type the source publishes travels as a JSON object of its fields and is built from that type; a reference to a field of the bound type travels as the field's name and resolves to it, an unknown name failing with the source's invalid-input error; every other value type the source publishes travels in the form the value table in API Preferences gives it.
 **Why:** Every client sends non-simple values the same way in every Group.
-**Boundary:** This conversion is part of serving and happens before the Handler runs; the Handler still only calls its Action, and the value's meaning never changes.
+**Boundary:** This conversion is part of serving and happens before the Handler runs; the Handler still only calls its operation, and the value's meaning never changes.
 
-#### Action errors map to HTTP by one table
+#### Operation errors map to HTTP by one table
 
-**Rule:** Every error an Endpoint returns is sent as RFC 9457 Problem Details (`application/problem+json`), with `type` set to the error's class name, and with the status the error table in API Preferences sets; an error the table does not name uses `500`.
-**Why:** Every client reads every Group's errors the same way, and the error's class reaches it unchanged.
+**Rule:** Every error an Endpoint returns is sent as RFC 9457 Problem Details, with `type` set to the error's own name, and with the status the error table in API Preferences sets: for an error that carries a code, the status set for its name and that code; otherwise the status set for its name. An error or code the table does not name uses `500`.
+**Why:** Every client reads every Group's errors the same way, the error's identity reaches it unchanged, and a client's own mistake is never reported as a server failure.
 **Boundary:** This mapping is part of serving every Endpoint; it adds no retry, recovery, or other error-handling Behavior.
+
+#### Results are sent without a second validation
+
+**Rule:** Every Endpoint sends its Handler's result as JSON exactly as the source returns it, without validating it a second time; the declared result type still documents the result.
+**Why:** The source already guarantees that every result is a JSON value, so a large result is not checked twice before it is sent.
+**Boundary:** A result that is not a JSON value fails when it is sent and is answered as an error; API never repairs or reshapes a result.
 
 <br>
 
@@ -283,6 +251,12 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Why:** An operator finds and changes the API's address and behavior in one file, never in source.
 **Boundary:** Source holds no runtime value of its own.
 
+#### A source that keeps its state in one process is served by one worker
+
+**Rule:** When the source of a served Group keeps its state in one process, the runtime Configuration sets one worker process, so every request reaches that same process.
+**Why:** A request served by another worker would not find state, such as an opened connection, that lives in a different process, and two processes would hold the same resource twice.
+**Boundary:** It sets only the number of workers; it changes nothing inside a Group.
+
 <br>
 
 ### Review
@@ -291,7 +265,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 **Rule:** API is conformant only when its Interface contract and the real API match one another, and every observation below holds.
 **Why:** A gap here silently hides or misplaces a Group for every client.
-**Boundary:** Review reads Group files only to compare; it changes nothing outside API's own files.
+**Boundary:** Group files are read only to compare; nothing outside API's own files changes.
 
 #### Review observes API through a fixed set of checks
 
@@ -303,13 +277,15 @@ Every Principle below is mandatory and belongs to the category that owns it.
 - Every Endpoint's Method follows the verb table, or `POST` when its verb is unlisted, and its Path is `/<operation>`, or `/<operation>/{id}` when it takes an `id`.
 - Every Parameter sits in Path, Query, or Body as the placement rule requires.
 - Every non-simple Parameter travels in the form the non-simple Parameter rule states, and is converted before its Handler runs.
-- Every returned error is RFC 9457 Problem Details with its class name as `type` and the status the error table sets.
+- Every result is sent as JSON exactly as the source returns it, without a second validation.
+- Every returned error is RFC 9457 Problem Details with its own name as `type` and the status the error table sets for its name, and for its code when it carries one.
+- When a served Group's source keeps its state in one process, the runtime Configuration sets one worker process.
 - When the key setting is on, the Base URL carries a non-empty URL Key.
 - When the package offers interactive documentation, it is served, lists every Endpoint, and has one section per Group and per Adapter.
 - The runtime Configuration holds every value the API Configuration Structure defines and follows its rules.
 - Bootstrap reads no Definition or Preferences file at runtime.
 **Why:** A fixed set of observations proves the same things on every review, so a result is never judged by a different standard from one run to the next.
-**Boundary:** Each observation states what is seen, never the command, tool, or code that observes it; how it is realized belongs to the Review Operation.
+**Boundary:** Each observation states what is seen, never the command, tool, or code that observes it.
 
 <br>
 
@@ -335,8 +311,6 @@ Every obligation in the file, under the Principle it comes from.
 - **Must** — Generate a random URL Key once when the key setting is on, and keep it afterwards.
 - **Never** — Regenerate an existing key.
 
-<br>
-
 ### Bootstrap
 
 **Bootstrap only composes and runs API**
@@ -344,14 +318,17 @@ Every obligation in the file, under the Principle it comes from.
 - **Must** — Read the runtime Configuration, create API, register every Group, and start serving.
 - **Never** — Define a Group capability or read Definition or Preferences files at runtime.
 
-<br>
-
 ### Groups
 
 **API Interface conforms to the Interface contract**
 
-- **Must** — Conform every realization to the Interface contract.
-- **Never** — Serve anything the contract does not list or change its structure without raising `contract_version`.
+- **Must** — Register every listed Group beneath its segment and serve its Endpoints exactly.
+- **Never** — Serve an Endpoint of API's own, add a wrapper or behavior to a Group, or change the structure without raising the Interface contract version.
+
+**Every Group is realized from the Group contract**
+
+- **Must** — Realize every Group from the Group contract, derive every Endpoint's identity in API, and let every Handler call only its operation.
+- **Never** — Let a Group state a Method, Path, placement, protocol, or technology, or let a Handler add a decision, validation, initialization, wrapper, other call, retry, or alternate path.
 
 **Public identities are valid and unique**
 
@@ -362,8 +339,6 @@ Every obligation in the file, under the Principle it comes from.
 
 - **Must** — Reference every Group by its fixed role and resolve exactly one Definition and Preferences file.
 - **Never** — Copy Group content into API or change a Reference because a Group's name changes.
-
-<br>
 
 ### Endpoints
 
@@ -382,12 +357,15 @@ Every obligation in the file, under the Principle it comes from.
 - **Must** — Send every non-simple Parameter in its stated form and convert it before the Handler runs.
 - **Never** — Convert a value inside a Handler or change its meaning.
 
-**Action errors map to HTTP by one table**
+**Operation errors map to HTTP by one table**
 
-- **Must** — Return every error as RFC 9457 Problem Details with its class name and the status the table sets.
+- **Must** — Return every error as RFC 9457 Problem Details with its own name and the status the table sets for its name, and for its code when it carries one.
 - **Never** — Add retry, recovery, or other error-handling Behavior through this mapping.
 
-<br>
+**Results are sent without a second validation**
+
+- **Must** — Send every result as JSON exactly as the source returns it.
+- **Never** — Validate a result a second time, or repair or reshape it.
 
 ### Configuration
 
@@ -396,7 +374,10 @@ Every obligation in the file, under the Principle it comes from.
 - **Must** — Write every value the API Configuration Structure defines into the runtime Configuration after generation, and read it only from there.
 - **Never** — Hold a runtime value in source.
 
-<br>
+**A source that keeps its state in one process is served by one worker**
+
+- **Must** — Set one worker process when a served Group's source keeps its state in one process.
+- **Never** — Serve such a Group from more than one worker process.
 
 ### Review
 

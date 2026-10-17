@@ -2,10 +2,10 @@
 meta:
   path: ".interface/implementation/development/api/groups/mt5/mt5.yaml"
   path_note: "The Preferences layer of MT5 Group inside the API Component."
-  purpose: "Role, name, directory, the Adapter naming pattern, and documentation for MT5 Group."
+  purpose: "Role, name, directory, the physical names of every part with the Adapter naming pattern, and the documentation of MT5 Group."
   standard: "Agent Project Interface"
-  version: "1.0"
-  updated: "2026-10-14"
+  version: "2.0"
+  updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
 policy:
@@ -19,16 +19,19 @@ resolution:
   consumption: "Read the content sections in read_order."
   selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
   version_resolution: "This file declares no versioned technology."
+  matching: "An entry here applies to MT5 Group of the API Component. An explicit Target value replaces the matching entry here, and a more specific entry governs over a general one."
 
 # <!--------------------------------------------------------------------------------- Read_Order -->
 read_order:
   - settings
   - architecture
+  - documentation
 
 # <!--------------------------------------------------------------------------------- Content_Map -->
 content_map:
   settings: "MT5 Group's role, configurable name, and directory."
-  architecture: "The entities of the Architecture tree — Adapters with their naming pattern, and Documentation with its file, location, and format."
+  architecture: "The physical names of every part of the Architecture tree and the Adapter naming pattern."
+  documentation: "The documentation file, its location and format, and its sections in order."
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
@@ -42,10 +45,17 @@ content:
 
   # <!-------------------------------------------- architecture -->
   architecture:
-    entities:
-      adapters:
-        naming: <group>
-      documentation:
-        file: README.md
-        location: the MT5 Group directory
-        format: markdown
+    adapters:
+      naming: <group>
+    constants: constants
+
+  # <!-------------------------------------------- documentation -->
+  documentation:
+    file: README.md
+    location: the MT5 Group directory
+    format: markdown
+    sections:
+      - overview: "What MT5 Group is, in one paragraph, with one request example."
+      - endpoints: "Every Function Group's Endpoints with Method, Path, and Parameters, each with one example."
+      - use: "How a client calls an Endpoint, including the Terminal Parameter."
+      - verify: "How to see that every Function has its Endpoint."

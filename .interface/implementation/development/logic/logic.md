@@ -23,7 +23,7 @@ Logic is the Development Component that holds the application's Behavior in modu
 
 ### Overview
 
-Logic is the reusable library that holds the application's Services. It has nothing of its own: its Interface publishes every Service's Interface under that Service's name.
+Logic is the reusable library that holds the application's Services. It has nothing of its own: its Interface publishes every Service under that Service's name — the one object a Service publishes when it publishes exactly one, and otherwise its whole Interface.
 
 ### Purpose
 
@@ -62,7 +62,7 @@ Every entity below is declared in `architecture` in Logic Preferences, which als
 Logic's outward surface: one entry for every Service, under that Service's name. Interface lives in its own `interface` file, the only file that publishes; the package's own initialiser, where the language has one, publishes nothing. Its Interface contract is these needs, with `contract_version` in Logic Preferences:
 
 1. **Complete** — exactly one entry for every Service listed in Logic Preferences, under that Service's configured name, changing when the list changes; each Service's name and Interface location come from that Service's own Preferences.
-2. **Unchanged** — each entry is that Service's own Interface, the identical object, never a copy, wrapper, or added Action.
+2. **Unchanged** — when a Service Interface publishes exactly one object, the entry is that object itself; otherwise the entry is the Service Interface itself. Either way it is the identical object, never a copy, wrapper, or added Action, so a consumer uses a single-object Service directly under the Service's name.
 3. **Nothing else** — nothing beyond these is published, and Interface defines no Action, wrapper, or rule of its own and runs no check.
 4. **Versioned** — changing this structure requires raising `contract_version` and a consumer review; adding or removing a Service in the list flows through without one.
 
@@ -214,7 +214,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 **Rule:** Review establishes Logic conformance through these observations, every one of them on every review:
 - Logic Interface publishes exactly one entry for every Service listed in Logic Preferences, under its configured name, and nothing else.
-- Every entry is the identical Interface object of its Service.
+- Every entry is the identical object its Service publishes when the Service Interface publishes exactly one, and otherwise the identical Service Interface.
 - No Service other than Entity Service imports Database Interface.
 - No Service imports Logic Interface.
 - No two Services share a name or directory.

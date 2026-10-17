@@ -6,7 +6,11 @@ from fastapi import APIRouter, Body
 from logic.interface import MT5
 from pydantic import JsonValue
 
-router = APIRouter(prefix="/market_data", tags=["MT5 · MarketData"])
+from api.endpoints import PlainRoute
+
+router = APIRouter(
+    prefix="/market_data", tags=["MT5 · MarketData"], route_class=PlainRoute
+)
 
 
 @router.post("/copy_rates_from")
@@ -18,7 +22,7 @@ def copy_rates_from(
     count: Annotated[int, Body(embed=True)],
 ) -> JsonValue:
     """Return bars starting from a date."""
-    return MT5.MT5(terminal).MarketData.copy_rates_from(
+    return MT5(terminal).MarketData.copy_rates_from(
         symbol=symbol, timeframe=timeframe, date_from=date_from, count=count
     )
 
@@ -32,7 +36,7 @@ def copy_rates_from_pos(
     count: Annotated[int, Body(embed=True)],
 ) -> JsonValue:
     """Return bars starting from a bar index."""
-    return MT5.MT5(terminal).MarketData.copy_rates_from_pos(
+    return MT5(terminal).MarketData.copy_rates_from_pos(
         symbol=symbol, timeframe=timeframe, start_pos=start_pos, count=count
     )
 
@@ -46,7 +50,7 @@ def copy_rates_range(
     date_to: Annotated[int, Body(embed=True)],
 ) -> JsonValue:
     """Return bars within a date range."""
-    return MT5.MT5(terminal).MarketData.copy_rates_range(
+    return MT5(terminal).MarketData.copy_rates_range(
         symbol=symbol, timeframe=timeframe, date_from=date_from, date_to=date_to
     )
 
@@ -60,7 +64,7 @@ def copy_ticks_from(
     flags: Annotated[int, Body(embed=True)],
 ) -> JsonValue:
     """Return ticks starting from a date."""
-    return MT5.MT5(terminal).MarketData.copy_ticks_from(
+    return MT5(terminal).MarketData.copy_ticks_from(
         symbol=symbol, date_from=date_from, count=count, flags=flags
     )
 
@@ -74,6 +78,6 @@ def copy_ticks_range(
     flags: Annotated[int, Body(embed=True)],
 ) -> JsonValue:
     """Return ticks within a date range."""
-    return MT5.MT5(terminal).MarketData.copy_ticks_range(
+    return MT5(terminal).MarketData.copy_ticks_range(
         symbol=symbol, date_from=date_from, date_to=date_to, flags=flags
     )

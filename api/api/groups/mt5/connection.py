@@ -6,7 +6,11 @@ from fastapi import APIRouter, Body
 from logic.interface import MT5
 from pydantic import JsonValue
 
-router = APIRouter(prefix="/connection", tags=["MT5 · Connection"])
+from api.endpoints import PlainRoute
+
+router = APIRouter(
+    prefix="/connection", tags=["MT5 · Connection"], route_class=PlainRoute
+)
 
 
 @router.post("/initialize")
@@ -20,7 +24,7 @@ def initialize(
     portable: Annotated[bool, Body(embed=True)] = False,
 ) -> JsonValue:
     """Establish a connection with the Terminal, starting its Terminal Process."""
-    return MT5.MT5(terminal).Connection.initialize(
+    return MT5(terminal).Connection.initialize(
         path=path,
         login=login,
         password=password,
@@ -39,7 +43,7 @@ def login(
     timeout: Annotated[int | None, Body(embed=True)] = None,
 ) -> JsonValue:
     """Connect to a trading account."""
-    return MT5.MT5(terminal).Connection.login(
+    return MT5(terminal).Connection.login(
         login=login, password=password, server=server, timeout=timeout
     )
 
@@ -47,28 +51,28 @@ def login(
 @router.post("/shutdown")
 def shutdown(terminal: Annotated[str, Body(embed=True)]) -> JsonValue:
     """Close the connection to the Terminal and end its Terminal Process."""
-    return MT5.MT5(terminal).Connection.shutdown()
+    return MT5(terminal).Connection.shutdown()
 
 
 @router.post("/version")
 def version(terminal: Annotated[str, Body(embed=True)]) -> JsonValue:
     """Return the Terminal version, build, and release date as a Timestamp."""
-    return MT5.MT5(terminal).Connection.version()
+    return MT5(terminal).Connection.version()
 
 
 @router.post("/last_error")
 def last_error(terminal: Annotated[str, Body(embed=True)]) -> JsonValue:
     """Return the last error code and description."""
-    return MT5.MT5(terminal).Connection.last_error()
+    return MT5(terminal).Connection.last_error()
 
 
 @router.post("/account_info")
 def account_info(terminal: Annotated[str, Body(embed=True)]) -> JsonValue:
     """Return info on the current trading account."""
-    return MT5.MT5(terminal).Connection.account_info()
+    return MT5(terminal).Connection.account_info()
 
 
 @router.post("/terminal_info")
 def terminal_info(terminal: Annotated[str, Body(embed=True)]) -> JsonValue:
     """Return the Terminal status and settings."""
-    return MT5.MT5(terminal).Connection.terminal_info()
+    return MT5(terminal).Connection.terminal_info()

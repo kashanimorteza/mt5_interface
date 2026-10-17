@@ -11,6 +11,23 @@ from starlette.exceptions import HTTPException
 INVALID_INPUT = 422
 UNNAMED = 500
 
+STATUS_BY_NAME: dict[str, int] = {}
+"""The status of every error the error table names by its name alone."""
+
+STATUS_BY_CODE: dict[str, dict[int, int]] = {
+    "MT5Error": {-2: INVALID_INPUT, -10005: 504},
+}
+"""The status of every error the error table names by its name and code."""
+
+
+def status_of(error: Exception) -> int:
+    """Return the status the error table sets for an error, by its name and code when it carries one."""
+    kind = type(error).__name__
+    code = getattr(error, "code", None)
+    if isinstance(code, int) and code in STATUS_BY_CODE.get(kind, {}):
+        return STATUS_BY_CODE[kind][code]
+    return STATUS_BY_NAME.get(kind, UNNAMED)
+
 
 def problem(error: Exception, status: int, detail: object) -> JSONResponse:
     """Send an error as Problem Details whose type is the error's class name."""
@@ -42,11 +59,11 @@ async def http_error(request: Request, error: Exception) -> Response:
 async def every_error(
     request: Request, call_next: Callable[[Request], Awaitable[Response]]
 ) -> Response:
-    """Send any other error, such as MT5Error, with the status for errors the table does not name."""
+    """Send any other error, such as MT5Error, with the status the error table sets for it."""
     try:
         return await call_next(request)
     except Exception as error:  # noqa: BLE001 - every error must reach the client as Problem Details
-        return problem(error, UNNAMED, str(error))
+        return problem(error, status_of(error), str(error))
 
 
 def install(app: FastAPI) -> None:

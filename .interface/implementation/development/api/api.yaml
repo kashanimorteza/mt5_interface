@@ -2,10 +2,10 @@
 meta:
   path: ".interface/implementation/development/api/api.yaml"
   path_note: "The Preferences layer of the API Component."
-  purpose: "Identity, the entities of architecture with the Interface and Group contract versions, Group list, Endpoint rules, Configuration defaults, and documentation, and the language profile for API."
+  purpose: "Identity, Endpoint rules and Configuration defaults, the Interface and Group contract versions, the Group list, the physical names of every part, the language profile, and the documentation of API."
   standard: "Agent Project Interface"
-  version: "17.0"
-  updated: "2026-10-12"
+  version: "20.0"
+  updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
 policy:
@@ -19,18 +19,25 @@ resolution:
   consumption: "Read the content sections in read_order."
   selection: "Preserve explicit compatible Target choices. Use these Preferences for choices the Target leaves unstated; for anything still unset, follow Development's resolution order."
   version_resolution: "Resolve latest-compatible to a concrete mutually compatible package version at implementation time and preserve every explicit compatible package version."
+  matching: "An entry here applies to the API Component. A Group listed here applies only when the Target selects the Logic Service that Group serves. An explicit Target value replaces the matching entry here, and a more specific entry governs over a general one."
 
 # <!--------------------------------------------------------------------------------- Read_Order -->
 read_order:
   - settings
+  - interface
+  - groups
   - architecture
   - development
+  - documentation
 
 # <!--------------------------------------------------------------------------------- Content_Map -->
 content_map:
-  settings: "API's identity."
-  architecture: "The entities of the Architecture tree — Groups with the Interface and Group contract versions and every Group's Definition and Preferences, Endpoints with the verb-to-Method table, Path and Parameter placement, URL shape, value forms, error statuses, and description keywords, Configuration with its file, location, format, structure, and the network, identity, and runtime defaults it is generated with, and Documentation with its file, location, and format."
+  settings: "API's identity, the Endpoint rules — verb-to-Method table, Path and Parameter placement, URL shape, value forms, and error statuses — and the network, identity, and runtime defaults the runtime Configuration is generated with."
+  interface: "The Interface contract version and the Group contract version."
+  groups: "Every Group Reference: its role with the paths of its Definition and Preferences."
+  architecture: "The physical names of every part of the Architecture tree, and the runtime Configuration file with its location, format, and structure."
   development: "Development capabilities and the selected language with its realization profile."
+  documentation: "The documentation file, its location and format, and its sections in order."
 
 # <!--------------------------------------------------------------------------------- Content -->
 content:
@@ -42,93 +49,101 @@ content:
       platform: VPS
       directory: api
       package: api
-
-  # <!-------------------------------------------- architecture -->
-  architecture:
-    entities:
-      groups:
-        contract_version: '1.4'
-        group_contract_version: '1.0'
-        list:
-          entity:
-            definition: groups/entity/entity.md
-            preferences: groups/entity/entity.yaml
-          mt5:
-            definition: groups/mt5/mt5.md
-            preferences: groups/mt5/mt5.yaml
-      endpoints:
-        method_by_verb:
-          GET:
-          - get
-          - list
-          - find
-          - search
-          - count
-          - sum
-          - min
-          - max
-          - read
-          PUT:
-          - update
-          - replace
-          PATCH:
-          - enable
-          - disable
-          - set
-          - patch
-          DELETE:
-          - delete
-          - remove
-          - truncate
-          - clear
-        default_method: POST
-        path: /<operation>
-        path_with_id: /<operation>/{id}
-        parameter_placement:
-          path:
-          - id
-          query_methods:
-          - GET
-          - DELETE
-          body_methods:
-          - POST
-          - PUT
-          - PATCH
-          complex_in_query_method: POST
-        url: <base_url>/<group segment>/<adapter segment><endpoint path>
-        value_forms:
-          Filter: "{field, operator, value}, in Body"
-          Order: "{field, direction}, in Body"
-          DatabaseInstance: "its name"
-        error_status:
+    endpoints:
+      method_by_verb:
+        GET:
+        - get
+        - list
+        - find
+        - search
+        - count
+        - sum
+        - min
+        - max
+        - read
+        PUT:
+        - update
+        - replace
+        PATCH:
+        - enable
+        - disable
+        - set
+        - patch
+        DELETE:
+        - delete
+        - remove
+        - truncate
+        - clear
+      default_method: POST
+      path: /<operation>
+      path_with_id: /<operation>/{id}
+      parameter_placement:
+        path:
+        - id
+        query_methods:
+        - GET
+        - DELETE
+        body_methods:
+        - POST
+        - PUT
+        - PATCH
+        complex_in_query_method: POST
+      url: <base_url>/<group segment>/<adapter segment><endpoint path>
+      value_forms:
+        Filter: "{field, operator, value}, in Body"
+        Order: "{field, direction}, in Body"
+        DatabaseInstance: "its name"
+      error_status:
+        by_name:
           Invalid Input: 422
           Inactive Instance: 503
           Connection Failure: 503
           Execution: 500
           Declaration Mismatch: 500
           Configuration: 500
-      configuration:
-        file: config.yaml
-        location: the Component root
-        format: yaml
-        structure: .interface/foundation/schema/api-configuration.yaml
-        defaults:
-          network:
-            transport_protocol: HTTP
-            host: 127.0.0.1
-            port: 8000
-            key: true
-            key_length: 32
-            url: http://127.0.0.1:8000/<key>
-          identity:
-            title: Target API
-            description: ''
-          runtime:
-            workers: 2
-      documentation:
-        file: README.md
-        location: the Component root
-        format: markdown
+        by_code:
+          MT5Error:
+            -2: 422
+            -10005: 504
+    configuration:
+      defaults:
+        network:
+          transport_protocol: HTTP
+          host: 127.0.0.1
+          port: 8000
+          key: true
+          key_length: 32
+          url: http://127.0.0.1:8000/<key>
+        identity:
+          title: Target API
+          description: ''
+        runtime:
+          workers: 1
+
+  # <!-------------------------------------------- interface -->
+  interface:
+    contract_version: '1.4'
+    group_contract_version: '1.1'
+
+  # <!-------------------------------------------- groups -->
+  groups:
+    entity:
+      definition: groups/entity/entity.md
+      preferences: groups/entity/entity.yaml
+    mt5:
+      definition: groups/mt5/mt5.md
+      preferences: groups/mt5/mt5.yaml
+
+  # <!-------------------------------------------- architecture -->
+  architecture:
+    bootstrap: bootstrap
+    groups: groups
+    endpoints: endpoints
+    configuration:
+      file: config.yaml
+      location: the Component root
+      format: yaml
+      structure: .interface/foundation/schema/api-configuration.yaml
 
   # <!-------------------------------------------- development -->
   development:
@@ -145,7 +160,11 @@ content:
             name: "FastAPI"
             package: "fastapi[standard]"
             version: "latest-compatible"
-            skill: "fastapi"
+            agent_skills:
+              - resource: "fastapi"
+                requirement: "optional"
+                activation: "when_selected"
+                purpose: "FastAPI conventions for the app, routers, route functions, parameters, and responses."
           documentation_ui:
             sections: "One tag per Adapter named <Group> · <Adapter>; Groups as tag groups (x-tagGroups) where the viewer supports them."
             swagger: "/docs"
@@ -159,6 +178,22 @@ content:
               allow_headers: ["*"]
           group:
             adapter: "One module per Adapter holding one APIRouter with one explicitly written route function per Endpoint; Adapters share no base class, router factory, or loop that generates routes."
-            endpoint: "One route function per Endpoint, decorated with its method and path; its parameters copy the operation's names, types, and defaults, placed by architecture.entities.endpoints.parameter_placement."
+            endpoint: "One route function per Endpoint, decorated with its method and path; its parameters copy the operation's names, types, and defaults, placed by settings.endpoints.parameter_placement."
             handler: "Each route calls the operation its Group names and returns the result unchanged."
+            result: "Every Adapter router uses one shared route class from the endpoints unit that sends the Handler's result as JSON directly, without validating it again, because the source already guarantees a JSON value; the declared return type still documents the result."
+          structured_types: "A structured type the source publishes is a class; an error's own name is its class name."
           bootstrap: "Create one FastAPI app from config.yaml and include each Group's routers under its segment; Bootstrap performs no check, because conformance belongs to Review."
+
+  # <!-------------------------------------------- documentation -->
+  documentation:
+    file: README.md
+    location: the Component root
+    format: markdown
+    sections:
+      - overview: "What API is, in one paragraph, with one request example."
+      - configuration: "Every runtime Configuration value and how the Base URL is formed from it."
+      - groups: "Every Group beneath its URL segment, with a link to its own documentation; never a copy of its Endpoints."
+      - setup: "How to install and start API."
+      - use: "How a client reaches a Group."
+      - verify: "How to see that every listed Group is served beneath its segment and nothing else is."
+      - troubleshooting: "Real problems a client can meet and how to fix them."

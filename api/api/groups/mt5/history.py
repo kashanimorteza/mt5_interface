@@ -6,7 +6,9 @@ from fastapi import APIRouter, Body
 from logic.interface import MT5
 from pydantic import JsonValue
 
-router = APIRouter(prefix="/history", tags=["MT5 · History"])
+from api.endpoints import PlainRoute
+
+router = APIRouter(prefix="/history", tags=["MT5 · History"], route_class=PlainRoute)
 
 
 @router.post("/history_orders_total")
@@ -16,7 +18,7 @@ def history_orders_total(
     date_to: Annotated[int, Body(embed=True)],
 ) -> JsonValue:
     """Return the number of history orders within an interval."""
-    return MT5.MT5(terminal).History.history_orders_total(
+    return MT5(terminal).History.history_orders_total(
         date_from=date_from, date_to=date_to
     )
 
@@ -31,7 +33,7 @@ def history_orders_get(
     position: Annotated[int | None, Body(embed=True)] = None,
 ) -> JsonValue:
     """Return history orders within an interval, or by order or position ticket."""
-    return MT5.MT5(terminal).History.history_orders_get(
+    return MT5(terminal).History.history_orders_get(
         date_from=date_from,
         date_to=date_to,
         group=group,
@@ -47,7 +49,7 @@ def history_deals_total(
     date_to: Annotated[int, Body(embed=True)],
 ) -> JsonValue:
     """Return the number of history deals within an interval."""
-    return MT5.MT5(terminal).History.history_deals_total(
+    return MT5(terminal).History.history_deals_total(
         date_from=date_from, date_to=date_to
     )
 
@@ -62,7 +64,7 @@ def history_deals_get(
     position: Annotated[int | None, Body(embed=True)] = None,
 ) -> JsonValue:
     """Return history deals within an interval, or by order or position ticket."""
-    return MT5.MT5(terminal).History.history_deals_get(
+    return MT5(terminal).History.history_deals_get(
         date_from=date_from,
         date_to=date_to,
         group=group,
