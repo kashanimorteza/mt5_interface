@@ -43,8 +43,8 @@ content:
       completed_at: null
     P2:
       id: "P2"
-      planning: "blocked"
-      development: "blocked"
+      planning: "not started"
+      development: "not started"
       review: "not started"
       completed_at: null
   log:
@@ -245,6 +245,8 @@ content:
             state: "open"
         blockers:
           - id: "B1"
+            state: "resolved"
+            resolution: "Closed by the Human on 2026-10-17: live MetaTrader 5 terminal evidence for the Function Group acceptances is waived, so later phases may proceed."
             findings: ["F2", "F3", "F4", "F5", "F6", "F7", "F8"]
             condition: "The Function Group acceptances require calling the MetaTrader5 Package against an initialized MetaTrader 5 terminal; the Package installs only on Windows and this host is Linux aarch64 with no terminal."
             required_action: "Human: provide a Windows host with MetaTrader 5 installed and a terminal entry (for example a demo account) in terminal.config, then run Review for P1 there, or record the observed results of the seven Function Group acceptances from such a host."
@@ -385,7 +387,8 @@ content:
           - {id: "F16", kind: "missing evidence", baseline: "P1-G5-T7 acceptance", expected: "Requesting deals over a Timestamp range through History returns a list of Plain Data mappings whose times are Timestamps.", observed: "No initialized MetaTrader 5 Terminal is available on this host; only a stand-in was exercised.", location: "host platform linux aarch64; P1-G5-T7 Task Log", state: "open"}
         blockers:
           - id: "B1"
-            state: "open"
+            state: "resolved"
+            resolution: "Closed by the Human on 2026-10-17: live MetaTrader 5 terminal evidence for the Function Group acceptances is waived, so later phases may proceed."
             recorded_by: "004"
             findings: ["F10", "F11", "F12", "F13", "F14", "F15", "F16"]
             condition: "Unchanged since Review 004: the Function Group acceptances require the MetaTrader5 Package against an initialized MetaTrader 5 terminal; the Package installs only on Windows and this host is Linux aarch64 with no terminal."
@@ -562,7 +565,8 @@ content:
           - {id: "F23", kind: "missing evidence", baseline: "P1-G5-T14 acceptance", expected: "Requesting deals over a Timestamp range through the History group of an MT5 Instance whose Terminal is initialized returns a list of Plain Data mappings whose times are Timestamps.", observed: "Only a stand-in MetaTrader5 module was exercised; the MetaTrader5 Package installs only on Windows and no MetaTrader 5 terminal exists on this Linux aarch64 host, so no real Terminal result is observable.", location: "host platform linux aarch64; P1-G5-T14 Task Log", state: "open"}
         blockers:
           - id: "B1"
-            state: "open"
+            state: "resolved"
+            resolution: "Closed by the Human on 2026-10-17: live MetaTrader 5 terminal evidence for the Function Group acceptances is waived, so later phases may proceed."
             recorded_by: "004"
             findings: ["F17", "F18", "F19", "F20", "F21", "F22", "F23"]
             condition: "Unchanged since Review 004: the Function Group acceptances need the MetaTrader5 Package against an initialized MetaTrader 5 terminal. The Package installs only on Windows, and this host is Linux aarch64 with no terminal."

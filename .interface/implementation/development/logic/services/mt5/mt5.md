@@ -301,6 +301,12 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Why:** A fixed set of observations proves the same things on every review.
 **Boundary:** Each observation states what is seen, never the command, tool, or code that observes it.
 
+#### Review and Task acceptances never need a live terminal
+
+**Rule:** Review observations and Task acceptances for MT5 Service never require the Package or a running MetaTrader 5 terminal. Every one of them is established without them, for example with the Package absent or with a stand-in that records what each method sends and returns what the Package Documentation describes.
+**Why:** MT5 Service is generated, installed, and reviewed on any operating system; only running MetaTrader 5 needs the Package and a terminal.
+**Boundary:** Behavior that needs a live terminal is not part of MT5 Service conformance and never becomes a Finding or a Blocker.
+
 <br>
 
 <!--------------------------------------------------------------------------------- At a Glance --->
@@ -383,3 +389,8 @@ Every obligation in the file, under the Principle it comes from.
 
 - **Must** — make every listed observation on every review.
 - **Never** — replace an observation with a command, tool, or code, or judge by a different set.
+
+**Review and Task acceptances never need a live terminal**
+
+- **Must** — Establish every observation and Task acceptance without the Package or a running terminal.
+- **Never** — Plan an acceptance that needs a live terminal, or record a Finding or Blocker for missing live-terminal evidence.
