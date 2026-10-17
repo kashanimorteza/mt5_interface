@@ -242,7 +242,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Operation errors map to HTTP by one table
 
-**Rule:** Every error an Endpoint returns is sent as RFC 9457 Problem Details, with `type` set to the error's own name, and with the status the error table in API Preferences sets: for an error that carries a code, the status set for its name and that code; otherwise the status set for its name. An error or code the table does not name uses `500`.
+**Rule:** Every error an Endpoint returns is sent as RFC 9457 Problem Details, with `type` set to the error's own name; an error that carries a code also carries it as a separate `code` member, with only its message as `detail`. Its status is the one the error table in API Preferences sets: for an error that carries a code, the status set for its name and that code; otherwise the status set for its name. An error or code the table does not name uses `500`.
 **Why:** Every client reads every Group's errors the same way, the error's identity reaches it unchanged, and a client's own mistake is never reported as a server failure.
 **Boundary:** This mapping is part of serving every Endpoint; it adds no retry, recovery, or other error-handling Behavior.
 
@@ -289,7 +289,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 - Every Parameter sits in Path, Query, or Body as the placement rule requires.
 - Every non-simple Parameter travels in the form the non-simple Parameter rule states, and is converted before its Handler runs.
 - Every result is sent as JSON exactly as the source returns it, without a second validation.
-- Every returned error is RFC 9457 Problem Details with its own name as `type` and the status the error table sets for its name, and for its code when it carries one.
+- Every returned error is RFC 9457 Problem Details with its own name as `type`, its code as a separate `code` member and its message as `detail` when it carries a code, and the status the error table sets for its name, and for its code when it carries one.
 - When a served Group's source keeps its state in one process, the runtime Configuration sets one worker process.
 - When the key setting is on, the Base URL carries a non-empty URL Key.
 - When the package offers interactive documentation, it is served, lists every Endpoint, and has one section per Group and per Adapter.
@@ -376,7 +376,7 @@ Every obligation in the file, under the Principle it comes from.
 
 **Operation errors map to HTTP by one table**
 
-- **Must** — Return every error as RFC 9457 Problem Details with its own name and the status the table sets for its name, and for its code when it carries one.
+- **Must** — Return every error as RFC 9457 Problem Details with its own name, its code as a separate `code` member when it carries one, and the status the table sets for its name and code.
 - **Never** — Add retry, recovery, or other error-handling Behavior through this mapping.
 
 **Results are sent without a second validation**

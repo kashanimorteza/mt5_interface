@@ -106,7 +106,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 **Rule:** MT5 Group obtains Function Groups and Functions only from MT5 Service through Logic Interface, and calls Functions only through that same boundary.
 **Why:** One source keeps every Adapter and Endpoint aligned with MT5 Service.
-**Boundary:** MT5 Group never imports the package MT5 Service uses.
+**Boundary:** MT5 Group never uses the package MT5 Service uses.
 
 #### MT5 Group conforms to the Group contract
 
@@ -164,7 +164,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 - Every Endpoint keeps its Function's Parameter names, requirements, and defaults, and every Function Endpoint adds only the required Terminal Parameter.
 - Every Handler creates an MT5 Instance for the request's Terminal Parameter and only calls its Function through Logic Interface.
 - No Adapter shares a base with another or produces Endpoints dynamically.
-- MT5 Group does not import the package MT5 Service uses.
+- MT5 Group does not use the package MT5 Service uses.
 - Every Function Endpoint states its Function's and Parameters' descriptions, one example request, and a link to its Function's page in the Package Documentation.
 **Why:** A fixed set of observations proves the same things on every review.
 **Boundary:** Each observation states what is seen, never the command, tool, or code that observes it.
@@ -187,7 +187,7 @@ Every obligation in the file, under the Principle it comes from.
 **MT5 Group reaches MetaTrader 5 only through Logic Interface**
 
 - **Must** — Call every Function through Logic Interface.
-- **Never** — Import the package MT5 Service uses.
+- **Never** — Use the package MT5 Service uses.
 
 **MT5 Group conforms to the Group contract**
 

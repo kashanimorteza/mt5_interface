@@ -4,7 +4,7 @@ meta:
   path_note: "The Preferences layer of MT5 Client inside the Logic Component."
   purpose: "Identity and the defaults Client Configuration is generated with, the published name and Interface contract version, the physical names of every part, the HTTP package and language realization, and the documentation of MT5 Client."
   standard: "Agent Project Interface"
-  version: "1.0"
+  version: "1.2"
   updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
@@ -52,7 +52,7 @@ content:
       defaults:
         client:
           url: "<the url of the API Component's runtime Configuration>"
-          request_timeout: 60
+          request_timeout: 70
 
   # <!-------------------------------------------- interface -->
   interface:
@@ -82,15 +82,15 @@ content:
       testing: false
       error_handling: false
       logging: false
-    http:
-      name: HTTPX
-      package: httpx
-      version: latest-compatible
-      documentation: "https://www.python-httpx.org/"
     language:
       selected: "python"
       options:
         python:
+          http:
+            name: HTTPX
+            package: httpx
+            version: latest-compatible
+            documentation: "https://www.python-httpx.org/"
           identifier_case: "snake_case"
           interface_file: "The Interface is the interface file at the MT5 Client directory (logic/services/mt5_client/interface.py); every __init__.py stays empty and publishes nothing."
           service: "One file, service.py, directly in the MT5 Client directory, holding the Client Entry as a class named MT5Client; MT5 Service's Constants and Error are class attributes of it, MT5Client.Constants and MT5Client.Error, the identical objects MT5 Service publishes."

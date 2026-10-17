@@ -30,6 +30,7 @@ External program  →  MT5 Interface REST API  →  MetaTrader 5 API  →  MetaT
 ### Scope
 
 - **MetaTrader 5 actions:** performing every function of the official MetaTrader 5 Python package through the MT5 Service.
+- **Remote use:** calling every function of the MT5 Service on a running MT5 Interface API through the MT5 Client Service, in the same shape as the MT5 Service.
 
 <!-------------------------- Constraints -->
 ### Constraints
@@ -61,7 +62,7 @@ Architecture
 <!-------------------------- Logic -->
 ### Logic
 
-Produces the Logic library through its services: the MT5 Service.
+Produces the Logic library through its services: the MT5 Service and the MT5 Client Service.
 
 Logic has no Entity Service and no connection to Entity or Database. The Implementation rule that fixes an Entity Service in every Logic does not apply to this Target.
 
@@ -70,7 +71,7 @@ Logic has no Entity Service and no connection to Entity or Database. The Impleme
 <!-------------------------- API -->
 ### API
 
-Produces the API executable over the Logic library, organized into groups that match the Logic services: the MT5 Group.
+Produces the API executable over the Logic library, organized into groups that match the Logic services: the MT5 Group. The MT5 Client Service calls the API and has no group of its own.
 
 → [Details of API](api.md)
 
@@ -96,3 +97,11 @@ Defines the project's implementation phases. Phases are executed step by step in
 - **Status:** Enabled
 - **Readiness:** Ready
 - **Goal:** Implement the API Layer as a separate executable over the Logic library with its MT5 Group.
+
+<!-------------------------- P3 -->
+### P3 — MT5 Client
+
+- **Target:** Logic
+- **Status:** Enabled
+- **Readiness:** Ready
+- **Goal:** Implement the MT5 Client Service in the Logic Layer, which calls every Function of the MT5 Service on the remote API through its Endpoints, with its `config.yaml` holding the API Address.

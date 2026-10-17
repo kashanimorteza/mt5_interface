@@ -77,7 +77,7 @@ The root is the MT5 Service directory. Every physical name, the group naming pat
 
 ### Interface — `interface`
 
-The gateway callers import from, and the only part of MT5 Service that publishes. Its Interface contract, with its version in MT5 Service Preferences:
+The gateway callers use, and the only part of MT5 Service that publishes. Its Interface contract, with its version in MT5 Service Preferences:
 
 1. **MT5 Entry** — the one published name. An MT5 Instance is created from it with a Terminal's name; every MT5 Instance is bound to that Terminal and exposes every Function Group this Definition names under the group's own name, as in `MT5("demo").Symbols.symbol_info("EURUSD")`. Any number of MT5 Instances may exist at once.
 2. **Constants** — carried by the MT5 Entry itself, so they are read from it without creating an MT5 Instance, as in `MT5.Constants.TIMEFRAME_H1`, and through any MT5 Instance as well.
@@ -107,7 +107,7 @@ The layer that runs the Package. Every Terminal has its own Terminal Process: th
 
 ### Constants — `constants`
 
-One group that holds every Constant of the Package under its own name with its value, and one method that returns them all as Plain Data, a dictionary from name to value. A caller reads a Constant's value from here and passes that value to a Function unchanged. The Constants are written out within MT5 Service, so they are available where the Package is not.
+One group that holds every Constant of the Package under its own name with its value, and one method that returns them all as Plain Data, an object from name to value. A caller reads a Constant's value from here and passes that value to a Function unchanged. The Constants are written out within MT5 Service, so they are available where the Package is not.
 
 ### Configuration — `config`
 
@@ -153,7 +153,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### MT5 Service is the only user of the Package
 
-**Rule:** MT5 Service is the only part of the application that imports the Package; every other part reaches MetaTrader 5 through MT5 Service Interface.
+**Rule:** MT5 Service is the only part of the application that uses the Package directly; every other part reaches MetaTrader 5 through MT5 Service Interface.
 **Why:** One owner keeps every use of MetaTrader 5 consistent and replaceable.
 **Boundary:** MT5 Service never exposes the Package object itself.
 
@@ -161,7 +161,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 **Rule:** Generating MT5 Service, installing it, loading its Interface, and starting anything that uses it work on every operating system, whether or not the Package can be installed there. The Package is declared as a dependency only where it can be installed, so installation never fails because of it. Where the Package is not available, every Function call raises MT5 Error.
 **Why:** Source is generated, installed, and served anywhere; only running MetaTrader 5 needs the Package.
-**Boundary:** No step of generation installs, imports, or runs the Package. The Constants and Terminal Configuration never need the Package.
+**Boundary:** No step of generation installs, loads, or runs the Package. The Constants and Terminal Configuration never need the Package.
 
 <br>
 
@@ -207,7 +207,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Every result is Plain Data and every failure is MT5 Error
 
-**Rule:** Every method returns its Function's result as Plain Data, a valid JSON value: a named tuple becomes a dictionary with the same field names, an array of records becomes a list of such dictionaries, a collection becomes a list, and a number that is not finite becomes null. When the Package returns its failure value, such as None or False, the method raises MT5 Error with the code and message of `last_error`.
+**Rule:** Every method returns its Function's result as Plain Data, a valid JSON value: a record with named fields becomes an object with the same field names, an array of records becomes an array of such objects, any other collection becomes an array, and a number that is not finite becomes null. When the Package returns its failure value, an empty or false result, the method raises MT5 Error with the code and message of `last_error`.
 **Why:** Every caller, including API, receives data it can use and send directly, and never has to check for a silent failure value.
 **Boundary:** Conversion changes only the form of a result, never its values or field names; a non-finite number has no JSON form, so null is its only form. MT5 Service's own error codes are the Package's own error Constants, never a second list of codes.
 
@@ -262,7 +262,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 #### Every Constant of the Package is published
 
 **Rule:** The Constants group holds every Constant the Package defines, under its own name and with its own value, each written out within MT5 Service; no Constant is read from the Package at runtime or reached through a bridge or handler to it. Every name and value is taken, when MT5 Service is generated, only from the Package's officially published distribution, read as files without installing or running the Package.
-**Why:** A caller that cannot import the Package, such as an external program through API, still needs every value a Function accepts, even where the Package is not installed.
+**Why:** A caller that cannot use the Package, such as an external program through API, still needs every value a Function accepts, even where the Package is not installed.
 **Boundary:** Functions still take a Constant's value, never its name. A value that cannot be taken from the Package's officially published distribution stops generation and is reported; it is never guessed or listed from memory. The Constants unit holds only the Constants, never other text carried over from the Package.
 
 <br>
@@ -307,7 +307,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 - A call that is not answered within the Call Timeout raises MT5 Error and frees its Terminal.
 - Starting one Terminal does not hold back calls for another.
 - Ending the Owner Process normally shuts down every running Terminal.
-- No other part of the application imports the Package.
+- No other part of the application uses the Package directly.
 - MT5 Service installs and its Interface loads where the Package is not available, and every Function call there raises MT5 Error.
 - Every result is Plain Data, a valid JSON value, with the Package's field names and values and every non-finite number as null, and every Package failure raises MT5 Error with the code and message of `last_error`; MT5 Service's own error codes are the Package's error Constants.
 - Every method takes only JSON values as parameters and returns only a JSON value, and every date and time is a Timestamp.
@@ -334,12 +334,12 @@ Every obligation in the file, under the Principle it comes from.
 **MT5 Service is the only user of the Package**
 
 - **Must** — Reach MetaTrader 5 only through MT5 Service Interface.
-- **Never** — Import the Package anywhere else or expose the Package object.
+- **Never** — Use the Package anywhere else or expose the Package object.
 
 **MT5 Service never depends on the Package being available**
 
 - **Must** — Generate, install, and load MT5 Service on every operating system, and raise MT5 Error from every Function call where the Package is not available.
-- **Never** — Install, import, or run the Package while generating, or let installation fail because the Package cannot be installed.
+- **Never** — Install, load, or run the Package while generating, or let installation fail because the Package cannot be installed.
 
 ### Interface
 

@@ -31,7 +31,7 @@ Consumers need one place to find every Service, so that none of them depends on 
 
 ### How It Works
 
-A consumer imports Logic Interface, selects a Service, and uses what that Service publishes.
+A consumer uses Logic Interface, selects a Service, and uses what that Service publishes.
 
 <br>
 
@@ -121,7 +121,7 @@ The root documentation, in the file, location, and format Logic Preferences name
 2. **Interface** — Every name Logic Interface publishes.
 3. **Services** — For every Service, its name and links to its README, its Definition, and its Preferences; never a copy of its contract.
 4. **Setup** — How to install Logic and what it needs next to it.
-5. **Use** — How a consumer imports from Logic Interface.
+5. **Use** — How a consumer reaches a Service through Logic Interface.
 6. **Verify** — How to see that Logic Interface publishes exactly every listed Service.
 7. **Troubleshooting** — Real problems a consumer can meet and how to fix them.
 
@@ -184,11 +184,11 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Why:** Every consumer depends on one exact gateway instead of reinterpreting each realization.
 **Boundary:** Changing the structure itself requires raising `contract_version`.
 
-#### Service imports point away from Logic Interface
+#### Service dependencies point away from Logic Interface
 
-**Rule:** Logic Interface imports Service Interfaces; no Service ever imports Logic Interface. A Service that collaborates with another imports that Service's Interface directly.
-**Why:** One-way imports keep Logic Interface and its Services free of a dependency cycle.
-**Boundary:** A direct Service Interface import is collaboration inside Logic, never an external entry point.
+**Rule:** Logic Interface depends on Service Interfaces; no Service ever depends on Logic Interface. A Service that collaborates with another depends on that Service's Interface directly.
+**Why:** One-way dependencies keep Logic Interface and its Services free of a dependency cycle.
+**Boundary:** A direct dependency on a Service Interface is collaboration inside Logic, never an external entry point.
 
 #### Service names are unique within Logic
 
@@ -223,8 +223,8 @@ Every Principle below is mandatory and belongs to the category that owns it.
 **Rule:** Review establishes Logic conformance through these observations, every one of them on every review:
 - Logic Interface publishes exactly one entry for every Service listed in Logic Preferences, under its configured name, and nothing else.
 - Every entry is the identical object its Service publishes when the Service Interface publishes exactly one, and otherwise the identical Service Interface.
-- No Service other than Entity Service imports Database Interface.
-- No Service imports Logic Interface.
+- No Service other than Entity Service depends on Database Interface.
+- No Service depends on Logic Interface.
 - No two Services share a name or directory.
 **Why:** A fixed set of observations proves the same things on every review, so a result is never judged by a different standard from one run to the next.
 **Boundary:** Each observation states what is seen, never the command, tool, or code that observes it; how it is realized belongs to the Review Operation.
@@ -250,10 +250,10 @@ Every obligation in the file, under the Principle it comes from.
 - **Must** — Conform every realization to the Interface contract.
 - **Never** — Publish anything the contract does not list or change its structure without raising `contract_version`.
 
-**Service imports point away from Logic Interface**
+**Service dependencies point away from Logic Interface**
 
-- **Must** — Import Service Interfaces into Logic Interface, and another Service's Interface directly when collaborating.
-- **Never** — Import Logic Interface from a Service.
+- **Must** — Make Logic Interface depend on Service Interfaces, and a Service depend on another Service's Interface directly when collaborating.
+- **Never** — Make a Service depend on Logic Interface.
 
 **Service names are unique within Logic**
 

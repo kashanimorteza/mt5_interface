@@ -65,7 +65,7 @@ The root is the MT5 Client directory. Every physical name, the group naming patt
 
 ### Interface — `interface`
 
-The gateway callers import from, and the only part of MT5 Client that publishes. Its Interface contract, with its version in MT5 Client Preferences:
+The gateway callers use, and the only part of MT5 Client that publishes. Its Interface contract, with its version in MT5 Client Preferences:
 
 1. **Client Entry** — the one published name. A Client Instance is created from it with a Terminal's name; every Client Instance is bound to that Terminal and exposes every Function Group of MT5 Service under the group's own name. Any number of Client Instances may exist at once.
 2. **Constants** — MT5 Service's Constants, carried by the Client Entry itself, so they are read without creating a Client Instance and through any Client Instance as well.
@@ -127,7 +127,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### MT5 Client reaches MetaTrader 5 only through the API
 
-**Rule:** MT5 Client runs every Function only by sending a request to the API Address. It never imports the Package and never calls MT5 Service's Function Groups; from MT5 Service it takes only its shape, its Constants, and its MT5 Error.
+**Rule:** MT5 Client runs every Function only by sending a request to the API Address. It never uses the Package and never calls MT5 Service's Function Groups; from MT5 Service it takes only its shape, its Constants, and its MT5 Error.
 **Why:** A program using MT5 Client runs anywhere, and every call reaches the one MetaTrader 5 host the API serves.
 **Boundary:** MT5 Client never starts a Terminal Process or opens a connection to MetaTrader 5 itself.
 
@@ -185,7 +185,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 
 #### Every failure is MT5 Error
 
-**Rule:** An error the API sends as Problem Details raises MT5 Error with the code and message it carries. A request that cannot reach the API raises MT5 Error with the Package's connection-failure code, and a request not answered within the Request Timeout raises MT5 Error with the Package's timeout code.
+**Rule:** An error the API sends as Problem Details raises MT5 Error with its `code` member as the code and its `detail` as the message. A request that cannot reach the API raises MT5 Error with the Package's connection-failure code, and a request not answered within the Request Timeout raises MT5 Error with the Package's timeout code.
 **Why:** A caller handles every failure of MT5 Client and of MT5 Service the same way.
 **Boundary:** The API Address and the Terminal's credentials never appear in an MT5 Error message.
 
@@ -218,7 +218,7 @@ Every Principle below is mandatory and belongs to the category that owns it.
 - An error the API sends raises MT5 Error with its code and message; an unreachable API and a request beyond the Request Timeout raise MT5 Error with the Package's connection-failure and timeout codes.
 - Connections to the API are reused between requests.
 - Client Configuration exists in exactly the structure of the MT5 Client Configuration Schema, and a change to it takes effect.
-- MT5 Client never imports the Package or calls MT5 Service's Function Groups, and it installs and loads where the Package is not available.
+- MT5 Client never uses the Package or calls MT5 Service's Function Groups, and it installs and loads where the Package is not available.
 - Loading the Interface and creating a Client Instance send no request.
 **Why:** A fixed set of observations proves the same things on every review.
 **Boundary:** Each observation states what is seen, never the command, tool, or code that observes it.
@@ -241,7 +241,7 @@ Every obligation in the file, under the Principle it comes from.
 **MT5 Client reaches MetaTrader 5 only through the API**
 
 - **Must** — Run every Function by sending a request to the API Address.
-- **Never** — Import the Package, call MT5 Service's Function Groups, or open a connection to MetaTrader 5.
+- **Never** — Use the Package, call MT5 Service's Function Groups, or open a connection to MetaTrader 5.
 
 **MT5 Client works on every operating system**
 

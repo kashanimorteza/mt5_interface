@@ -4,7 +4,7 @@ meta:
   path_note: "The Preferences layer of the API Component."
   purpose: "Identity, Endpoint rules and Configuration defaults, the Interface and Group contract versions, the Group list, the physical names of every part, the language profile, and the documentation of API."
   standard: "Agent Project Interface"
-  version: "21.0"
+  version: "22.0"
   updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
@@ -181,6 +181,7 @@ content:
             endpoint: "One route function per Endpoint, decorated with its method and path; its parameters copy the operation's names, types, and defaults, placed by settings.endpoints.parameter_placement."
             handler: "Each route calls the operation its Group names and returns the result unchanged."
             documentation: "The app title and description come from config.yaml. Every operation_id is <group>_<adapter>_<operation> in lower case, set by one generate_unique_id_function in Bootstrap, never containing the URL Key. Every Parameter carries Body(description=..., examples=[...]); every route carries openapi_extra with externalDocs {description, url} when its Group states a link. One Problem Details model from the endpoints unit is declared as the response for every status the error table can produce, on every Adapter router."
+            problem: "The Problem Details model has type, title, status, an optional integer code, and detail; an error with an integer code attribute sends it as code and its message attribute as detail."
             result: "Every Adapter router uses one shared route class from the endpoints unit that sends the Handler's result as JSON directly, without validating it again, because the source already guarantees a JSON value; the declared return type still documents the result."
           structured_types: "A structured type the source publishes is a class; an error's own name is its class name."
           bootstrap: "Create one FastAPI app from config.yaml and include each Group's routers under its segment; Bootstrap performs no check, because conformance belongs to Review."

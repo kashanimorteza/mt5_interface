@@ -4,7 +4,7 @@ meta:
   path_note: "The Preferences layer of MT5 Service inside the Logic Component."
   purpose: "Identity, the published names and Interface contract version, the physical names of every part, the Package and language realization, and the documentation of MT5 Service."
   standard: "Agent Project Interface"
-  version: "4.0"
+  version: "4.1"
   updated: "2026-10-17"
 
 # <!--------------------------------------------------------------------------------- Policy -->
@@ -84,13 +84,13 @@ content:
       logging: false
     package:
       name: MetaTrader5
-      import: "import MetaTrader5 as mt5"
       version: latest-compatible
       documentation: "https://www.mql5.com/en/docs/python_metatrader5"
     language:
       selected: "python"
       options:
         python:
+          package_import: "import MetaTrader5 as mt5"
           identifier_case: "snake_case"
           interface_file: "The Interface is the interface file at the MT5 Service directory (logic/services/mt5/interface.py); every __init__.py stays empty and publishes nothing."
           service: "One file, service.py, directly in the MT5 Service directory, holding the MT5 Entry as a class; the Constants and MT5 Error are class attributes of it, MT5.Constants and MT5.Error, so they are reached without creating an instance."

@@ -33,6 +33,7 @@ class Problem(BaseModel):
     type: str
     title: str
     status: int
+    code: int | None = None
     detail: JsonValue
 
 
@@ -75,15 +76,16 @@ def status_of(error: Exception) -> int:
 
 
 def problem(error: Exception, status: int, detail: object) -> JSONResponse:
-    """Send an error as Problem Details whose type is the error's class name."""
+    """Send an error as Problem Details whose type is the error's class name, with its code when it has one."""
     kind = type(error).__name__
+    body: dict[str, object] = {"type": kind, "title": kind, "status": status}
+    code = getattr(error, "code", None)
+    if isinstance(code, int) and not isinstance(code, bool):
+        body["code"] = code
+        detail = getattr(error, "message", detail)
+    body["detail"] = jsonable_encoder(detail)
     return JSONResponse(
-        {
-            "type": kind,
-            "title": kind,
-            "status": status,
-            "detail": jsonable_encoder(detail),
-        },
+        body,
         status_code=status,
         media_type="application/problem+json",
     )
